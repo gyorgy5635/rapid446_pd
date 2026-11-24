@@ -1,0 +1,914 @@
+<title>PD 24-Sample Run Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: instrument-schematic map on the left, step log on the right, transport bar under the map. */
+:root {
+  --bg: #eef2f4; --panel: #ffffff; --deck: #e3e9ed; --slot: #f7f9fa; --ink: #16212b; --muted: #5a6875;
+  --line: #cbd4db; --accent: #0b6e8a; --accent-soft: #d3e9f0; --arm: #34434f; --busy: #0b6e8a;
+  --warn: #9a5b00; --warn-soft: #fbefd9; --plate-ink: #ffffff; --tips: #8d99a3;
+  --c0: #6b7a86; --c1: #2f6fb0; --c2: #a8462d; --c3: #3c8d5a; --c4: #8a5bb5; --c5: #1f8f8c;
+  --c6: #a97e14; --c7: #c2477a; --c8: #4f62c9; --c9: #607d18;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1418; --panel: #151d23; --deck: #1b252c; --slot: #121a1f; --ink: #e3eaef; --muted: #93a2ad;
+  --line: #2b3741; --accent: #5cbad6; --accent-soft: #163744; --arm: #c4d0d8; --busy: #5cbad6;
+  --warn: #f0b75c; --warn-soft: #3a2b12; --plate-ink: #0e1418; --tips: #6f7c86;
+  --c0: #9aa7b1; --c1: #7fb2e5; --c2: #ee9a7a; --c3: #7ccf98; --c4: #c3a0e8; --c5: #6fd2cf;
+  --c6: #e2c060; --c7: #f08cb5; --c8: #a3b0ff; --c9: #b5d26a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1418; --panel: #151d23; --deck: #1b252c; --slot: #121a1f; --ink: #e3eaef; --muted: #93a2ad;
+  --line: #2b3741; --accent: #5cbad6; --accent-soft: #163744; --arm: #c4d0d8; --busy: #5cbad6;
+  --warn: #f0b75c; --warn-soft: #3a2b12; --plate-ink: #0e1418; --tips: #6f7c86;
+  --c0: #9aa7b1; --c1: #7fb2e5; --c2: #ee9a7a; --c3: #7ccf98; --c4: #c3a0e8; --c5: #6fd2cf;
+  --c6: #e2c060; --c7: #f08cb5; --c8: #a3b0ff; --c9: #b5d26a; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 32px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 600; text-wrap: balance; margin: 0; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 16px; }
+
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+header.top h1 { font-size: 1.75rem; letter-spacing: -0.01em; }
+header.top .src { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+header.top .src code { font-family: var(--f-mono); font-size: 0.8rem; }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 20px; font-variant-numeric: tabular-nums; }
+.stats div { display: grid; }
+.stats b { font-family: var(--f-display); font-size: 1.25rem; font-weight: 600; }
+.stats span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; align-items: start; }
+@media (max-width: 1080px) { .main { grid-template-columns: minmax(0, 1fr); } }
+
+.stage { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; min-width: 0; overflow: hidden; }
+.mapwrap { overflow-x: auto; }
+svg#map { display: block; width: 100%; min-width: 640px; height: auto; touch-action: manipulation; }
+.editing svg#map { cursor: default; }
+
+/* map */
+.inst-body { fill: var(--deck); stroke: var(--line); stroke-width: 1.2; }
+.inst.busy .inst-body { stroke: var(--busy); stroke-width: 2.5; stroke-dasharray: 8 5; animation: march 0.9s linear infinite; }
+@keyframes march { to { stroke-dashoffset: -26; } }
+.inst-label { font-family: var(--f-display); font-weight: 600; font-size: 15px; fill: var(--ink); }
+.inst-sub { font-family: var(--f-mono); font-size: 10px; fill: var(--muted); }
+.inst-status { font-family: var(--f-body); font-weight: 600; font-size: 11.5px; fill: var(--accent); }
+.slot { fill: var(--slot); stroke: var(--line); stroke-width: 1; }
+.slot.fixture { fill: none; stroke-dasharray: 3 3; }
+.slot.hot { stroke: var(--accent); stroke-width: 2; }
+.slot-num { font-family: var(--f-mono); font-size: 9px; fill: var(--muted); }
+.slot-fix { font-family: var(--f-body); font-size: 9.5px; fill: var(--muted); }
+.staging-line { stroke: var(--line); stroke-dasharray: 4 4; }
+.editing .inst { cursor: grab; }
+.editing .inst .inst-body { stroke: var(--accent); stroke-dasharray: 4 3; }
+.arm-base { fill: var(--panel); stroke: var(--arm); stroke-width: 3; }
+.arm-link { stroke: var(--arm); stroke-width: 7; stroke-linecap: round; fill: none; opacity: 0.85; }
+.arm-joint { fill: var(--arm); }
+.arm.idle .arm-link { opacity: 0.6; }
+.rail-track { fill: var(--deck); stroke: var(--line); stroke-width: 1.2; }
+.rail-tick { stroke: var(--line); stroke-width: 1.5; }
+.jaw { fill: var(--arm); }
+.plate rect.body { stroke: rgba(0,0,0,0.18); stroke-width: 1; }
+.plate text { font-family: var(--f-mono); font-weight: 500; font-size: 11px; fill: var(--plate-ink); pointer-events: none; }
+.plate.tips text { fill: var(--panel); }
+.plate .wells { fill: var(--plate-ink); opacity: 0.28; }
+.plate.moving rect.body { stroke: var(--ink); stroke-width: 2; }
+.plate.dim { opacity: 0.25; }
+.plate .grip { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 3 2; }
+.trail { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.8; }
+.trail-dot { stroke: var(--panel); stroke-width: 1.5; }
+.banner rect { fill: var(--warn-soft); stroke: var(--warn); }
+.banner text { fill: var(--warn); font-weight: 600; font-size: 13px; }
+
+/* transport */
+.transport { display: grid; gap: 8px; padding: 12px 14px 14px; border-top: 1px solid var(--line); }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 7px; padding: 6px 12px; cursor: pointer; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); min-width: 84px; }
+.btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.clock { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--muted); margin-left: auto; }
+.clock b { color: var(--ink); font-weight: 500; }
+label.inline { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); }
+select { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 4px 6px; }
+.bands { display: flex; height: 8px; border-radius: 4px; overflow: hidden; }
+.bands div { min-width: 2px; cursor: pointer; }
+input[type=range] { width: 100%; accent-color: var(--accent); margin: 0; }
+.bandlabels { display: flex; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.bandlabels div { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-right: 4px; }
+
+/* side panel */
+aside { display: grid; gap: 12px; min-width: 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.card h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-family: var(--f-body); margin-bottom: 8px; }
+.now .phase { display: inline-block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.now .idx { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); margin-left: 8px; }
+.now h3 { font-size: 1.15rem; margin: 8px 0 4px; line-height: 1.25; }
+.now .detail { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); overflow-wrap: anywhere; }
+.now dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px; margin: 10px 0 0; font-size: 0.82rem; }
+.now dt { color: var(--muted); }
+.now dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.now a { color: var(--accent); }
+.src-tag { font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); margin-left: 4px; }
+.src-tag.code { border-color: var(--accent); color: var(--accent); }
+
+.steps { max-height: 420px; overflow-y: auto; margin: 0 -16px -14px; border-top: 1px solid var(--line); }
+.steps .ph { position: sticky; top: 0; background: var(--panel); font-family: var(--f-display); font-weight: 600; font-size: 0.9rem; padding: 8px 16px 4px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; z-index: 1; }
+.steps .ph span { font-family: var(--f-mono); font-weight: 400; font-size: 0.75rem; color: var(--muted); }
+.steps button.row { display: grid; grid-template-columns: 2.4em 3.6em minmax(0, 1fr); gap: 6px; width: 100%; text-align: left; border: 0; background: none; padding: 5px 16px; cursor: pointer; font-size: 0.8rem; align-items: baseline; }
+.steps button.row:hover { background: var(--slot); }
+.steps button.row.done { color: var(--muted); }
+.steps button.row.cur { background: var(--accent-soft); color: var(--ink); }
+.steps .n { font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.steps .k { font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.04em; font-weight: 500; }
+.k.move { color: var(--c1); } .k.flex { color: var(--c5); } .k.run { color: var(--c3); } .k.act { color: var(--c4); } .k.pause { color: var(--warn); }
+.steps .t { overflow-wrap: anywhere; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px 3px 4px; background: var(--panel); cursor: pointer; font-size: 0.78rem; }
+.chip i { width: 18px; height: 12px; border-radius: 3px; display: inline-block; }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.hint { color: var(--muted); font-size: 0.78rem; margin: 8px 0 0; }
+.warnlist { margin: 0; padding-left: 18px; font-size: 0.8rem; }
+.warnlist li { margin-bottom: 4px; }
+.warnlist code, .card code { font-family: var(--f-mono); font-size: 0.75rem; }
+.editbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+textarea#layoutOut { width: 100%; height: 160px; font-family: var(--f-mono); font-size: 0.72rem; border: 1px solid var(--line); border-radius: 6px; background: var(--slot); color: var(--ink); margin-top: 8px; }
+.loctable { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.loctable th { text-align: left; font-weight: 500; color: var(--muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 6px 4px 0; border-bottom: 1px solid var(--line); }
+.loctable td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.loctable td.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; color: var(--muted); text-align: right; }
+.loctable code { font-family: var(--f-mono); font-size: 0.72rem; overflow-wrap: anywhere; }
+.loctable tr.grp td { font-family: var(--f-display); font-weight: 600; font-size: 0.85rem; padding-top: 10px; border-bottom: 0; }
+.loctable tr.hot td { background: var(--accent-soft); }
+.loctable .pl { display: inline-flex; align-items: center; gap: 4px; font-family: var(--f-mono); font-size: 0.7rem; }
+.loctable .pl i { width: 12px; height: 9px; border-radius: 2px; display: inline-block; }
+.loctable .role { display: block; color: var(--muted); font-size: 0.7rem; }
+.locwrap { max-height: 360px; overflow-y: auto; }
+.setups { display: grid; gap: 10px; }
+.setups-head h2 { font-size: 1.25rem; }
+.setups-head .hint { margin: 2px 0 0; max-width: 75ch; }
+.setup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 12px; }
+.setup-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px 14px; display: grid; gap: 8px; min-width: 0; align-content: start; }
+.setup-card header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
+.setup-card h3 { font-size: 1.05rem; }
+.setup-card header span { font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.setup-card .tools { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.btn.small { padding: 3px 10px; font-size: 0.78rem; }
+.setup-card .jump { border: 0; background: none; padding: 0; cursor: pointer; text-align: left; display: block; width: 100%; border-radius: 6px; }
+.setup-card .jump:hover svg { outline: 1px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+svg.mini { width: 100%; height: auto; display: block; }
+.mini .ghost rect.body { fill-opacity: 0.16; stroke-dasharray: 5 3; stroke-width: 2; }
+.mini .ghost text { fill: var(--ink); }
+.setup-card dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; margin: 0; font-size: 0.78rem; }
+.setup-card dt { color: var(--muted); }
+.setup-card dd { margin: 0; overflow-wrap: anywhere; }
+.toast { font-size: 0.8rem; color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .inst.busy .inst-body { animation: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 id="pageHead">Protein Design run · labware movements</h1>
+      <div class="src">Generated from <code id="srcName"></code> <span id="genTime"></span></div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="main">
+    <section class="stage" id="stage">
+      <div class="mapwrap"><svg id="map" role="img" aria-label="Top-down map of the workcell with plates"></svg></div>
+      <div class="transport">
+        <div class="controls">
+          <button class="btn" id="btnStart" title="Back to start (Home)">Start</button>
+          <button class="btn" id="btnPrev" title="Previous step (←)">◀</button>
+          <button class="btn primary" id="btnPlay" title="Play / pause (Space)">Play</button>
+          <button class="btn" id="btnNext" title="Next step (→)">▶</button>
+          <label class="inline" for="speed">Speed
+            <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select>
+          </label>
+          <button class="btn" id="btnEdit" aria-pressed="false">Edit layout</button>
+          <div class="clock">Step <b id="stepNum">0</b> / <span id="stepTot"></span> · <span id="clockLabel">est.</span> <b id="clock">T+0:00</b></div>
+        </div>
+        <div class="bands" id="bands"></div>
+        <input type="range" id="scrub" min="0" value="0" aria-label="Scrub through steps">
+        <div class="bandlabels" id="bandlabels"></div>
+      </div>
+    </section>
+
+    <aside>
+      <div class="card now" id="now"></div>
+      <div class="card" id="editCard" hidden>
+        <h2>Edit layout</h2>
+        <p class="hint" style="margin-top:0">Drag instruments on the map. Positions are kept in this browser. Copy the JSON into <code>config/layout.json</code> and rebuild to make them permanent.</p>
+        <div class="editbar">
+          <button class="btn" id="btnCopy">Copy layout JSON</button>
+          <button class="btn" id="btnReset">Reset to file</button>
+          <span class="toast" id="toast" role="status"></span>
+        </div>
+        <textarea id="layoutOut" readonly hidden aria-label="Layout JSON"></textarea>
+      </div>
+      <div class="card">
+        <h2>Labware</h2>
+        <div class="legend" id="legend"></div>
+        <p class="hint">Select labware to draw its full route.</p>
+      </div>
+      <div class="card">
+        <h2>Steps</h2>
+        <div class="steps" id="steps"></div>
+      </div>
+      <div class="card">
+        <h2>Locations</h2>
+        <div class="locwrap"><table class="loctable" id="locs"></table></div>
+        <p class="hint">Every location named in the workflow files, what holds it at the current step, and how many moves use it.</p>
+      </div>
+      <div class="card" id="checks"></div>
+    </aside>
+  </div>
+
+  <section class="setups">
+    <div class="setups-head">
+      <h2>Deck setup by phase</h2>
+      <p class="hint">Solid: on the deck when the phase starts. Dashed: brought in during the phase, shown in the slot where it is used. Select a phase to jump the map to its start.</p>
+    </div>
+    <div class="setup-grid" id="setups"></div>
+  </section>
+</div>
+
+<script>
+const EV = /*__EVENTS__*/null;
+const LAYOUT_FILE = /*__LAYOUT__*/null;
+const REPO_URL = EV.meta.script_url;  // null for a local variant: line numbers are shown without links
+const srcLink = (line, text) => REPO_URL ? `<a href="${REPO_URL}#L${line}" target="_blank" rel="noopener">${text}</a>` : text;
+const CELL = { w: 78, h: 58 }, PL = { w: 62, h: 42 }, PAD = 14, TOP = 48;
+const NS = "http://www.w3.org/2000/svg";
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = (id) => document.getElementById(id);
+
+// ---------- layout ----------
+const LS_KEY = "pd-run-map-layout-v2-" + (EV.meta.version || "default");
+function loadLayout() {
+  const base = JSON.parse(JSON.stringify(LAYOUT_FILE));
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+    if (saved) for (const inst of base.instruments) if (saved[inst.id]) { inst.x = saved[inst.id][0]; inst.y = saved[inst.id][1]; }
+  } catch (e) {}
+  return base;
+}
+let layout = loadLayout();
+function saveLayout() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(Object.fromEntries(layout.instruments.map(i => [i.id, [i.x, i.y]])))); } catch (e) {}
+}
+
+function geometry(inst) {
+  const slots = [];
+  const fx = inst.fixtures || {};
+  if (inst.kind === "rack") {
+    for (let r = 1; r <= 5; r++) for (let n = 1; n <= 3; n++)
+      slots.push({ key: `${inst.prefix}row${r}_nest${n}`, label: `R${r}·N${n}`, cx: PAD + (n - 1) * CELL.w + CELL.w / 2, cy: TOP + (r - 1) * CELL.h + CELL.h / 2 });
+    return { w: PAD * 2 + 3 * CELL.w, h: TOP + 5 * CELL.h + 12, slots };
+  }
+  if (inst.kind === "ot2") {
+    const rows = [[10, 11, 12], [7, 8, 9], [4, 5, 6], [1, 2, 3]];
+    rows.forEach((row, r) => row.forEach((s, c) =>
+      slots.push({ key: inst.prefix + s, label: String(s), fixture: fx[s], cx: PAD + c * CELL.w + CELL.w / 2, cy: TOP + r * CELL.h + CELL.h / 2 })));
+    return { w: PAD * 2 + 3 * CELL.w, h: TOP + 4 * CELL.h + 12, slots };
+  }
+  if (inst.kind === "flex") {
+    "ABCD".split("").forEach((row, r) => [1, 2, 3, 4].forEach((col, c) => {
+      const s = row + col;
+      slots.push({ key: inst.prefix + s, label: s, fixture: fx[s], staging: col === 4, cx: PAD + c * CELL.w + (col === 4 ? 14 : 0) + CELL.w / 2, cy: TOP + r * CELL.h + CELL.h / 2 });
+    }));
+    return { w: PAD * 2 + 4 * CELL.w + 14, h: TOP + 4 * CELL.h + 12, slots, stagingX: PAD + 3 * CELL.w + 7 };
+  }
+  if (inst.kind === "nest") {
+    slots.push({ key: inst.location, label: "", cx: 75, cy: TOP + CELL.h / 2 + 2 });
+    return { w: 150, h: TOP + CELL.h + 14, slots };
+  }
+  return { w: 0, h: 0, slots };
+}
+
+let slotIndex = {};   // location key -> {x, y, inst}
+let nodeToInst = {};  // MADSci node -> instrument id
+function buildIndex() {
+  slotIndex = {}; nodeToInst = {};
+  for (const inst of layout.instruments) {
+    inst._g = geometry(inst);
+    for (const s of inst._g.slots) slotIndex[s.key] = { x: inst.x + s.cx, y: inst.y + s.cy, inst: inst.id };
+    for (const n of inst.nodes || [inst.id]) nodeToInst[n] = inst.id;
+  }
+}
+const canon = (loc) => (layout.aliases && layout.aliases[loc]) || loc;
+function posOf(loc) {
+  const p = slotIndex[canon(loc)];
+  if (p) return p;
+  return { x: 20, y: 20, inst: null, missing: true };
+}
+
+// ---------- precomputed state ----------
+const N = EV.steps.length;
+const plateById = Object.fromEntries(EV.plates.map(p => [p.id, p]));
+const states = [];  // states[t] = {plateId: loc} after t completed steps
+const elapsed = [0]; // seconds after t steps
+{
+  let s = Object.fromEntries(EV.plates.map(p => [p.id, p.start]));
+  states.push({ ...s });
+  for (const st of EV.steps) {
+    if (st.kind === "move") s[st.plate] = st.to;
+    states.push({ ...s });
+    elapsed.push(elapsed[elapsed.length - 1] + (st.wait_before_s || 0) + st.duration_s);
+  }
+}
+const fmtClock = (sec) => { const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60); return `T+${h}:${String(m).padStart(2, "0")}`; };
+const fmtDur = (sec) => sec >= 3600 ? `${(sec / 3600).toFixed(sec % 3600 ? 1 : 0)} h` : sec >= 60 ? `${Math.round(sec / 60)} min` : `${sec} s`;
+const plateColor = (p) => p.kind === "tips" ? "var(--tips)" : `var(--c${p.color || 0})`;
+const KIND = (st) => st.kind === "move" ? (st.mover === "flex_gripper" ? ["flex", "FLEX"] : ["move", "PF400"]) :
+  st.kind === "protocol" ? ["run", "RUN"] : st.kind === "pause" ? ["pause", "MANUAL"] : ["act", "ACTION"];
+const ACTION_WORDS = { seal: "Sealing", peel: "Peeling", open_lid: "Opening lid", close_lid: "Closing lid", open: "Opening", close: "Closing", run_assay: "Reading plate", run_protocol: "Running" };
+
+const FLEX_HANDOFF = "otflex_sandy.deck_nest_A4";
+const TIMING = EV.meta.timing || null;
+const SRC_LABEL = { code: "from code", measured: "measured", estimate: "estimate" };
+function title(st) {
+  if (st.kind === "move") {
+    const p = plateById[st.plate];
+    const toInst = layout.instruments.find(i => i.id === posOf(st.to).inst);
+    const slot = toInst && /^(ot2|flex)$/.test(toInst.kind) ? " " + canon(st.to).slice(toInst.prefix.length) : "";
+    const hand = canon(st.to) === FLEX_HANDOFF ? " (handoff)" : "";
+    return `${st.mover === "flex_gripper" ? "Flex gripper moves" : "PF400 moves"} ${p.name.replace(/ \(.*\)$/, "")} → ${toInst ? toInst.label : st.to}${slot}${hand}`;
+  }
+  if (st.kind === "pause") return "Manual step: " + st.detail.replace(/^PAUSED:\s*/i, "");
+  const inst = layout.instruments.find(i => i.id === nodeToInst[st.node]);
+  return `${inst ? inst.label : st.node}: ${st.detail}`;
+}
+
+// ---------- SVG ----------
+const svg = $("map");
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+let gTrails, gInst, gArm, gPlates, gBanner, plateEls = {}, instEls = {}, slotEls = {};
+function renderMap() {
+  svg.innerHTML = "";
+  const [W, H] = layout.viewBox;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  gInst = el("g", {}, svg); gTrails = el("g", {}, svg); gArm = el("g", { class: "arm idle" }, svg); gPlates = el("g", {}, svg); gBanner = el("g", { class: "banner" }, svg);
+  instEls = {}; slotEls = {};
+  for (const inst of layout.instruments) {
+    if (inst.kind === "rail") continue;
+    const g = el("g", { class: "inst", transform: `translate(${inst.x},${inst.y})`, "data-id": inst.id }, gInst);
+    const geo = inst._g;
+    el("rect", { class: "inst-body", width: geo.w, height: geo.h, rx: 10 }, g);
+    el("text", { class: "inst-label", x: 12, y: 20 }, g).textContent = inst.label;
+    el("text", { class: "inst-sub", x: 12, y: 35 }, g).textContent = inst.sub || "";
+    const status = el("text", { class: "inst-status", x: 12, y: geo.h + 16 }, g);
+    if (geo.stagingX) el("line", { class: "staging-line", x1: geo.stagingX, x2: geo.stagingX, y1: TOP - 4, y2: geo.h - 8 }, g);
+    for (const s of geo.slots) {
+      const r = el("rect", { class: "slot" + (s.fixture && !isTracked(s.key) ? " fixture" : ""), x: s.cx - CELL.w / 2 + 4, y: s.cy - CELL.h / 2 + 4, width: CELL.w - 8, height: CELL.h - 8, rx: 5 }, g);
+      slotEls[s.key] = r;
+      if (s.label) el("text", { class: "slot-num", x: s.cx - CELL.w / 2 + 8, y: s.cy - CELL.h / 2 + 14 }, g).textContent = s.label;
+      if (s.fixture) wrapText(el("text", { class: "slot-fix", x: s.cx, y: s.cy + 4, "text-anchor": "middle" }, g), s.fixture, s.cx, 13);
+    }
+    instEls[inst.id] = { g, status, inst };
+  }
+  const rail = railInst();
+  if (rail) {
+    el("rect", { class: "rail-track", x: rail.x, y: rail.y - 12, width: rail.w, height: 24, rx: 6 }, gArm);
+    for (let x = rail.x + 20; x < rail.x + rail.w - 10; x += 40) el("line", { class: "rail-tick", x1: x, x2: x, y1: rail.y - 6, y2: rail.y + 6 }, gArm);
+    el("text", { class: "inst-label", x: rail.x + rail.w + 12, y: rail.y }, gArm).textContent = rail.label;
+    el("text", { class: "inst-sub", x: rail.x + rail.w + 12, y: rail.y + 15 }, gArm).textContent = rail.sub || "";
+    el("rect", { class: "arm-base", id: "carriage", x: rail.x, y: rail.y - 17, width: 46, height: 34, rx: 6 }, gArm);
+    el("path", { class: "arm-link", id: "armPath", d: "" }, gArm);
+    el("circle", { class: "arm-joint", id: "armJoint", r: 6, cx: rail.x, cy: rail.y }, gArm);
+    instEls[rail.id] = { g: gArm, inst: rail, status: { textContent: "" } };
+  }
+  plateEls = {};
+  for (const p of EV.plates) {
+    const g = el("g", { class: "plate" + (p.kind === "tips" ? " tips" : "") }, gPlates);
+    el("title", {}, g).textContent = p.name;
+    el("rect", { class: "body", x: -PL.w / 2, y: -PL.h / 2, width: PL.w, height: PL.h, rx: p.kind === "flat" ? 2 : 6, fill: plateColor(p) }, g);
+    if (p.kind === "tips") for (let r = 0; r < 3; r++) for (let c = 0; c < 6; c++) el("circle", { class: "wells", cx: -22 + c * 8.8, cy: -12 + r * 12, r: 1.8 }, g);
+    el("text", { x: 0, y: 4, "text-anchor": "middle" }, g).textContent = p.short;
+    const jw = el("g", { class: "jaws", visibility: "hidden" }, g);
+    el("rect", { class: "jaw n", x: -PL.w / 2 - 6, y: -9, width: 6, height: 18, rx: 1.5 }, jw);
+    el("rect", { class: "jaw n", x: PL.w / 2, y: -9, width: 6, height: 18, rx: 1.5 }, jw);
+    el("rect", { class: "jaw w", x: -13, y: -PL.h / 2 - 6, width: 26, height: 6, rx: 1.5 }, jw);
+    el("rect", { class: "jaw w", x: -13, y: PL.h / 2, width: 26, height: 6, rx: 1.5 }, jw);
+    el("rect", { class: "grip", x: -PL.w / 2 - 4, y: -PL.h / 2 - 4, width: PL.w + 8, height: PL.h + 8, rx: 8, visibility: "hidden" }, g);
+    plateEls[p.id] = g;
+  }
+  drawTrails();
+}
+function isTracked(key) { return EV.plates.some(p => p.start === key) || EV.steps.some(s => s.to === key); }
+function wrapText(t, str, x, lh) {
+  const words = str.split(" "); let line = "", lines = [];
+  for (const w of words) { if ((line + " " + w).trim().length > 12 && line) { lines.push(line); line = w; } else line = (line + " " + w).trim(); }
+  lines.push(line);
+  lines.forEach((l, i) => { const ts = el("tspan", { x, dy: i ? lh : -(lines.length - 1) * lh / 2 }, t); ts.textContent = l; });
+}
+function placePlate(id, x, y) { plateEls[id].setAttribute("transform", `translate(${x},${y})`); plateEls[id]._xy = [x, y]; }
+
+const railInst = () => layout.instruments.find(i => i.kind === "rail");
+const railClamp = (x) => { const r = railInst(); return Math.max(r.x + 23, Math.min(r.x + r.w - 23, x)); };
+let carriageX = null;
+const armHome = () => ({ x: carriageX + 4, y: railInst().y - 36 });
+// target = gripper position, or null for the folded "home" pose. cx = carriage position on the rail.
+function setArm(target, cx) {
+  const r = railInst(); if (!r) return;
+  if (cx != null) carriageX = cx;
+  if (carriageX == null) carriageX = railClamp(r.x + r.w / 2);
+  const bx = carriageX, by = r.y, path = $("armPath"), joint = $("armJoint");
+  $("carriage").setAttribute("x", bx - 23);
+  if (!target) {
+    path.setAttribute("d", `M${bx},${by} L${bx + 20},${by - 22} L${bx + 4},${by - 36}`);
+    joint.setAttribute("cx", bx + 20); joint.setAttribute("cy", by - 22);
+    gArm.classList.add("idle"); return;
+  }
+  const dx = target.x - bx, dy = target.y - by, d = Math.hypot(dx, dy), a = Math.atan2(dy, dx), L = Math.max(d * 0.58, 26);
+  let jx, jy;
+  if (d >= 2 * L) { jx = bx + dx / 2; jy = by + dy / 2; }
+  else { const al = Math.acos(d / (2 * L)); jx = bx + L * Math.cos(a - al); jy = by + L * Math.sin(a - al); }
+  path.setAttribute("d", `M${bx},${by} L${jx},${jy} L${target.x},${target.y}`);
+  joint.setAttribute("cx", jx); joint.setAttribute("cy", jy);
+  gArm.classList.remove("idle");
+}
+// Which side of the plate the PF400 grips, from the exchange location name used in the transfer.
+function gripOf(st) {
+  if (!st || st.kind !== "move" || st.mover !== "pf400") return null;
+  const ex = [st.src, st.dst].find(x => /^exchange_(narrow|wide)$/.test(x));
+  return ex ? ex.split("_")[1] : null;
+}
+function showJaws(id, grip) {
+  const jw = plateEls[id].querySelector(".jaws");
+  if (grip === undefined) { jw.setAttribute("visibility", "hidden"); return; }
+  jw.setAttribute("visibility", "visible");
+  jw.querySelectorAll(".n").forEach(e => e.setAttribute("visibility", grip === "wide" ? "hidden" : "visible"));
+  jw.querySelectorAll(".w").forEach(e => e.setAttribute("visibility", grip === "wide" ? "visible" : "hidden"));
+}
+function carriageAt(tt) {
+  for (let i = tt - 1; i >= 0; i--) { const st = EV.steps[i]; if (st.kind === "move" && st.mover === "pf400") return railClamp(posOf(st.to).x); }
+  return null;
+}
+
+// ---------- trails ----------
+const traced = new Set();
+function drawTrails() {
+  gTrails.innerHTML = "";
+  for (const id of traced) {
+    const p = plateById[id];
+    const pts = [posOf(p.start)];
+    for (const st of EV.steps) if (st.kind === "move" && st.plate === id) pts.push(posOf(st.to));
+    const off = (EV.plates.indexOf(p) % 5 - 2) * 3;
+    el("polyline", { class: "trail", stroke: plateColor(p), points: pts.map(q => `${q.x + off},${q.y + off}`).join(" ") }, gTrails);
+    pts.forEach((q, i) => el("circle", { class: "trail-dot", cx: q.x + off, cy: q.y + off, r: i === 0 ? 5 : 3.5, fill: plateColor(p) }, gTrails));
+  }
+  for (const pid in plateEls) plateEls[pid].classList.toggle("dim", traced.size > 0 && !traced.has(pid));
+}
+
+// ---------- playback ----------
+let t = 0;          // completed steps shown
+let playing = false, animToken = 0;
+const speed = () => parseFloat($("speed").value);
+
+function applyState(tt) {
+  const s = states[tt];
+  for (const id in s) { const p = posOf(s[id]); placePlate(id, p.x, p.y); plateEls[id].classList.remove("moving"); plateEls[id].querySelector(".grip").setAttribute("visibility", "hidden"); showJaws(id); }
+  if (railInst()) { carriageX = carriageAt(tt); setArm(null); }
+}
+function clearHighlights() {
+  for (const id in instEls) { instEls[id].g.classList && instEls[id].g.classList.remove("busy"); instEls[id].status.textContent = ""; }
+  for (const k in slotEls) slotEls[k].classList.remove("hot");
+  gBanner.innerHTML = "";
+  setArm(null);
+}
+function highlight(st, phaseFrac = 1) {
+  clearHighlights();
+  if (!st) return;
+  if (st.kind === "move") {
+    [st.from, st.to].forEach(k => slotEls[canon(k)] && slotEls[canon(k)].classList.add("hot"));
+    if (st.mover === "pf400") setArm(null, railClamp(posOf(st.to).x));
+    const ex = instEls.exchange, g = gripOf(st);
+    if (ex && st.to === "exchange") ex.status.textContent = `Placed (${g} side) · arm homes to re-grip`;
+    if (ex && st.from === "exchange") ex.status.textContent = `Re-gripped · picked up by ${g} side`;
+    if (st.hold) {
+      const ii = instEls[posOf(st.to).inst];
+      if (ii) { ii.g.classList.add("busy"); ii.status.textContent = `Holding ${fmtDur(st.hold)} at ${st.to.split("_").pop()} (protocol delay)`; }
+    }
+  } else if (st.kind === "pause") {
+    const [W] = layout.viewBox, msg = st.detail.replace(/^PAUSED:\s*/i, "Manual: ");
+    const w = Math.min(W - 40, 40 + msg.length * 7.4);
+    el("rect", { x: (W - w) / 2, y: 120, width: w, height: 34, rx: 8 }, gBanner);
+    el("text", { x: W / 2, y: 142, "text-anchor": "middle" }, gBanner).textContent = msg;
+  } else {
+    const ii = instEls[nodeToInst[st.node]];
+    if (ii) {
+      ii.g.classList.add("busy");
+      ii.status.textContent = `${ACTION_WORDS[st.action] || st.action}${st.kind === "protocol" ? " " + st.protocol : ""} · ~${fmtDur(st.duration_s)}`;
+    }
+  }
+}
+
+function go(tt, animate = false) {
+  tt = Math.max(0, Math.min(N, tt));
+  animToken++;
+  if (animate && tt === t + 1 && !reduceMotion) return animateStep(tt);
+  t = tt; applyState(t); highlight(EV.steps[t - 1]); updateUI();
+  return Promise.resolve();
+}
+function ease(x) { return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
+function tween(ms, fn, token) {
+  return new Promise(res => {
+    const t0 = performance.now();
+    function frame(now) {
+      if (token !== animToken) return res(false);
+      const k = Math.min(1, (now - t0) / ms); fn(k);
+      if (k < 1) requestAnimationFrame(frame); else res(true);
+    }
+    requestAnimationFrame(frame);
+  });
+}
+const STEP_MS = 1300; // every step gets the same screen time, whatever its real duration
+async function animateStep(tt) {
+  const token = animToken, st = EV.steps[tt - 1];
+  applyState(tt - 1);
+  t = tt; updateUI();
+  const T = STEP_MS / speed();
+  if (st.kind !== "move") { highlight(st); await tween(T, () => {}, token); return; }
+  const a = posOf(st.from), b = posOf(st.to), pe = plateEls[st.plate], r = railInst();
+  highlight(st); pe.classList.add("moving");
+  const pf = st.mover === "pf400" && r, grip = gripOf(st);
+  if (pf) {
+    setArm(null);
+    const c0 = carriageX, c1 = railClamp(a.x);
+    // reach: carriage slides along the rail while the arm unfolds to the plate
+    if (!await tween(T * 0.32, k => {
+      const e = ease(k), cx = c0 + (c1 - c0) * e, h = { x: cx + 4, y: r.y - 36 };
+      setArm({ x: h.x + (a.x - h.x) * e, y: h.y + (a.y - h.y) * e }, cx);
+    }, token)) return;
+    showJaws(st.plate, grip);
+  } else pe.querySelector(".grip").setAttribute("visibility", "visible");
+  const c1 = pf ? carriageX : 0, c2 = pf ? railClamp(b.x) : 0;
+  if (!await tween(T * (pf ? 0.5 : 0.85), k => {
+    const e = ease(k), lift = Math.sin(Math.PI * k) * 18;
+    const x = a.x + (b.x - a.x) * e, y = a.y + (b.y - a.y) * e - lift;
+    placePlate(st.plate, x, y);
+    if (pf) setArm({ x, y }, c1 + (c2 - c1) * e);
+  }, token)) return;
+  pe.classList.remove("moving"); pe.querySelector(".grip").setAttribute("visibility", "hidden"); showJaws(st.plate);
+  if (pf) {
+    // release and fold back home
+    if (!await tween(T * 0.18, k => { const h = armHome(), e = ease(k); setArm({ x: b.x + (h.x - b.x) * e, y: b.y + (h.y - b.y) * e }); }, token)) return;
+  }
+  highlight(st);
+  if (!pf) await tween(T * 0.15, () => {}, token);
+}
+async function playLoop() {
+  while (playing && t < N) {
+    const myToken = animToken + 1;
+    await go(t + 1, true);
+    if (animToken !== myToken) break;
+    await new Promise(r => setTimeout(r, 120 / speed()));
+  }
+  if (t >= N) setPlaying(false);
+}
+function setPlaying(v) {
+  playing = v; $("btnPlay").textContent = v ? "Pause" : (t >= N ? "Replay" : "Play");
+  if (v) { if (t >= N) go(0); playLoop(); }
+}
+
+// ---------- UI ----------
+function phaseIndex(name) { return EV.phases.findIndex(p => p.name === name); }
+const PH_COLORS = ["var(--c1)", "var(--c3)", "var(--c6)", "var(--c7)", "var(--c4)", "var(--c5)", "var(--c2)"];
+function buildStatic() {
+  const m = EV.meta;
+  $("srcName").textContent = `${EV.meta.version || "full_run.py"}${EV.meta.derived_from ? ` (variant of ${EV.meta.derived_from})` : ""} · ${EV.meta.source}`;
+  $("genTime").textContent = "· " + m.generated.replace("T", " ");
+  $("stats").innerHTML = [
+    [m.steps, "steps"], [m.workflow_calls, "workflow calls"], [m.pf400_moves, "PF400 moves"],
+    [m.flex_gripper_moves, "Flex gripper moves"], [fmtDur(m.estimated_total_s), TIMING ? `run time · ${Math.round(100 * TIMING.measured_steps / N)}% measured` : "est. run time"],
+  ].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
+  $("stepTot").textContent = N;
+  if (EV.meta.title) $("pageHead").textContent = EV.meta.title;
+  if (TIMING) $("clockLabel").textContent = "";
+  buildLocations();
+  buildSetups();
+  $("scrub").max = N;
+  $("bands").innerHTML = EV.phases.map((p, i) => `<div style="flex:${p.last - p.first + 1};background:${PH_COLORS[i % PH_COLORS.length]}" title="${p.name}" data-first="${p.first}"></div>`).join("");
+  $("bandlabels").innerHTML = EV.phases.map(p => `<div style="flex:${p.last - p.first + 1}">${p.name}</div>`).join("");
+  $("bands").addEventListener("click", e => { const f = e.target.dataset.first; if (f) { setPlaying(false); go(+f); } });
+
+  $("legend").innerHTML = EV.plates.map(p => `<button class="chip" aria-pressed="false" data-id="${p.id}" title="${p.name}"><i style="background:${plateColor(p)}"></i>${p.short}</button>`).join("");
+  $("legend").addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    const id = b.dataset.id; traced.has(id) ? traced.delete(id) : traced.add(id);
+    b.setAttribute("aria-pressed", traced.has(id)); drawTrails();
+  });
+
+  const sec = (a, b) => elapsed[b + 1] - elapsed[a];
+  let html = "";
+  EV.phases.forEach(ph => {
+    html += `<div class="ph">${ph.name}<span>${ph.last - ph.first + 1} steps · ~${fmtDur(sec(ph.first, ph.last))}</span></div>`;
+    for (let i = ph.first; i <= ph.last; i++) {
+      const st = EV.steps[i], [cls, lab] = KIND(st);
+      html += `<button class="row" data-t="${i + 1}"><span class="n">${i + 1}</span><span class="k ${cls}">${lab}</span><span class="t">${esc(title(st))}</span></button>`;
+    }
+  });
+  $("steps").innerHTML = html;
+  $("steps").addEventListener("click", e => { const b = e.target.closest(".row"); if (b) { setPlaying(false); go(+b.dataset.t); } });
+
+  const w = EV.warnings;
+  $("checks").innerHTML = `<h2>Checks</h2>
+    <p class="hint" style="margin-top:0">Every move was checked against the tracked deck state: the source held a plate and the destination was free${w.length ? "" : ", with no problems found"}.</p>
+    ${w.length ? `<ul class="warnlist">${w.map(x => `<li>${srcLink(x.line, `line ${x.line}`)}: ${esc(x.message)}</li>`).join("")}</ul>` : ""}
+    <p class="hint">${TIMING
+      ? `Durations: ${TIMING.measured_steps} of ${N} steps are medians of measured MADSci runs (${TIMING.runs.filter(r => r.used).map(r => `${esc(r.experiment_id)}, ${r.matched_calls}/${EV.calls.length} workflows matched`).join("; ")}). The rest are estimates from <code>config/durations.json</code>.`
+      : `Durations are estimates from <code>config/durations.json</code> unless marked "from code". Export MADSci history to replace them with measured times.`} ${m.resource_bookkeeping_calls_ignored} MADSci resource push/pop calls were treated as bookkeeping, not movement.</p>`;
+}
+function gripText(st) {
+  const g = gripOf(st), prev = EV.steps[st.i - 1];
+  if (st.from === "exchange" && prev && prev.plate === st.plate && prev.to === "exchange") {
+    const pg = gripOf(prev);
+    return pg === g ? `${g} side (re-gripped at exchange)` : `re-gripped at exchange: ${pg} side → ${g} side`;
+  }
+  return `${g} side`;
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// Locations panel: grouped by instrument, one row per canonical location (aliases listed together).
+let locRows = {};
+function buildLocations() {
+  const groups = {};
+  for (const u of EV.locations) {
+    const c = u.canonical, pos = posOf(c), inst = layout.instruments.find(i => i.id === pos.inst);
+    const gid = inst ? inst.id : "other";
+    const g = groups[gid] = groups[gid] || { label: inst ? inst.label : "Other", order: inst ? layout.instruments.indexOf(inst) : 99, rows: {} };
+    const r = g.rows[c] = g.rows[c] || { canonical: c, names: [], uses: 0, movers: new Set() };
+    r.names.push(u.name); r.uses += u.uses; u.movers.forEach(m => r.movers.add(m));
+  }
+  const MOVER = { pf400: "PF400", flex_gripper: "Flex gripper" };
+  let html = `<tr><th>Location</th><th>Holds now</th><th style="text-align:right">Moves</th></tr>`;
+  for (const g of Object.values(groups).sort((a, b) => a.order - b.order)) {
+    html += `<tr class="grp"><td colspan="3">${esc(g.label)}</td></tr>`;
+    for (const r of Object.values(g.rows).sort((a, b) => a.canonical.localeCompare(b.canonical, undefined, { numeric: true }))) {
+      let role = [...r.movers].map(m => MOVER[m] || m).join(" + ");
+      if (r.canonical === FLEX_HANDOFF) role = "Handoff: PF400 ↔ Flex gripper";
+      if (r.canonical === "exchange") role = "Re-grip nest: place, home, pick up by the other side";
+      html += `<tr data-loc="${esc(r.canonical)}"><td>${r.names.map(n => `<code>${esc(n)}</code>`).join("<br>")}<span class="role">${esc(role)}</span></td><td class="holds"></td><td class="n">${r.uses}</td></tr>`;
+    }
+  }
+  $("locs").innerHTML = html;
+  locRows = {};
+  $("locs").querySelectorAll("tr[data-loc]").forEach(tr => locRows[tr.dataset.loc] = tr);
+}
+function updateLocations() {
+  const at = {};
+  for (const [pid, loc] of Object.entries(states[t])) at[loc] = pid;
+  const st = EV.steps[t - 1], hot = st && st.kind === "move" ? [st.from, st.to] : [];
+  for (const [loc, tr] of Object.entries(locRows)) {
+    const p = at[loc] && plateById[at[loc]];
+    tr.querySelector(".holds").innerHTML = p ? `<span class="pl" title="${esc(p.name)}"><i style="background:${plateColor(p)}"></i>${esc(p.short)}</span>` : "";
+    tr.classList.toggle("hot", hot.includes(loc));
+  }
+}
+// ---------- deck setup per phase ----------
+const isDeck = (loc) => /^(ot2_patrick|otflex_sandy)\.deck_nest_/.test(canon(loc));
+function slotName(loc) {
+  const c = canon(loc), inst = layout.instruments.find(i => i.id === posOf(c).inst);
+  if (!inst) return c;
+  if (inst.kind === "nest") return inst.label;
+  if (inst.kind === "rack") { const m = /row(\d+)_nest(\d+)/.exec(c); return m ? `${inst.label} R${m[1]}·N${m[2]}` : inst.label; }
+  return `${inst.label} ${c.slice(inst.prefix.length)}`;
+}
+function miniDeck(svgEl, inst, ox, oy, solid, ghost) {
+  const geo = geometry(inst), g = el("g", { transform: `translate(${ox},${oy})` }, svgEl);
+  el("rect", { class: "inst-body", width: geo.w, height: geo.h, rx: 10 }, g);
+  el("text", { class: "inst-label", x: 12, y: 22 }, g).textContent = inst.label;
+  if (geo.stagingX) el("line", { class: "staging-line", x1: geo.stagingX, x2: geo.stagingX, y1: TOP - 4, y2: geo.h - 8 }, g);
+  for (const sl of geo.slots) {
+    el("rect", { class: "slot" + (sl.fixture ? " fixture" : ""), x: sl.cx - CELL.w / 2 + 4, y: sl.cy - CELL.h / 2 + 4, width: CELL.w - 8, height: CELL.h - 8, rx: 5 }, g);
+    el("text", { class: "slot-num", x: sl.cx - CELL.w / 2 + 8, y: sl.cy - CELL.h / 2 + 14 }, g).textContent = sl.label;
+    const pid = solid[sl.key] || ghost[sl.key];
+    if (pid) {
+      const p = plateById[pid], pg = el("g", { class: "plate" + (p.kind === "tips" ? " tips" : "") + (solid[sl.key] ? "" : " ghost"), transform: `translate(${sl.cx},${sl.cy + 3})` }, g);
+      el("title", {}, pg).textContent = p.name + (solid[sl.key] ? " (on deck at start)" : " (brought in during phase)");
+      el("rect", { class: "body", x: -PL.w / 2, y: -PL.h / 2, width: PL.w, height: PL.h, rx: p.kind === "flat" ? 2 : 6, fill: plateColor(p), stroke: plateColor(p) }, pg);
+      el("text", { x: 0, y: 4, "text-anchor": "middle" }, pg).textContent = p.short;
+    } else if (sl.fixture) wrapText(el("text", { class: "slot-fix", x: sl.cx, y: sl.cy + 4, "text-anchor": "middle" }, g), sl.fixture, sl.cx, 13);
+  }
+  return geo;
+}
+function buildSetups() {
+  const ot2 = layout.instruments.find(i => i.kind === "ot2"), flex = layout.instruments.find(i => i.kind === "flex");
+  const box = $("setups"); box.innerHTML = "";
+  if (!ot2 || !flex) return;
+  const pname = (pid) => plateById[pid].name.replace(/ \(.*\)$/, "");
+  EV.phases.forEach((ph, idx) => {
+    const start = states[ph.first], end = states[ph.last + 1];
+    const solid = {}, ghost = {}, arrives = [], leaves = [];
+    for (const [pid, loc] of Object.entries(start)) if (isDeck(loc)) solid[canon(loc)] = pid;
+    // where each plate is used on a deck during the phase (skip the A4 handoff when it goes further)
+    const used = {};
+    for (let i = ph.first; i <= ph.last; i++) {
+      const st = EV.steps[i];
+      if (st.kind === "move" && isDeck(st.to)) (used[st.plate] = used[st.plate] || []).push(canon(st.to));
+    }
+    for (const [pid, locs] of Object.entries(used)) {
+      const real = locs.filter(l => l !== FLEX_HANDOFF), slot = (real.length ? real : locs)[0];
+      const onDeckAtStart = isDeck(start[pid]);
+      if (!onDeckAtStart) { if (!solid[slot] && !ghost[slot]) ghost[slot] = pid; arrives.push(`${pname(pid)} → ${slotName(slot)}`); }
+      else if (real.length && canon(start[pid]) !== real[real.length - 1]) arrives.push(`${pname(pid)} moves to ${slotName(real[real.length - 1])}`);
+    }
+    for (const [pid, loc] of Object.entries(end)) {
+      const wasOn = isDeck(start[pid]) || used[pid];
+      if (wasOn && !isDeck(loc)) leaves.push(`${pname(pid)} → ${slotName(loc)}`);
+    }
+    const protos = [...new Set(EV.steps.slice(ph.first, ph.last + 1).filter(s => s.kind === "protocol" && !/^set_/.test(s.protocol)).map(s => s.detail))];
+    const secs = elapsed[ph.last + 1] - elapsed[ph.first];
+
+    const card = document.createElement("article");
+    card.className = "setup-card";
+    card.innerHTML = `<header><h3>${esc(ph.name)}</h3><span>steps ${ph.first + 1}–${ph.last + 1} · ~${fmtDur(secs)}</span>
+        <span class="tools"><span class="toast" role="status"></span><button class="btn small" type="button">Export PNG</button></span></header>
+      <button class="jump" aria-label="Jump the map to the start of ${esc(ph.name)}"></button>
+      <dl>
+        ${protos.length ? `<dt>Liquid handling</dt><dd>${protos.map(esc).join("; ")}</dd>` : ""}
+        <dt>Brought in</dt><dd>${arrives.length ? arrives.map(esc).join("; ") : "nothing"}</dd>
+        <dt>Leaves deck</dt><dd>${leaves.length ? leaves.map(esc).join("; ") : "nothing"}</dd>
+      </dl>`;
+    const svgEl = el("svg", { class: "mini", role: "img", "aria-label": `${ph.name} deck setup` });
+    const g1 = geometry(ot2), g2 = geometry(flex), gap = 22;
+    svgEl.setAttribute("viewBox", `0 0 ${g1.w + gap + g2.w} ${Math.max(g1.h, g2.h)}`);
+    miniDeck(svgEl, ot2, 0, 0, solid, ghost);
+    miniDeck(svgEl, flex, g1.w + gap, 0, solid, ghost);
+    card.querySelector(".jump").appendChild(svgEl);
+    card.querySelector(".jump").addEventListener("click", () => {
+      setPlaying(false); go(ph.first);
+      $("stage").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    });
+    const btn = card.querySelector(".tools .btn"), note = card.querySelector(".tools .toast");
+    btn.addEventListener("click", () => exportPNG(svgEl, `${ph.name} · deck setup (steps ${ph.first + 1}–${ph.last + 1})`,
+      `deck_${String(idx + 1).padStart(2, "0")}_${ph.name.toLowerCase().replace(/[^a-z0-9]+/g, "_")}.png`, note));
+    box.appendChild(card);
+  });
+}
+
+// Export one deck picture as a PNG: copy computed styles onto a clone so the SVG renders standalone,
+// add a title band, rasterise at 2x and download. Always exported in the light theme (for slides and documents).
+const EXPORT_PROPS = ["fill", "fill-opacity", "stroke", "stroke-width", "stroke-dasharray", "stroke-opacity", "opacity",
+  "visibility", "font-family", "font-size", "font-weight", "letter-spacing"];
+function exportPNG(svgEl, heading, filename, note) {
+  const say = (msg) => { note.textContent = msg; setTimeout(() => { note.textContent = ""; }, 3000); };
+  const root = document.documentElement, prevTheme = root.getAttribute("data-theme");
+  root.setAttribute("data-theme", "light");   // styles are read synchronously below, then the theme is restored
+  try {
+    const vb = svgEl.viewBox.baseVal, HEAD = 46, PADX = 8, S = 2;
+    const W = vb.width + PADX * 2, H = vb.height + HEAD + PADX;
+    const clone = svgEl.cloneNode(true);
+    const src = svgEl.querySelectorAll("*"), dst = clone.querySelectorAll("*");
+    src.forEach((e, i) => {
+      const cs = getComputedStyle(e);
+      dst[i].setAttribute("style", EXPORT_PROPS.map(p => `${p}:${cs.getPropertyValue(p)}`).join(";"));
+    });
+    clone.querySelectorAll("title").forEach(t => t.remove());
+    const page = getComputedStyle(document.querySelector(".setup-card"));
+    const out = el("svg", { xmlns: NS, width: W * S, height: H * S, viewBox: `0 0 ${W} ${H}` });
+    el("rect", { width: W, height: H, style: `fill:${page.backgroundColor}` }, out);
+    const t = el("text", { x: PADX + 4, y: 30, style: `fill:${page.color};font-family:${getComputedStyle(document.querySelector("h1")).fontFamily};font-size:20px;font-weight:600` }, out);
+    t.textContent = heading;
+    const g = el("g", { transform: `translate(${PADX},${HEAD})` }, out);
+    [...clone.childNodes].forEach(n => g.appendChild(n));
+    restoreTheme();
+    const xml = new XMLSerializer().serializeToString(out);
+    const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml;charset=utf-8" }));
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas"); c.width = W * S; c.height = H * S;
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(blob => {
+        if (!blob) return say("Export failed");
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        say("Saved " + filename);
+      }, "image/png");
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); say("Export failed"); };
+    img.src = url;
+  } catch (e) { say("Export failed: " + e.message); }
+  finally { restoreTheme(); }
+  function restoreTheme() { if (prevTheme === null) root.removeAttribute("data-theme"); else root.setAttribute("data-theme", prevTheme); }
+}
+
+function updateUI() {
+  updateLocations();
+  $("stepNum").textContent = t; $("scrub").value = t; $("clock").textContent = fmtClock(elapsed[t]);
+  if (!playing) $("btnPlay").textContent = t >= N ? "Replay" : "Play";
+  const st = EV.steps[t - 1];
+  const now = $("now");
+  if (!st) {
+    now.innerHTML = `<span class="phase">Setup</span><span class="idx">start</span>
+      <h3>Starting deck state</h3>
+      <div class="detail">${EV.plates.length} labware items registered by push_new_assay_plate_resource before the first workflow.</div>
+      <p class="hint">Press Play, or step with the arrow keys.</p>`;
+  } else {
+    const call = EV.calls[st.call];
+    const [, lab] = KIND(st);
+    now.innerHTML = `<span class="phase">${esc(st.phase)}</span><span class="idx">step ${t} / ${N} · ${lab}</span>
+      <h3>${esc(title(st))}</h3>
+      <div class="detail">${esc(st.kind === "move" ? `${st.src} → ${st.dst}` : st.detail)}</div>
+      <dl>
+        ${call ? `<dt>Workflow</dt><dd><code>${esc(call.workflow)}</code></dd>` : ""}
+        ${gripOf(st) ? `<dt>Grip</dt><dd>${gripText(st)}</dd>` : ""}
+        ${st.protocol ? `<dt>Protocol</dt><dd><code>${esc(st.protocol)}</code></dd>` : ""}
+        ${call && call.caption ? `<dt>Script note</dt><dd>${esc(call.caption)}</dd>` : ""}
+        <dt>Source</dt><dd>${srcLink(st.line, `full_run.py line ${st.line}`)}</dd>
+        <dt>Duration</dt><dd>~${fmtDur(st.duration_s)}<span class="src-tag ${st.duration_source !== "estimate" ? "code" : ""}">${SRC_LABEL[st.duration_source] || st.duration_source}${st.measured_runs > 1 ? ` · median of ${st.measured_runs} runs` : ""}</span>${st.wait_before_s ? `<br><span class="hint">plus ${fmtDur(st.wait_before_s)} waiting before this workflow started</span>` : ""}${st.hold_note ? `<br><span class="hint">${esc(st.hold_note)}</span>` : ""}</dd>
+        <dt>Elapsed</dt><dd>${fmtClock(elapsed[t])}${TIMING ? "" : " est."}</dd>
+      </dl>`;
+  }
+  const list = $("steps");
+  list.querySelectorAll(".row").forEach(r => { const k = +r.dataset.t; r.classList.toggle("cur", k === t); r.classList.toggle("done", k < t); });
+  const cur = list.querySelector(".row.cur");
+  if (cur) {
+    const top = cur.offsetTop - list.offsetTop, h = list.clientHeight;
+    if (top < list.scrollTop + 30 || top > list.scrollTop + h - 40) list.scrollTop = top - h / 3;
+  }
+}
+
+// ---------- editing ----------
+let editing = false;
+function setEditing(v) {
+  editing = v; $("btnEdit").setAttribute("aria-pressed", v); $("stage").classList.toggle("editing", v); $("editCard").hidden = !v;
+  if (v) setPlaying(false);
+}
+function svgPoint(evt) { const pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
+let drag = null;
+svg.addEventListener("pointerdown", e => {
+  if (!editing) return;
+  let target = e.target.closest(".inst"), inst;
+  if (target) inst = layout.instruments.find(i => i.id === target.dataset.id);
+  else if (e.target.closest(".arm")) inst = railInst();
+  if (!inst) return;
+  const p = svgPoint(e);
+  drag = { inst, dx: p.x - inst.x, dy: p.y - inst.y };
+  svg.setPointerCapture(e.pointerId); e.preventDefault();
+});
+svg.addEventListener("pointermove", e => {
+  if (!drag) return;
+  const p = svgPoint(e);
+  drag.inst.x = Math.round((p.x - drag.dx) / 10) * 10; drag.inst.y = Math.round((p.y - drag.dy) / 10) * 10;
+  buildIndex(); renderMap(); applyState(t); highlight(EV.steps[t - 1]);
+});
+svg.addEventListener("pointerup", () => { if (drag) { drag = null; saveLayout(); } });
+function layoutJSON() {
+  const out = JSON.parse(JSON.stringify(LAYOUT_FILE));
+  for (const inst of out.instruments) { const cur = layout.instruments.find(i => i.id === inst.id); inst.x = cur.x; inst.y = cur.y; }
+  return JSON.stringify(out, null, 2);
+}
+$("btnCopy").addEventListener("click", () => {
+  const txt = layoutJSON(), ta = $("layoutOut");
+  ta.value = txt; ta.hidden = false;
+  const done = (msg) => { $("toast").textContent = msg; setTimeout(() => $("toast").textContent = "", 2500); };
+  try {
+    navigator.clipboard.writeText(txt).then(() => done("Copied"), () => { ta.select(); done("Select the text below and copy it"); });
+  } catch (e) { ta.select(); done("Select the text below and copy it"); }
+});
+$("btnReset").addEventListener("click", () => {
+  try { localStorage.removeItem(LS_KEY); } catch (e) {}
+  layout = loadLayout(); buildIndex(); renderMap(); go(t);
+  $("toast").textContent = "Reset to config/layout.json";
+});
+
+// ---------- wiring ----------
+$("btnPlay").addEventListener("click", () => setPlaying(!playing));
+$("btnNext").addEventListener("click", () => { setPlaying(false); go(t + 1, true); });
+$("btnPrev").addEventListener("click", () => { setPlaying(false); go(t - 1); });
+$("btnStart").addEventListener("click", () => { setPlaying(false); go(0); });
+$("btnEdit").addEventListener("click", () => setEditing(!editing));
+$("scrub").addEventListener("input", e => { setPlaying(false); go(+e.target.value); });
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, select, textarea")) return;
+  if (e.key === " ") { e.preventDefault(); setPlaying(!playing); }
+  else if (e.key === "ArrowRight") { setPlaying(false); go(t + 1, true); }
+  else if (e.key === "ArrowLeft") { setPlaying(false); go(t - 1); }
+  else if (e.key === "Home") { setPlaying(false); go(0); }
+});
+
+// Link to a step with #step-42
+const stepFromHash = () => { const m = /^#step-(\d+)$/.exec(location.hash); return m ? +m[1] : 0; };
+addEventListener("hashchange", () => { setPlaying(false); go(stepFromHash()); });
+buildIndex(); buildStatic(); renderMap(); go(stepFromHash());
+</script>

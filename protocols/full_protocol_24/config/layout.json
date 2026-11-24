@@ -1,0 +1,134 @@
+{
+  "_comment": "Top-down map of the workcell, following incoming/PD.arrangement.pptx (Flex top-left; sealer, thermocycler, Hidex, peeler in a row; PF400 on a linear rail below them; exchange bottom-left; plate nests bottom-right). OT-2 below the rail under the Hidex, nests to its right (slide updated 2026-11-24). x/y are top-left corners in the viewBox drawing; drag instruments in the player's Edit layout mode, copy the JSON, and paste it here.",
+  "viewBox": [
+    1340,
+    820
+  ],
+  "aliases": {
+    "exchange_narrow": "exchange",
+    "exchange_wide": "exchange",
+    "ot2_patrick.deck_nest_4_temp_block": "ot2_patrick.deck_nest_4",
+    "ot2_patrick.deck_nest_6_temp_block": "ot2_patrick.deck_nest_6"
+  },
+  "instruments": [
+    {
+      "id": "rack1",
+      "label": "Plate nests",
+      "sub": "rack1 · 5 rows × 3",
+      "kind": "rack",
+      "prefix": "rack1_",
+      "x": 1050,
+      "y": 450
+    },
+    {
+      "id": "exchange",
+      "label": "Exchange",
+      "sub": "re-grip: narrow / wide side",
+      "kind": "nest",
+      "location": "exchange",
+      "x": 40,
+      "y": 450
+    },
+    {
+      "id": "pf400_piper",
+      "label": "PF400 arm",
+      "sub": "pf400_piper · linear rail",
+      "kind": "rail",
+      "nodes": [
+        "pf400_piper"
+      ],
+      "x": 400,
+      "y": 390,
+      "w": 720
+    },
+    {
+      "id": "sealer_sassy",
+      "label": "Plate sealer",
+      "sub": "sealer_sassy",
+      "kind": "nest",
+      "location": "sealer_sassy.sealer_carriage",
+      "nodes": [
+        "sealer_sassy"
+      ],
+      "x": 420,
+      "y": 210
+    },
+    {
+      "id": "peeler_penelope",
+      "label": "Plate peeler",
+      "sub": "peeler_penelope",
+      "kind": "nest",
+      "location": "peeler_penelope.peeler_carriage",
+      "nodes": [
+        "peeler_penelope"
+      ],
+      "x": 930,
+      "y": 210
+    },
+    {
+      "id": "biometra_beuford",
+      "label": "Thermocycler (PCR)",
+      "sub": "Biometra · beuford",
+      "kind": "nest",
+      "location": "biometra_beuford.biometra_nest",
+      "nodes": [
+        "biometra_beuford_96"
+      ],
+      "x": 590,
+      "y": 210
+    },
+    {
+      "id": "hidex_geraldine",
+      "label": "Plate reader",
+      "sub": "Hidex · geraldine",
+      "kind": "nest",
+      "location": "hidex_geraldine.hidex_carriage",
+      "nodes": [
+        "hidex_geraldine"
+      ],
+      "x": 760,
+      "y": 210
+    },
+    {
+      "id": "ot2_patrick",
+      "label": "OT-2",
+      "sub": "ot2_patrick · 20 µL single + multi",
+      "kind": "ot2",
+      "prefix": "ot2_patrick.deck_nest_",
+      "nodes": [
+        "ot2_patrick"
+      ],
+      "x": 760,
+      "y": 450,
+      "fixtures": {
+        "4": "Temp 4 °C",
+        "6": "Temp 4 °C",
+        "10": "Reagent block 1",
+        "12": "Trash"
+      }
+    },
+    {
+      "id": "otflex_sandy",
+      "label": "OT Flex",
+      "sub": "otflex_sandy · 50 µL + 1000 µL multi",
+      "kind": "flex",
+      "prefix": "otflex_sandy.deck_nest_",
+      "nodes": [
+        "otflex_sandy"
+      ],
+      "x": 30,
+      "y": 40,
+      "fixtures": {
+        "A1": "200 µL tips",
+        "A2": "50 µL tips",
+        "A3": "50 µL tips",
+        "B1": "Temp 4 °C",
+        "C1": "Temp 4 °C",
+        "D1": "Heater-shaker 37 °C",
+        "D2": "Reagent block 2",
+        "D3": "Waste chute",
+        "A4": "PF400 handoff"
+      }
+    }
+  ]
+}

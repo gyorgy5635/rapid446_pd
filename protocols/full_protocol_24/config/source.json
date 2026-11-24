@@ -1,0 +1,12 @@
+{
+  "_comment": "Where this protocol version came from. repo_blob_url + script path gives clickable source links in the player; set it to null for a local variant that is not on GitHub yet.",
+  "name": "full_protocol_24",
+  "title": "Full protocol, 24 samples (baseline)",
+  "repo": "AD-SDL/rapid446_applications",
+  "branch": "PD_full_loop",
+  "path": "Protein_Design/full_protocol_24",
+  "commit": "e4bc261ada888ceb50e51382e10a597b55978cac",
+  "commit_date": "2026-11-11",
+  "derived_from": null,
+  "repo_blob_url": "https://github.com/AD-SDL/rapid446_applications/blob/e4bc261ada888ceb50e51382e10a597b55978cac/Protein_Design/full_protocol_24"
+}
