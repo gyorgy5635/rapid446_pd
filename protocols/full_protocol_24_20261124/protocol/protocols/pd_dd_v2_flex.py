@@ -270,7 +270,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     reagent_plate = protocol.load_labware(config['reagent_plate_type'], config['reagent_plate_position'])
 
-    controls_plate = temp_adapter1.load_labware(config['controls_plate_type'])
+    # Controls plate no longer placed on the Flex in this version (only SYBR steps used it).
     pcr_plate = temp_adapter2.load_labware(config['pcr_plate_type'])
     pcr_plate.set_offset(x=0.4, y=0.4, z=0.2)
 

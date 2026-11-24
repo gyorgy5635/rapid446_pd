@@ -446,6 +446,10 @@ class PDApp(ExperimentScript,): # TODO
              transfers_directory / "controls_to_flex.yaml"
         )
 
+        controls_rack_to_ot2 = (
+             transfers_directory / "controls_rack_to_ot2.yaml"
+        )
+
         sybrgreen_to_flex = (
              transfers_directory / "sybrgreen_to_flex.yaml"
         )
@@ -891,21 +895,8 @@ class PDApp(ExperimentScript,): # TODO
 
         input("PAUSED: MOVE CONTROLS PLATE TO RACK 1 ROW 3 NEST 1")
 
-        #move controls plate (FROM?) to cool block in flex #TODO: needs to be cooled
-        #WORKING 7-23
-        workflow = self.workcell_client.submit_workflow(
-            controls_to_flex.resolve(),
-        )
-
-        payload["current_flex_protocol"] = A4_to_B1
-        workflow = self.workcell_client.submit_workflow(
-            run_flex_wf.resolve(),
-            file_inputs={
-                "flex_protocol": payload["current_flex_protocol"],
-            },
-        )
-
-        self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
+        # Controls plate no longer goes to Flex B1 in this version (the Flex no longer
+        # uses it); it waits in rack1_row3_nest1 and goes straight to the OT-2 below.
 
         # SYBR Green plate (rack1_row3_nest2 -> Flex C2) removed in this version.
 
@@ -972,30 +963,10 @@ class PDApp(ExperimentScript,): # TODO
         )
 
 
-        #move controls from flex to ot-2 B1 flex to D1
-        #WORKING 7-23
-        payload["current_flex_protocol"] = B1_to_A4
+        # move controls plate straight from rack1_row3_nest1 to OT-2 nest 1
+        # (was: Flex B1 -> A4 -> exchange -> OT-2 nest 1)
         workflow = self.workcell_client.submit_workflow(
-            run_flex_wf.resolve(),
-            file_inputs={
-                "flex_protocol": payload["current_flex_protocol"],
-            },
-        )
-
-        new_plate, old_plate = self.push_new_assay_plate_resource(
-            location_name="otflex_sandy.deck_nest_A4",
-            labware_type="pcr"
-        )
-
-        # #WORKING 7-23
-        workflow = self.workcell_client.submit_workflow(
-            pcr_plate_to_ot2_block.resolve(),
-        )
-
-        #TODO: grabbed plate really high for some reason?
-
-        workflow = self.workcell_client.submit_workflow(
-            dd_controls_flex_to_ot2.resolve(),
+            controls_rack_to_ot2.resolve(),
         )
 
 
