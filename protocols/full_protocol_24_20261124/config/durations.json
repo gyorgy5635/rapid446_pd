@@ -40,7 +40,7 @@
     "pd_golden_gate_ot2_v2.py": "Golden Gate assembly (4 fragments/well + master mix)",
     "pd_pcr_v2_flex.py": "PCR master mix, 24 µL into PCR Product plate",
     "pd_pcr_v2_ot2.py": "Dilute Golden Gate products; 1 µL into PCR plate",
-    "pd_dd_v2_flex.py": "Dilution + SybrGreen plate setup",
+    "pd_dd_v2_flex.py": "Water + intermediate dilution of PCR products (SYBR Green removed)",
     "pd_dd_v2_ot2.py": "Dilute PCR products into Diluted PCR plate",
     "cell_free_pd_flex_v2.py": "Prepare CFPS master mix (Mix A + Mix B)",
     "cell_free_pd_ot2_v2.py": "Diluted PCR into CFPS plate",

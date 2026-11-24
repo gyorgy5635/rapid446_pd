@@ -7,7 +7,6 @@
   "rack1_row1_nest3":        {"name": "OT-2 20 µL tips (spare)",           "short": "T20·S","kind": "tips"},
   "rack1_row2_nest1":        {"name": "PCR Product (Opentrons Tough PCR)", "short": "PCR",  "kind": "pcr",  "color": 3},
   "rack1_row3_nest1":        {"name": "Controls (Opentrons Tough PCR)",    "short": "CTRL", "kind": "pcr",  "color": 4},
-  "rack1_row3_nest2":        {"name": "SybrGreen (Corning Assay)",         "short": "SYBR", "kind": "flat", "color": 5},
   "rack1_row3_nest3":        {"name": "Diluted PCR (Opentrons Tough PCR)", "short": "DIL",  "kind": "pcr",  "color": 6},
   "rack1_row4_nest1":        {"name": "RMF Mixes (Opentrons Tough PCR)",   "short": "RMF",  "kind": "pcr",  "color": 7},
   "rack1_row4_nest2":        {"name": "CFPS (Opentrons Tough PCR)",        "short": "CFPS", "kind": "pcr",  "color": 8},

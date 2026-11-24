@@ -266,8 +266,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # pcr_plate = protocol.load_labware(config['pcr_plate_type'], config['pcr_plate_position'])
     # pcr_plate.set_offset(x=0.4, y=0.4, z=0.2)
 
-    sybrgreen_plate = protocol.load_labware(config['sybrgreen_plate_type'], config['sybrgreen_plate_position'])
-    sybrgreen_plate.set_offset(x=0, y=0, z=0.4)
+    # SYBR Green plate removed in this version (was loaded at C2).
 
     reagent_plate = protocol.load_labware(config['reagent_plate_type'], config['reagent_plate_position'])
 
@@ -306,23 +305,8 @@ def run(protocol: protocol_api.ProtocolContext):
                           pipette=p50,
                           config=config)
 
-    sybrgreen_to_dest(protocol=protocol,
-                      reagent_plate=reagent_plate,
-                      sybrgreen_plate=sybrgreen_plate,
-                      pipette=p1000,
-                      config=config)
-
-    pcr_to_dest(protocol=protocol,
-                pcr_plate=pcr_plate,
-                sybrgreen_plate=sybrgreen_plate,
-                pipette=p50,
-                config=config)
-
-    controls_to_sybrgreen(protocol=protocol,
-                          controls_plate=controls_plate,
-                          sybrgreen_plate=sybrgreen_plate,
-                          pipette=p50,
-                          config=config)
+    # SYBR Green steps removed in this version: sybrgreen_to_dest, pcr_to_dest,
+    # controls_to_sybrgreen (functions kept above, no longer called).
     
 
     protocol.comment(f"tips used 1000: {config['tips_used_1000']}")

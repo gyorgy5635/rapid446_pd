@@ -337,12 +337,6 @@ class PDApp(ExperimentScript,): # TODO
             labware_type="pcr"
         )
 
-        # Sybrgreen plate 
-        new_plate, old_plate = self.push_new_assay_plate_resource(
-            location_name="rack1_row3_nest2",
-            labware_type="flat_bottom"
-        )
-
 
         #empty diluted pcr plate
         new_plate, old_plate = self.push_new_assay_plate_resource(
@@ -913,22 +907,8 @@ class PDApp(ExperimentScript,): # TODO
 
         self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
 
-        #move empty sybrgreen plate to flex
-        #WORKING 7-23
-        workflow = self.workcell_client.submit_workflow(
-            sybrgreen_to_flex.resolve(),
-        )
+        # SYBR Green plate (rack1_row3_nest2 -> Flex C2) removed in this version.
 
-        payload["current_flex_protocol"] = A4_to_C2
-        workflow = self.workcell_client.submit_workflow(
-            run_flex_wf.resolve(),
-            file_inputs={
-                "flex_protocol": payload["current_flex_protocol"],
-            },
-        )
-
-        self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
-        
 
         #move empty diluted pcr plate to OT-2 (6)
         #WORKING 7-23
@@ -940,11 +920,9 @@ class PDApp(ExperimentScript,): # TODO
         # TIPS USED: 
         # WATER TO PCR: 1 COL ALWAYS, 200UL
         # DILUTION: 1 COL PER 8 COMBOS: 50UL
-        # SYBRGREEN TO DEST: 1 COL ALWAYS: 200UL
-        # PCR TO DEST: 1 COL PER 8 COMBOS: 50UL
-        # CONTROLS TO SYBRGREEN: 1 COL always: 50UL
-        # 8 COMBO RUN: 2 COLS OF 200UL AND 3 COLS OF 50UL
-        # 24 COMBO RUN: 2 COLS OF 200UL AND 7 COLS OF 50UL
+        # (SYBR Green steps removed: no SYBRGREEN TO DEST, PCR TO DEST, CONTROLS TO SYBRGREEN)
+        # 8 COMBO RUN: 1 COL OF 200UL AND 1 COL OF 50UL
+        # 24 COMBO RUN: 1 COL OF 200UL AND 3 COLS OF 50UL
 
         # #multichannel flex protocol
         ot2_replacement_variables = helper_functions.collect_ot2_replacement_variables(payload)
@@ -1052,48 +1030,8 @@ class PDApp(ExperimentScript,): # TODO
         # OT2: 7 COLS LEFT IN 20UL
         # FLEX: 5 COLS LEFT IN 50, 7 COLS LEFT IN 200
 
-        #WORKING 7-23
-
-        payload["current_flex_protocol"] = C2_to_A4
-        workflow = self.workcell_client.submit_workflow(
-            run_flex_wf.resolve(),
-            file_inputs={
-                "flex_protocol": payload["current_flex_protocol"],
-            },
-        )
-
-        new_plate, old_plate = self.push_new_assay_plate_resource(
-            location_name="otflex_sandy.deck_nest_A4",
-            labware_type="flat_bottom"
-        )
-
-
-        # move sybrgreen plate to the hidex
-        # WORKING 7-23
-        workflow = self.workcell_client.submit_workflow(
-            sybrgreen_flex_to_hidex.resolve(),
-        )
-
-        #run hidex protocol # TODO
-        workflow = self.workcell_client.submit_workflow(
-            run_hidex_sybr.resolve(),
-        )
-
-        hidex_data_point = workflow.get_datapoint(label="file")
-        # print("HIDEX DATA POINT", hidex_data_point)
-        # print("HIDEX DATA POINT PATH", hidex_data_point.path)
-        path = hidex_data_point.path[12:]
-        # path.removeprefix("/home/madsci/")
-        correct_path = "/home/rpl/workspace/" + path
-        # print("CORRECT PATH", correct_path)
-
-        # self.rest_handler.upload_excel_file(correct_path)
-        oracle_id = self.rest_handler.upload_excel_file(correct_path)
-        print(oracle_id)
-
-        workflow = self.workcell_client.submit_workflow(
-            sybrgreen_hidex_to_rack.resolve(),
-        )
+        # SYBR Green QC removed in this version (was: Flex C2 -> A4, plate to Hidex,
+        # run_hidex_sybr, upload results, plate Hidex -> rack1_row2_nest1).
 
         workflow = self.workcell_client.submit_workflow(
             pcr_products_to_rack.resolve(),
