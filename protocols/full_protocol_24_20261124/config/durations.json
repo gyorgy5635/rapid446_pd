@@ -1,0 +1,49 @@
+{
+  "_comment": "Duration ESTIMATES in seconds. full_run.py has no timing information, so these are placeholders; replace them with measured values or MADSci workflow history. A protocol.delay() found inside a protocol file is added automatically and marked as coming from code.",
+  "transfer": 45,
+  "flex_gripper_move": 60,
+  "manual_pause": 300,
+  "actions": {
+    "sealer_sassy.seal": 20,
+    "peeler_penelope.peel": 30,
+    "biometra_beuford_96.open_lid": 15,
+    "biometra_beuford_96.close_lid": 15,
+    "hidex_geraldine.open": 10,
+    "hidex_geraldine.close": 10,
+    "biometra_beuford_96.run_protocol program=4": 3600,
+    "biometra_beuford_96.run_protocol program=3": 5400,
+    "hidex_geraldine.run_assay assay_name=PCR_Final_Results": 300,
+    "hidex_geraldine.run_assay assay_name=PD_Kinetic_REAL": 3600
+  },
+  "protocols": {
+    "set_ot2_temp_on.py": 600,
+    "set_ot2_temp_off.py": 60,
+    "set_flex_temp_on.py": 600,
+    "set_flex_temp_off.py": 60,
+    "set_flex_C1_off.py": 60,
+    "pd_golden_gate_ot2_v2.py": 2400,
+    "pd_pcr_v2_flex.py": 900,
+    "pd_pcr_v2_ot2.py": 1200,
+    "pd_dd_v2_flex.py": 1500,
+    "pd_dd_v2_ot2.py": 900,
+    "cell_free_pd_flex_v2.py": 900,
+    "cell_free_pd_ot2_v2.py": 900,
+    "pd_fdglu_flex_v2.py": 1200,
+    "_default": 600
+  },
+  "protocol_labels": {
+    "set_ot2_temp_on.py": "Cool OT-2 temperature modules to 4 °C",
+    "set_ot2_temp_off.py": "Turn off OT-2 temperature modules",
+    "set_flex_temp_on.py": "Cool Flex temperature modules to 4 °C",
+    "set_flex_temp_off.py": "Turn off Flex temperature modules",
+    "set_flex_C1_off.py": "Turn off Flex C1 temperature module",
+    "pd_golden_gate_ot2_v2.py": "Golden Gate assembly (4 fragments/well + master mix)",
+    "pd_pcr_v2_flex.py": "PCR master mix, 24 µL into PCR Product plate",
+    "pd_pcr_v2_ot2.py": "Dilute Golden Gate products; 1 µL into PCR plate",
+    "pd_dd_v2_flex.py": "Dilution + SybrGreen plate setup",
+    "pd_dd_v2_ot2.py": "Dilute PCR products into Diluted PCR plate",
+    "cell_free_pd_flex_v2.py": "Prepare CFPS master mix (Mix A + Mix B)",
+    "cell_free_pd_ot2_v2.py": "Diluted PCR into CFPS plate",
+    "pd_fdglu_flex_v2.py": "FDGlu assay plate setup"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "_comment": "Friendly names for labware, keyed by the location where full_run.py first registers it (push_new_assay_plate_resource before the first workflow). Names follow the 2026 workflow slides. 'kind' picks the drawing style: pcr | flat | tips.",
+  "rack1_row1_nest1":        {"name": "Fragments (Opentrons Tough PCR)",   "short": "FRAG", "kind": "pcr",  "color": 1},
+  "rack1_row1_nest2":        {"name": "Golden Gate (Opentrons Tough PCR)", "short": "GG",   "kind": "pcr",  "color": 2},
+  "ot2_patrick.deck_nest_1": {"name": "OT-2 20 µL tips (box 1)",           "short": "T20·1","kind": "tips"},
+  "ot2_patrick.deck_nest_3": {"name": "OT-2 20 µL tips (box 3)",           "short": "T20·3","kind": "tips"},
+  "rack1_row1_nest3":        {"name": "OT-2 20 µL tips (spare)",           "short": "T20·S","kind": "tips"},
+  "rack1_row2_nest1":        {"name": "PCR Product (Opentrons Tough PCR)", "short": "PCR",  "kind": "pcr",  "color": 3},
+  "rack1_row3_nest1":        {"name": "Controls (Opentrons Tough PCR)",    "short": "CTRL", "kind": "pcr",  "color": 4},
+  "rack1_row3_nest2":        {"name": "SybrGreen (Corning Assay)",         "short": "SYBR", "kind": "flat", "color": 5},
+  "rack1_row3_nest3":        {"name": "Diluted PCR (Opentrons Tough PCR)", "short": "DIL",  "kind": "pcr",  "color": 6},
+  "rack1_row4_nest1":        {"name": "RMF Mixes (Opentrons Tough PCR)",   "short": "RMF",  "kind": "pcr",  "color": 7},
+  "rack1_row4_nest2":        {"name": "CFPS (Opentrons Tough PCR)",        "short": "CFPS", "kind": "pcr",  "color": 8},
+  "rack1_row5_nest1":        {"name": "FDGlu Assay (Corning Assay)",       "short": "FDG",  "kind": "flat", "color": 9},
+  "rack1_row5_nest2":        {"name": "Flex 50 µL tips (spare)",           "short": "T50·S","kind": "tips"}
+}
