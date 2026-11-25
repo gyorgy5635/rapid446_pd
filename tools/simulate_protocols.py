@@ -51,6 +51,43 @@ def load_combinations(path: Path):
             "non_combinatorial_sources": str(d["non_combinatorial_sources"])}
 
 
+def combination_counts(payload):
+    """(combinations, columns, fragment transfers) without importing the version's helpers: the
+    older single-run versions ship a helper_functions.py that predates these."""
+    import ast
+    import itertools
+    use = payload["use_combinations"]
+    use = use if isinstance(use, bool) else str(use) != "False"
+    combos = (list(itertools.product(*ast.literal_eval(payload["combinations"]))) if use
+              else ast.literal_eval(payload["non_combinatorial_sources"]))
+    return len(combos), (len(combos) + 7) // 8, sum(len(c) for c in combos)
+
+
+def plan_from_events(app: Path, payload_base, events):
+    """Protocol runs in the order the run map says full_run.py submits them.
+
+    Used for a version whose protocols take no tip-start or per-round variables, so the combination
+    payload is all they need. The 3-round version does need those and gets the plan below instead.
+    """
+    sys.path.insert(0, str(app / "src"))
+    import helper_functions as hf
+
+    steps = []
+    for step in events["steps"]:
+        if step["kind"] != "protocol":
+            continue
+        phase = step["phase"]
+        rnd = int(phase[1:].split()[0]) if phase[:1] == "R" and phase[1:2].isdigit() else 1
+        steps.append((rnd, step["protocol"], hf.collect_ot2_replacement_variables(dict(payload_base))))
+    n, cols, sources = combination_counts(payload_base)
+    return steps, hf, {"combinations": n, "columns": cols, "fragment_transfers": sources}
+
+
+def needs_tip_plan(app: Path):
+    """True when the version's protocols expect the tip-start variables full_run.py counts out."""
+    return any("_tip_start" in f.read_text() for f in (app / "protocols").glob("*.py"))
+
+
 def plan(app: Path, payload_base):
     """The (round, protocol, variables) triples full_run.py would generate, in run order."""
     sys.path.insert(0, str(app / "src"))
@@ -173,11 +210,15 @@ def main():
     ap.add_argument("--only", help="simulate just the protocols whose name contains this")
     a = ap.parse_args()
 
-    app = REPO / "protocols" / a.version / "protocol"
-    out = a.out or (REPO / "protocols" / a.version / "viz" / "simulated")
+    base = REPO / "protocols" / a.version
+    app = base / "protocol"
+    out = a.out or (base / "viz" / "simulated")
     out.mkdir(parents=True, exist_ok=True)
     payload = load_combinations(a.combinations)
-    steps, hf, counts = plan(app, payload)
+    if needs_tip_plan(app):
+        steps, hf, counts = plan(app, payload)
+    else:
+        steps, hf, counts = plan_from_events(app, payload, json.loads((base / "viz" / "events.json").read_text()))
     print(f"{a.combinations.name}: {counts['combinations']} combinations, {counts['columns']} columns, "
           f"{counts['fragment_transfers']} fragment transfers per round\n")
 

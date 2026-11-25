@@ -192,7 +192,9 @@ def main():
     deck_of = {}
     for step in events["steps"]:
         if step["kind"] == "protocol" and step.get("deck_plates"):
-            rnd = step["phase"].split(" ")[0][1:] if step["phase"].startswith("R") else ""
+            # "R2 · PCR" -> round 2; a single-run version has no prefix and is round 1
+            phase = step["phase"]
+            rnd = int(phase[1:].split()[0]) if phase[:1] == "R" and phase[1:2].isdigit() else 1
             deck_of[(rnd, step["protocol"])] = step["deck_plates"]
 
     out_dir = base / "viz" / "liquid"
@@ -215,7 +217,7 @@ def main():
         if not log_path.exists():
             continue
         log = json.loads(log_path.read_text())
-        deck = deck_of.get((str(run["round"]), run["protocol"]), {})
+        deck = deck_of.get((int(run["round"]), run["protocol"]), {})
         node = "ot2_patrick" if run["robot"] == "OT-2" else "otflex_sandy"
 
         # hand the labware on this deck whatever it already holds, then let the run change it
@@ -234,10 +236,13 @@ def main():
                     if f.get("volume_ul"):
                         held.setdefault(w, {})[f["reagent"]] = float(f["volume_ul"])
                 seeded.add(ident)
+            # a well is "sized" when we know what it starts with, including known-empty ones: then
+            # drawing from it when empty is air, not liquid of unknown origin
             lw_state[key] = {"comp": held,
                              "pure": {w: f["reagent"] for w, f in declared.items()
                                       if f.get("volume_ul") is None},
-                             "sized": {w for w, f in declared.items() if f.get("volume_ul") is not None},
+                             "sized": {w for w, f in declared.items() if f.get("volume_ul") is not None}
+                                      | set(start.get("expected_dry") or {}),
                              "reservoir": "reservoir" in cmd["labware"]}
             ident_of[key] = ident
         before = {k: json.loads(json.dumps(v["comp"])) for k, v in lw_state.items()}

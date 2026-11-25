@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24",
   "script_url": null,
-  "generated": "2026-11-25T14:54:37",
+  "generated": "2026-11-25T16:37:33",
   "workflow_calls": 63,
   "steps": 119,
   "pf400_moves": 68,
@@ -1333,7 +1333,11 @@
    "plates": [
     "p3",
     "p4"
-   ]
+   ],
+   "deck_plates": {
+    "D1": "p3",
+    "D3": "p4"
+   }
   },
   {
    "i": 2,
@@ -1421,7 +1425,13 @@
     "p2",
     "p3",
     "p4"
-   ]
+   ],
+   "deck_plates": {
+    "D1": "p3",
+    "D3": "p4",
+    "C1": "p1",
+    "C3": "p2"
+   }
   },
   {
    "i": 7,
@@ -1806,7 +1816,11 @@
    "plates": [
     "p1",
     "p6"
-   ]
+   ],
+   "deck_plates": {
+    "B1": "p1",
+    "C1": "p6"
+   }
   },
   {
    "i": 31,
@@ -1877,7 +1891,12 @@
     "p2",
     "p4",
     "p6"
-   ]
+   ],
+   "deck_plates": {
+    "D3": "p4",
+    "C3": "p2",
+    "C1": "p6"
+   }
   },
   {
    "i": 35,
@@ -2270,7 +2289,10 @@
    "protocol": "pd_dd_v2_flex.py",
    "plates": [
     "p6"
-   ]
+   ],
+   "deck_plates": {
+    "C1": "p6"
+   }
   },
   {
    "i": 60,
@@ -2444,7 +2466,13 @@
     "p6",
     "p7",
     "p8"
-   ]
+   ],
+   "deck_plates": {
+    "C3": "p8",
+    "C1": "p6",
+    "D1": "p7",
+    "D3": "p5"
+   }
   },
   {
    "i": 70,
@@ -2611,7 +2639,11 @@
    "plates": [
     "p10",
     "p9"
-   ]
+   ],
+   "deck_plates": {
+    "B1": "p9",
+    "C1": "p10"
+   }
   },
   {
    "i": 80,
@@ -2683,7 +2715,13 @@
     "p5",
     "p7",
     "p8"
-   ]
+   ],
+   "deck_plates": {
+    "C3": "p8",
+    "D1": "p7",
+    "D3": "p5",
+    "C1": "p10"
+   }
   },
   {
    "i": 84,
@@ -2783,7 +2821,12 @@
     "p5",
     "p7",
     "p8"
-   ]
+   ],
+   "deck_plates": {
+    "C3": "p8",
+    "D1": "p7",
+    "D3": "p5"
+   }
   },
   {
    "i": 90,
@@ -2801,7 +2844,11 @@
    "plates": [
     "p10",
     "p9"
-   ]
+   ],
+   "deck_plates": {
+    "B1": "p9",
+    "A4": "p10"
+   }
   },
   {
    "i": 91,
@@ -3157,7 +3204,12 @@
     "p10",
     "p11",
     "p7"
-   ]
+   ],
+   "deck_plates": {
+    "B1": "p7",
+    "B3": "p11",
+    "B2": "p10"
+   }
   },
   {
    "i": 112,
@@ -3266,7 +3318,11 @@
    "plates": [
     "p10",
     "p7"
-   ]
+   ],
+   "deck_plates": {
+    "B1": "p7",
+    "B2": "p10"
+   }
   }
  ],
  "final_state": {
@@ -3502,6 +3558,608 @@
    ]
   }
  ],
- "contents": null,
- "warnings": []
+ "contents": {
+  "reagents": {
+   "fragments": {
+    "label": "Fragment stocks",
+    "color": 1
+   },
+   "gg_mix": {
+    "label": "Golden Gate master mix",
+    "color": 2
+   },
+   "pcr_mix": {
+    "label": "PCR master mix",
+    "color": 3
+   },
+   "controls": {
+    "label": "Controls",
+    "color": 4
+   },
+   "mix_a": {
+    "label": "Cell-free Mix A",
+    "color": 5
+   },
+   "cfps_mix": {
+    "label": "Cell-free reaction mix (RMF)",
+    "color": 8
+   },
+   "water": {
+    "label": "Water",
+    "color": 6
+   },
+   "fdglu": {
+    "label": "FDGlu substrate",
+    "color": 9
+   },
+   "rmf_waste": {
+    "label": "Empty: receives the RMF removed from the cell-free plate",
+    "color": 0
+   }
+  },
+  "labware": [
+   {
+    "key": "rack1_row1_nest1",
+    "format": "96",
+    "rows": 8,
+    "cols": 12,
+    "capacity_ul": 200,
+    "expected_dry": {},
+    "label": "Fragments (Opentrons Tough PCR)",
+    "plate": "p1",
+    "wells": {
+     "A1": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "A2": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "A3": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "A4": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "A5": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "A6": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "B1": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "B2": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "B3": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "B4": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "B5": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "B6": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "C1": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "C2": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "C3": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "C4": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "C5": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "C6": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "D1": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "D2": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "D3": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "D4": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "D5": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "D6": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "E1": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "E2": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "E3": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "E4": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "E5": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "E6": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "F1": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "F2": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "F3": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "F4": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "F5": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "F6": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "G1": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "G2": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "G3": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "G4": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "G5": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "G6": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "H1": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "H2": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "H3": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "H4": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "H5": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "H6": {
+      "reagent": "fragments",
+      "note": "the busiest stock gives up 24 uL in this run; sources are picked per combination",
+      "volume_ul": 100
+     },
+     "A7": {
+      "reagent": "gg_mix",
+      "note": "36 uL drawn per well",
+      "volume_ul": 100
+     },
+     "B7": {
+      "reagent": "gg_mix",
+      "note": "36 uL drawn per well",
+      "volume_ul": 100
+     },
+     "C7": {
+      "reagent": "gg_mix",
+      "note": "36 uL drawn per well",
+      "volume_ul": 100
+     },
+     "D7": {
+      "reagent": "gg_mix",
+      "note": "36 uL drawn per well",
+      "volume_ul": 100
+     },
+     "E7": {
+      "reagent": "gg_mix",
+      "note": "36 uL drawn per well",
+      "volume_ul": 100
+     },
+     "F7": {
+      "reagent": "gg_mix",
+      "note": "36 uL drawn per well",
+      "volume_ul": 100
+     },
+     "G7": {
+      "reagent": "gg_mix",
+      "note": "36 uL drawn per well",
+      "volume_ul": 100
+     },
+     "H7": {
+      "reagent": "gg_mix",
+      "note": "36 uL drawn per well",
+      "volume_ul": 100
+     },
+     "A10": {
+      "reagent": "pcr_mix",
+      "note": "72 uL drawn per well",
+      "volume_ul": 120
+     },
+     "B10": {
+      "reagent": "pcr_mix",
+      "note": "72 uL drawn per well",
+      "volume_ul": 120
+     },
+     "C10": {
+      "reagent": "pcr_mix",
+      "note": "72 uL drawn per well",
+      "volume_ul": 120
+     },
+     "D10": {
+      "reagent": "pcr_mix",
+      "note": "72 uL drawn per well",
+      "volume_ul": 120
+     },
+     "E10": {
+      "reagent": "pcr_mix",
+      "note": "72 uL drawn per well",
+      "volume_ul": 120
+     },
+     "F10": {
+      "reagent": "pcr_mix",
+      "note": "72 uL drawn per well",
+      "volume_ul": 120
+     },
+     "G10": {
+      "reagent": "pcr_mix",
+      "note": "72 uL drawn per well",
+      "volume_ul": 120
+     },
+     "H10": {
+      "reagent": "pcr_mix",
+      "note": "72 uL drawn per well",
+      "volume_ul": 120
+     }
+    },
+    "filled": 64
+   },
+   {
+    "key": "rack1_row3_nest1",
+    "format": "96",
+    "rows": 8,
+    "cols": 12,
+    "capacity_ul": 200,
+    "expected_dry": {},
+    "label": "Controls (Opentrons Tough PCR)",
+    "plate": "p7",
+    "wells": {
+     "A1": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the diluted PCR plate",
+      "volume_ul": 60
+     },
+     "B1": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the diluted PCR plate",
+      "volume_ul": 60
+     },
+     "C1": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the diluted PCR plate",
+      "volume_ul": 60
+     },
+     "D1": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the diluted PCR plate",
+      "volume_ul": 60
+     },
+     "E1": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the diluted PCR plate",
+      "volume_ul": 60
+     },
+     "F1": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the diluted PCR plate",
+      "volume_ul": 60
+     },
+     "G1": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the diluted PCR plate",
+      "volume_ul": 60
+     },
+     "H1": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the diluted PCR plate",
+      "volume_ul": 60
+     },
+     "F3": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the FDGlu plate",
+      "volume_ul": 60
+     },
+     "G3": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the FDGlu plate",
+      "volume_ul": 60
+     },
+     "H3": {
+      "reagent": "controls",
+      "note": "20 uL drawn per well, into the FDGlu plate",
+      "volume_ul": 60
+     }
+    },
+    "filled": 11
+   },
+   {
+    "key": "rack1_row4_nest1",
+    "format": "96",
+    "rows": 8,
+    "cols": 12,
+    "capacity_ul": 200,
+    "expected_dry": {},
+    "label": "RMF Mixes (Opentrons Tough PCR)",
+    "plate": "p9",
+    "wells": {
+     "A1": {
+      "reagent": "mix_a",
+      "note": "84 uL drawn per well, into column 4",
+      "volume_ul": 120
+     },
+     "B1": {
+      "reagent": "mix_a",
+      "note": "84 uL drawn per well, into column 4",
+      "volume_ul": 120
+     },
+     "C1": {
+      "reagent": "mix_a",
+      "note": "84 uL drawn per well, into column 4",
+      "volume_ul": 120
+     },
+     "D1": {
+      "reagent": "mix_a",
+      "note": "84 uL drawn per well, into column 4",
+      "volume_ul": 120
+     },
+     "E1": {
+      "reagent": "mix_a",
+      "note": "84 uL drawn per well, into column 4",
+      "volume_ul": 120
+     },
+     "F1": {
+      "reagent": "mix_a",
+      "note": "84 uL drawn per well, into column 4",
+      "volume_ul": 120
+     },
+     "G1": {
+      "reagent": "mix_a",
+      "note": "84 uL drawn per well, into column 4",
+      "volume_ul": 120
+     },
+     "H1": {
+      "reagent": "mix_a",
+      "note": "84 uL drawn per well, into column 4",
+      "volume_ul": 120
+     },
+     "A4": {
+      "reagent": "cfps_mix",
+      "note": "already in column 4 before the run; 110 uL drawn per well once Mix A is added",
+      "volume_ul": 160
+     },
+     "B4": {
+      "reagent": "cfps_mix",
+      "note": "already in column 4 before the run; 110 uL drawn per well once Mix A is added",
+      "volume_ul": 160
+     },
+     "C4": {
+      "reagent": "cfps_mix",
+      "note": "already in column 4 before the run; 110 uL drawn per well once Mix A is added",
+      "volume_ul": 160
+     },
+     "D4": {
+      "reagent": "cfps_mix",
+      "note": "already in column 4 before the run; 110 uL drawn per well once Mix A is added",
+      "volume_ul": 160
+     },
+     "E4": {
+      "reagent": "cfps_mix",
+      "note": "already in column 4 before the run; 110 uL drawn per well once Mix A is added",
+      "volume_ul": 160
+     },
+     "F4": {
+      "reagent": "cfps_mix",
+      "note": "already in column 4 before the run; 110 uL drawn per well once Mix A is added",
+      "volume_ul": 160
+     },
+     "G4": {
+      "reagent": "cfps_mix",
+      "note": "already in column 4 before the run; 110 uL drawn per well once Mix A is added",
+      "volume_ul": 160
+     },
+     "H4": {
+      "reagent": "cfps_mix",
+      "note": "already in column 4 before the run; 110 uL drawn per well once Mix A is added",
+      "volume_ul": 160
+     }
+    },
+    "filled": 16
+   },
+   {
+    "key": "rack1_row4_nest2",
+    "format": "96",
+    "rows": 8,
+    "cols": 12,
+    "capacity_ul": 200,
+    "expected_dry": {
+     "F4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate",
+     "G4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate",
+     "H4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate"
+    },
+    "label": "CFPS (Opentrons Tough PCR)",
+    "plate": "p10",
+    "wells": {},
+    "filled": 0
+   },
+   {
+    "key": "ot2_patrick:A1",
+    "format": "reservoir12",
+    "rows": 1,
+    "cols": 12,
+    "capacity_ul": 15000,
+    "expected_dry": {},
+    "label": "OT-2 reagent reservoir (slot 10)",
+    "plate": null,
+    "wells": {
+     "A1": {
+      "reagent": "water",
+      "note": "0.9 mL drawn, plus dead volume",
+      "volume_ul": 2500
+     }
+    },
+    "filled": 1
+   },
+   {
+    "key": "otflex_sandy:D2",
+    "format": "reservoir12",
+    "rows": 1,
+    "cols": 12,
+    "capacity_ul": 15000,
+    "expected_dry": {},
+    "label": "Flex reagent reservoir (D2)",
+    "plate": null,
+    "wells": {
+     "A1": {
+      "reagent": "water",
+      "note": "2.3 mL drawn, plus dead volume",
+      "volume_ul": 4000
+     },
+     "A6": {
+      "reagent": "fdglu",
+      "note": "3.2 mL drawn, plus dead volume",
+      "volume_ul": 4500
+     },
+     "A12": {
+      "reagent": "rmf_waste",
+      "note": "starts empty: it receives the RMF removed from the cell-free plate",
+      "volume_ul": 0
+     }
+    },
+    "filled": 3
+   }
+  ]
+ },
+ "warnings": [
+  {
+   "line": 1100,
+   "message": "COLLISION RISK cell_free_pd_ot2_v2.py: Controls (Opentrons Tough PCR) is on ot2_patrick D1, but the protocol does not know it is there"
+  }
+ ]
 }

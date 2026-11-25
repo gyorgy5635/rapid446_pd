@@ -135,6 +135,10 @@ python3 -I tools/simulate_protocols.py --version full_protocol_24_3round \
 Rendered protocols and `report.json` land in `protocols/<version>/viz/simulated/` (not committed).
 `incoming/combinations_oracle_1008.json` is a real design-server payload, used as the default input.
 
+A version whose protocols take no tip-start variables (the single-run ones) is simulated straight
+from its run map: the protocol runs in the order `events.json` says `full_run.py` submits them.
+The 3-round version needs the tip counter, so it uses the ledger plan in the script instead.
+
 ## Liquid-handling pages
 Once a version has been simulated, `./build.sh` also writes one page per protocol run to
 `protocols/<version>/viz/liquid/` (not committed) with `tools/build_liquid_player.py`. Each page
