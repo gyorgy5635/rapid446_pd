@@ -58,7 +58,7 @@ def plan(app: Path, payload_base):
 
     n_combos, n_cols, n_sources = hf.combination_counts(payload_base)
     tips = {
-        "ot2_20": hf.TipLedger("OT-2 20 uL", racks=7),
+        "ot2_20": hf.TipLedger("OT-2 20 uL", racks=6, spare_slots=["rack2_row1_nest2"], swap_start=60),
         "flex_200": hf.TipLedger("Flex 200 uL", racks=1, tip_type="opentrons_flex_96_tiprack_200ul",
                                  deck_slot="A1", spare_slots=["D4"]),
         "flex_50": hf.TipLedger("Flex 50 uL 8-channel", racks=1, tip_type="opentrons_flex_96_tiprack_50ul",
@@ -71,17 +71,25 @@ def plan(app: Path, payload_base):
         steps.append((rnd, name, hf.collect_ot2_replacement_variables(dict(base, tip_starts=tip_starts))))
 
     def swap(rnd, base, ledger):
+        spare = ledger.swap()
+        swap_vars = {"tip_type": ledger.tip_type, "deck_slot": ledger.deck_slot, "spare_slot": spare}
         steps.append((rnd, "flex_tips_swap.py",
-                      hf.collect_ot2_replacement_variables(dict(base, swap_vars=ledger.swap()))))
+                      hf.collect_ot2_replacement_variables(dict(base, swap_vars=swap_vars))))
 
     for rnd in (1, 2, 3):
         base = dict(payload_base, round_vars={"round_num": rnd, "pcr_mm_start_well": 8 * (8 + rnd)})
-        step(rnd, "pd_golden_gate_ot2_v2.py", base,
-             ot2_tip_start=tips["ot2_20"].take(n_cols + (n_sources + 7) // 8))
+        gg_cols = n_cols + (n_sources + 7) // 8
+        if tips["ot2_20"].needs_swap(gg_cols):           # PF400 workflow, not a protocol: nothing to simulate
+            tips["ot2_20"].swap()
+        step(rnd, "pd_golden_gate_ot2_v2.py", base, ot2_tip_start=tips["ot2_20"].take(gg_cols))
         if tips["flex_200"].needs_swap(n_cols):
             swap(rnd, base, tips["flex_200"])
         step(rnd, "pd_pcr_v2_flex.py", base, flex200_tip_start=tips["flex_200"].take(n_cols))
+        if tips["ot2_20"].needs_swap(2 * n_cols):
+            tips["ot2_20"].swap()
         step(rnd, "pd_pcr_v2_ot2.py", base, ot2_tip_start=tips["ot2_20"].take(2 * n_cols))
+        if tips["ot2_20"].needs_swap(n_cols + 2):
+            tips["ot2_20"].swap()
         step(rnd, "pd_dilute_1to50_ot2.py", base, ot2_tip_start=tips["ot2_20"].take(n_cols + 2))
         if tips["flex_50"].needs_swap(n_cols + 2):
             swap(rnd, base, tips["flex_50"])

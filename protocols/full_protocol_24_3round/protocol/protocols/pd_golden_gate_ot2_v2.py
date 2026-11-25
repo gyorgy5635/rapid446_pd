@@ -95,8 +95,10 @@ config = {
 
 
 # 3-round run: OT-2 20 uL tip racks, in the order the tip counter in full_run.py uses them (12 columns per rack).
-# D1 stays free for the controls plate. Slots other than D3 need labware position check offsets (TODO).
-OT2_TIP_SLOTS = ['D3', 'D2', 'C2', 'B1', 'B2', 'B3', 'A2']
+# Slot D1 (1) holds the controls plate and D2 (2) MUST stay empty: the PF400 cannot reach slot 1 with
+# anything in slot 2. D3 (3) is last in the order and is the only rack the PF400 can swap, so it is the one
+# that runs out last and gets replaced from rack 2 mid-run. Slots other than D3 need position check offsets.
+OT2_TIP_SLOTS = ['C2', 'B1', 'B2', 'B3', 'A2', 'D3']
 OT2_TIP_OFFSETS = {'D3': (0.4, 1.2, -0.4)}
 OT2_TIP_START = int("$ot2_tip_start")  # first unused tip column across OT2_TIP_SLOTS, set by full_run.py
 

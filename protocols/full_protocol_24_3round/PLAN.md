@@ -43,6 +43,8 @@ Temperature modules are switched on once at the start and off after round 3.
 |---|---|
 | `cold_block_ext` (TODO real name) | Fragments plate, sealed, all rounds |
 | `rack2_row1_nest1` | Controls plate, reused every round (rack2 is the second 5 × 3 nest rack) |
+| `rack2_row1_nest2` | Full spare OT-2 20 µL tip box, for the slot 3 swap |
+| `rack2_row2_nest1` | Left empty: the spent slot 3 tip box is parked here |
 | `rack1_row1_nest{n}` | Golden Gate plate, round n |
 | `rack1_row2_nest{n}` | PCR plate, round n |
 | `rack1_row3_nest{n}` | Dilution plate, round n |
@@ -54,8 +56,14 @@ rack 2 holds the controls plate in row 1 nest 1 and has 14 free nests for spares
 
 ## Deck layouts
 
-**OT-2**: C1 cold block (fragments / PCR plate), C3 cold block (GG / dilution plate), D1 controls plate during the
-dilution only, A1 reservoir, 20 µL tips on D3, D2, C2, B1, B2, B3, A2 (7 racks, loaded at the start).
+**OT-2** (numbered slots in brackets): C1 (4) and C3 (6) cold blocks, D1 (1) controls plate during the dilution
+only, A1 (10) reservoir, A3 (12) trash. 20 µL tips on C2, B1, B2, B3, A2 (5 fixed racks) and D3 (3).
+
+**D2 (2) must stay empty.** The PF400 cannot place into slot 1 while slot 2 is occupied, and the controls plate
+goes into slot 1 every round. Of the tip slots only D3 is reachable by the arm, so it is last in the rack order and
+is the one that gets swapped: when it runs out, `ot2_tip_swap.yaml` parks the spent box on `rack2_row2_nest1` and
+brings the full spare from `rack2_row1_nest2`. This is a physical constraint the Opentrons simulator cannot see —
+it simulated the old deck, with tips in slot 2, quite happily.
 
 **Flex**: A1 200 µL tips, A2 50 µL tips (8-channel), A3 50 µL tips (single-tip only), B1 cold block, C1 cold block,
 B2 cell-free plate, B3 FDGlu plate, D1 heater-shaker, D2 reservoir, D3 waste chute, A4 PF400 handoff,
@@ -72,14 +80,19 @@ Counted by the simulator over the whole 3-round run (24 combinations), not estim
 
 | Tips | Per round | 3 rounds | Boxes | Margin |
 |---|---|---|---|---|
-| OT-2 20 µL | 208 tips (GG 120, PCR 48, dilution 40) | 624 tips | 7 racks on deck = 672 | 48 tips |
+| OT-2 20 µL | 208 tips (GG 120, PCR 48, dilution 40) | 624 tips | 5 fixed racks (480) + 2 boxes in slot 3 | 48 tips |
 | Flex 200 µL (A1) | 32 tips (PCR mix 24, FDGlu 8) | 96 tips | exactly 1 box; spare on D4 unused | 0 |
 | Flex 50 µL 8-channel (A2) | 72 tips (cell-free 40, FDGlu 32) | 216 tips | 1 on deck + 2 spares, 2 gripper swaps | 72 tips |
 | Flex 50 µL single (A3) | 6 tips (FDGlu) | 18 tips | 1 box | 78 tips |
 
-The OT-2 needs **no** tip-box swapping: 7 racks cover all 3 rounds. On the Flex the 8-channel 50 µL box is swapped
-twice by the gripper (during rounds 2 and 3). The 200 µL box comes out exactly full at 96 tips, so the D4 spare is
-there for the case where a round has more combinations. `full_run.py` counts tips (`TipLedger` in `helper_functions.py`) and passes the first unused tip into each
+The OT-2 needs **one** PF400 tip-box swap, in round 3 before the PCR step: the five fixed racks and the first
+slot-3 box cover 576 tips, and the run needs 624. On the Flex the 8-channel 50 µL box is swapped twice by the
+gripper (rounds 2 and 3). The 200 µL box comes out exactly full at 96 tips, so the D4 spare is there for the case
+where a round has more combinations.
+
+Swaps are decided at run time by the tip counter, so the run map draws every swap that *could* happen (marked
+"only if needed") and does not apply them to the tracked deck. That is why it shows 386 steps and about 30.8 h,
+against 1 OT-2 and 2 Flex swaps actually firing. `full_run.py` counts tips (`TipLedger` in `helper_functions.py`) and passes the first unused tip into each
 protocol (`$ot2_tip_start`, `$flex200_tip_start`, `$flex50_tip_start`, `$flex50_single_start`). If a 200 µL step would
 run past the A1 box, the Flex gripper swaps in the B4 spare (`flex_tips_200_swap.py`, A1 → C4, B4 → A1; no PF400).
 If any other box would run out, the run stops with an error instead of crashing a pipette.

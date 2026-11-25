@@ -546,6 +546,18 @@ class Extractor:
             u["uses"] += 1
             if mover not in u["movers"]:
                 u["movers"].append(mover)
+        if self.conditional:
+            # A move the script only makes when a run-time check fires (a tip box running out). It is
+            # drawn so the route is visible, but the tracker does not apply it and does not judge it:
+            # the extractor cannot know which of the possible firings actually happen, and applying
+            # them all would corrupt the deck state and bury the real warnings in noise.
+            plate = self.state.get(csrc)
+            base = self.dur["transfer"] if mover == "pf400" else self.dur["flex_gripper_move"]
+            self.add_step(line, call_id, kind="move", mover=mover, src=src, dst=dst,
+                          from_=csrc, to=cdst, plate=plate, protocol=protocol,
+                          detail=f"{self.name(plate) if plate else 'labware'}: {src} → {dst}",
+                          duration=base + extra, dsrc=extra_src or "estimate")
+            return
         plate = self.state.pop(csrc, None)
         if plate is None:
             self.warn(line, f"Move from {src} but no tracked plate is there; created a placeholder")

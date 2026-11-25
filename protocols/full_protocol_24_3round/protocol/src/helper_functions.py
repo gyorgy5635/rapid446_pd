@@ -79,10 +79,15 @@ class TipLedger:
     spares: full boxes waiting in Flex staging slots; swap() puts one in place of the current box.
     """
 
-    def __init__(self, name, racks, unit="column", spare_slots=(), tip_type=None, deck_slot=None):
+    def __init__(self, name, racks, unit="column", spare_slots=(), tip_type=None, deck_slot=None,
+                 swap_start=0):
         self.name, self.racks, self.unit = name, racks, unit
-        self.spare_slots = list(spare_slots)   # staging slots holding full boxes, used in order
+        self.spare_slots = list(spare_slots)   # where the full spare boxes wait, used in order
         self.tip_type, self.deck_slot = tip_type, deck_slot
+        # Column index the swapped-in box starts at. 0 when the whole rack list is one box; on the
+        # OT-2 only the last rack can be swapped by the PF400, so a swap rewinds to that rack's start
+        # and the fixed racks before it stay counted as used.
+        self.swap_start = swap_start
         self.per_rack = 12 if unit == "column" else 96
         self.used = 0
 
@@ -101,12 +106,18 @@ class TipLedger:
         return n > self.remaining() and self.spare_slots
 
     def swap(self):
-        """Take the next spare box; returns the $variables for flex_tips_swap.py."""
+        """Take the next spare box and rewind the counter; returns where that spare was waiting."""
         if not self.spare_slots:
             raise RuntimeError(f"{self.name}: no spare tip box left to swap in")
         spare = self.spare_slots.pop(0)
-        self.used = 0
-        return {"tip_type": self.tip_type, "deck_slot": self.deck_slot, "spare_slot": spare}
+        if self.used > self.swap_start:
+            wasted = 0
+        else:
+            wasted = self.swap_start - self.used   # unused columns in the racks before the swapped one
+        if wasted:
+            print(f"{self.name}: swapping early, {wasted} tip column(s) in the fixed racks go unused")
+        self.used = self.swap_start
+        return spare
 
     def take(self, n):
         if n > self.remaining():

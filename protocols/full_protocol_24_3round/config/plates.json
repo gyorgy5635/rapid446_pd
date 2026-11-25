@@ -14,6 +14,11 @@
   "color": 4,
   "role": "controls"
  },
+ "rack2_row1_nest2": {
+  "name": "OT-2 20 µL tips (spare for slot 3)",
+  "short": "T20·S",
+  "kind": "tips"
+ },
  "rack1_row1_nest1": {
   "name": "Golden Gate R1",
   "short": "GG1",
@@ -118,5 +123,10 @@
   "kind": "flat",
   "color": 9,
   "role": "fdglu"
+ },
+ "ot2_patrick.deck_nest_3": {
+  "name": "OT-2 20 µL tips (slot 3, PF400-swappable)",
+  "short": "T20·3",
+  "kind": "tips"
  }
 }
