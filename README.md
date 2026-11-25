@@ -102,6 +102,22 @@ To change the layout, use **Edit layout** in the player: drag the instruments, c
 (src/, workflows/, protocols/). Refresh it from the repo, update `commit` and `repo_blob_url`
 in its `source.json`, then run `./build.sh full_protocol_24`.
 
+## Simulating the protocols
+`tools/simulate_protocols.py` renders each Opentrons protocol the way `full_run.py` does (combinations, per-round
+columns, tip start positions) and runs the real Opentrons simulator on it, then reports the tips and liquid each run
+uses and flags overfilled wells and empty tip boxes. It needs two virtualenvs, because the Flex wants a recent
+opentrons release and OT-2 support was dropped after 9.x:
+
+```
+python3 -m venv /tmp/otenv  && /tmp/otenv/bin/pip  install opentrons
+python3 -m venv /tmp/ot2env && /tmp/ot2env/bin/pip install 'opentrons==8.8.2'
+python3 -I tools/simulate_protocols.py --version full_protocol_24_3round \
+    --flex-python /tmp/otenv/bin/python --ot2-python /tmp/ot2env/bin/python
+```
+
+Rendered protocols and `report.json` land in `protocols/<version>/viz/simulated/` (not committed).
+`incoming/combinations_oracle_1008.json` is a real design-server payload, used as the default input.
+
 ## Known limits
 - Durations are placeholders until a MADSci history export is added, except the 150 min CFPS
   incubation (from `pcr_A4_to_D1.py`).

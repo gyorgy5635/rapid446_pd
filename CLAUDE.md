@@ -31,5 +31,10 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
 - 3-round decisions from the user: PCR master mix column 10/11/12 per round, GG mix column 9 shared; cell-free 24 µL
   water + 6 µL diluted PCR; rounds sequential with new combinations each round; Flex staging B4/C4 can hold tip boxes
   for on-deck swaps (PF400 tip-box swapping still has issues).
+- Simulation: `tools/simulate_protocols.py` + two venvs (Flex needs recent opentrons, OT-2 needs <=9.x; 8.8.2 works).
+  It found the two bugs static checks missed: Flex tip boxes in C2/C3 collide with single-tip moves to B2/B3, and
+  labware-type disagreements. `incoming/combinations_oracle_1008.json` is the user's real design-server payload.
+- Flex tip layout is constrained: only A1/A2/A3 may hold tip boxes; spares wait in staging B4/C4/D4 and the gripper
+  swaps them in (`flex_tips_swap.py`), dropping the empty box down the waste chute.
 - Each Opentrons run starts fresh tip tracking: in multi-round versions `full_run.py` counts tips (TipLedger) and
   passes start tips into protocols as `$..._tip_start` template variables.

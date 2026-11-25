@@ -1,0 +1,249 @@
+#!/usr/bin/env python3
+"""Render every Opentrons protocol of a version the way full_run.py does, simulate it, and tally
+the tips and liquid each run uses.
+
+full_run.py never hands a protocol file to the robot as it is on disk: helper_functions
+.generate_ot2_protocol() substitutes the $variables first (combinations, the round's master-mix
+column, the first unused tip, tip-swap slots). This replays that substitution for the whole
+3-round sequence and runs the real Opentrons simulator on each result, so a failure here is a
+failure the run would hit. It then parses the simulator's command log to report, per protocol:
+
+  * tips picked up, per tip box, and whether a box ran out
+  * liquid aspirated from each source well (how much to load) and dispensed into each
+    destination well, with a warning when a well goes over its labware's capacity
+
+The opentrons package is not a dependency of this repo. The Flex needs a recent version and the
+OT-2 was dropped after 9.x, so two virtualenvs are needed:
+
+    python3 -m venv /tmp/otenv  && /tmp/otenv/bin/pip  install opentrons           # Flex
+    python3 -m venv /tmp/ot2env && /tmp/ot2env/bin/pip install 'opentrons==8.8.2'  # OT-2
+    python3 -I tools/simulate_protocols.py --version full_protocol_24_3round \
+        --flex-python /tmp/otenv/bin/python --ot2-python /tmp/ot2env/bin/python
+
+Exit status is non-zero if any protocol fails to simulate.
+"""
+import argparse
+import json
+import re
+import subprocess
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+DEFAULT_COMBINATIONS = REPO / "incoming" / "combinations_oracle_1008.json"
+
+# Well capacities the simulator does not enforce, for the overfill check (uL per well).
+CAPACITY = {
+    "opentrons_96_wellplate_200ul_pcr_full_skirt": 200,
+    "corning_96_wellplate_360ul_flat": 360,
+    "nest_12_reservoir_15ml": 15000,
+    "nest_96_wellplate_100ul_pcr_full_skirt": 100,
+}
+TIPS_PER_BOX = 96
+
+
+def load_combinations(path: Path):
+    """The design-server payload full_run.py gets from collect_combinations()."""
+    d = json.loads(path.read_text())
+    return {"combinations": str(d["combinations"]),
+            "use_combinations": str(d["use_combinations"]),
+            "non_combinatorial_sources": str(d["non_combinatorial_sources"])}
+
+
+def plan(app: Path, payload_base):
+    """The (round, protocol, variables) triples full_run.py would generate, in run order."""
+    sys.path.insert(0, str(app / "src"))
+    import helper_functions as hf
+
+    n_combos, n_cols, n_sources = hf.combination_counts(payload_base)
+    tips = {
+        "ot2_20": hf.TipLedger("OT-2 20 uL", racks=7),
+        "flex_200": hf.TipLedger("Flex 200 uL", racks=1, tip_type="opentrons_flex_96_tiprack_200ul",
+                                 deck_slot="A1", spare_slots=["D4"]),
+        "flex_50": hf.TipLedger("Flex 50 uL 8-channel", racks=1, tip_type="opentrons_flex_96_tiprack_50ul",
+                                deck_slot="A2", spare_slots=["B4", "C4"]),
+        "flex_50_single": hf.TipLedger("Flex 50 uL single", racks=1, unit="tip"),
+    }
+    steps = []
+
+    def step(rnd, name, base, **tip_starts):
+        steps.append((rnd, name, hf.collect_ot2_replacement_variables(dict(base, tip_starts=tip_starts))))
+
+    def swap(rnd, base, ledger):
+        steps.append((rnd, "flex_tips_swap.py",
+                      hf.collect_ot2_replacement_variables(dict(base, swap_vars=ledger.swap()))))
+
+    for rnd in (1, 2, 3):
+        base = dict(payload_base, round_vars={"round_num": rnd, "pcr_mm_start_well": 8 * (8 + rnd)})
+        step(rnd, "pd_golden_gate_ot2_v2.py", base,
+             ot2_tip_start=tips["ot2_20"].take(n_cols + (n_sources + 7) // 8))
+        if tips["flex_200"].needs_swap(n_cols):
+            swap(rnd, base, tips["flex_200"])
+        step(rnd, "pd_pcr_v2_flex.py", base, flex200_tip_start=tips["flex_200"].take(n_cols))
+        step(rnd, "pd_pcr_v2_ot2.py", base, ot2_tip_start=tips["ot2_20"].take(2 * n_cols))
+        step(rnd, "pd_dilute_1to50_ot2.py", base, ot2_tip_start=tips["ot2_20"].take(n_cols + 2))
+        if tips["flex_50"].needs_swap(n_cols + 2):
+            swap(rnd, base, tips["flex_50"])
+        step(rnd, "cell_free_lyo_flex.py", base, flex50_tip_start=tips["flex_50"].take(n_cols + 2))
+        if tips["flex_200"].needs_swap(1):
+            swap(rnd, base, tips["flex_200"])
+        if tips["flex_50"].needs_swap(n_cols + 1):
+            swap(rnd, base, tips["flex_50"])
+        step(rnd, "pd_fdglu_flex_v2.py", base,
+             flex200_tip_start=tips["flex_200"].take(1),
+             flex50_tip_start=tips["flex_50"].take(n_cols + 1),
+             flex50_single_start=tips["flex_50_single"].take(6))
+    return steps, hf, {"combinations": n_combos, "columns": n_cols, "fragment_transfers": n_sources}
+
+
+def tally(log):
+    """Tips and liquid from the structured command log (tools/_sim_driver.py).
+
+    A pick-up consumes as many tips as the pipette has *active* nozzles, so the nozzle layout each
+    mount was configured with is tracked (SINGLE takes 1 tip, COLUMN takes 8): the hardware channel
+    count alone would count every single-tip pick-up as 8. An 8-channel step also touches 8 wells,
+    so a plate column is expanded to its 8 wells, while a reservoir well is hit by every channel at
+    once and takes 8x the volume. A mix() moves liquid in place and is left out of both totals.
+    """
+    boxes = defaultdict(lambda: {"tips": 0, "pickups": 0})
+    wells = defaultdict(lambda: {"aspirated": 0.0, "dispensed": 0.0})
+    active = {}        # mount -> active nozzle count
+    mixing = False
+
+    def nozzles(cmd):
+        return active.get(cmd["mount"], cmd["channels"] or 1)
+
+    for cmd in log:
+        kind = cmd["kind"]
+        if kind == "configure":
+            style = (cmd["style"] or "").upper()
+            active[cmd["mount"]] = 1 if "SINGLE" in style else 8 if "COLUMN" in style else (cmd["channels"] or 1)
+            continue
+        if kind == "mix":
+            mixing = True
+            continue
+        if kind == "pick_up_tip":
+            mixing = False
+            box = boxes[f"{cmd['labware']} on {cmd['slot']}"]
+            box["tips"] += nozzles(cmd)
+            box["pickups"] += 1
+        elif kind in ("aspirate", "dispense"):
+            if mixing or cmd["labware"] is None or cmd["volume"] is None:
+                continue
+            n = nozzles(cmd)
+            field = "aspirated" if kind == "aspirate" else "dispensed"
+            if "reservoir" in (cmd["labware"] or ""):
+                # every active channel draws from the same reservoir well
+                wells[(cmd["labware"], cmd["slot"], cmd["well"])][field] += cmd["volume"] * n
+            else:
+                row, col = (cmd["well"] or "A1")[0], (cmd["well"] or "A1")[1:]
+                rows = "ABCDEFGH"[:n] if n > 1 and row == "A" else row
+                for r in rows:
+                    wells[(cmd["labware"], cmd["slot"], f"{r}{col}")][field] += cmd["volume"]
+        else:
+            mixing = False
+
+    liquid = [{"labware": lw, "slot": slot, "well": w,
+               "aspirated": round(v["aspirated"], 1), "dispensed": round(v["dispensed"], 1)}
+              for (lw, slot, w), v in sorted(wells.items())]
+    overfilled = [x for x in liquid if x["dispensed"] > CAPACITY.get(x["labware"], 1e9)]
+    overdrawn = [k for k, v in boxes.items() if v["tips"] > TIPS_PER_BOX]
+    return {"tip_boxes": {k: v["tips"] for k, v in boxes.items()},
+            "tip_pickups": {k: v["pickups"] for k, v in boxes.items()},
+            "liquid": liquid, "overfilled": overfilled, "boxes_overdrawn": overdrawn}
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--version", required=True, help="folder name under protocols/")
+    ap.add_argument("--flex-python", default=sys.executable, help="interpreter with a recent opentrons")
+    ap.add_argument("--ot2-python", default=sys.executable, help="interpreter with opentrons 8.x (OT-2 support)")
+    ap.add_argument("--combinations", type=Path, default=DEFAULT_COMBINATIONS,
+                    help="design-server payload JSON (default: the saved oracle 1008 example)")
+    ap.add_argument("--out", type=Path, help="where to write rendered protocols and the report")
+    ap.add_argument("--only", help="simulate just the protocols whose name contains this")
+    a = ap.parse_args()
+
+    app = REPO / "protocols" / a.version / "protocol"
+    out = a.out or (REPO / "protocols" / a.version / "viz" / "simulated")
+    out.mkdir(parents=True, exist_ok=True)
+    payload = load_combinations(a.combinations)
+    steps, hf, counts = plan(app, payload)
+    print(f"{a.combinations.name}: {counts['combinations']} combinations, {counts['columns']} columns, "
+          f"{counts['fragment_transfers']} fragment transfers per round\n")
+
+    results, failures = [], 0
+    for rnd, name, variables in steps:
+        if a.only and a.only not in name:
+            continue
+        src = app / "protocols" / name
+        is_ot2 = '"OT-2"' in src.read_text()
+        rendered = Path(hf.generate_ot2_protocol(src, variables))
+        target = out / f"r{rnd}_{name}"
+        target.write_text(rendered.read_text())
+        rendered.unlink()
+        log_path = target.with_suffix(".log.json")
+        proc = subprocess.run([a.ot2_python if is_ot2 else a.flex_python,
+                               str(REPO / "tools" / "_sim_driver.py"), str(target), str(log_path)],
+                              capture_output=True, text=True, cwd=out)
+        ok = proc.returncode == 0 and log_path.exists()
+        failures += not ok
+        row = {"round": rnd, "protocol": name, "robot": "OT-2" if is_ot2 else "Flex", "ok": ok}
+        if ok:
+            row.update(tally(json.loads(log_path.read_text())))
+        else:
+            row["error"] = " | ".join((proc.stderr or proc.stdout).strip().splitlines()[-3:])[:400]
+        results.append(row)
+        extra = ""
+        if ok:
+            extra = "  tips: " + (", ".join(
+                f"{n} from {b.replace('opentrons_', '').replace('_96_', ' ').replace('filtertiprack', 'tips').replace('tiprack', 'tips')}"
+                for b, n in row["tip_boxes"].items()) or "none")
+            if row["overfilled"]:
+                extra += f"  OVERFILL {len(row['overfilled'])} well(s)"
+            if row["boxes_overdrawn"]:
+                extra += f"  TIP BOX EMPTY: {', '.join(row['boxes_overdrawn'])}"
+        print(f"{'ok  ' if ok else 'FAIL'} round {rnd} {name:28s}{extra}"
+              f"{'' if ok else chr(10) + '     ' + row['error']}", flush=True)
+
+    summary = summarise(results)
+    report = {"version": a.version, "combinations_file": str(a.combinations), "counts": counts,
+              "summary": summary, "runs": results}
+    (out / "report.json").write_text(json.dumps(report, indent=1))
+
+    print("\nTips for the whole run (a slot is refilled when the gripper swaps a box in):")
+    for slot, n in sorted(summary["tips_per_slot"].items()):
+        boxes = -(-n // TIPS_PER_BOX)
+        print(f"  {n:5d} tips  {slot}   = {boxes} box{'es' if boxes != 1 else ''} of {TIPS_PER_BOX}")
+    print("\nReagent to load (reservoirs are never swapped, so these are run totals, before dead volume):")
+    for key, v in sorted(summary["reservoir_uses"].items()):
+        robot, slot, well = key.split(" | ")
+        print(f"  {v / 1000:6.2f} mL  {robot} reservoir on slot {slot}, well {well}")
+    fullest = summary["fullest_well"]
+    if fullest:
+        print(f"\nFullest well in any single run: {fullest['dispensed']} uL into {fullest['well']} of "
+              f"{fullest['labware']} (capacity {CAPACITY.get(fullest['labware'], '?')} uL)")
+    print(f"\n{len(results) - failures}/{len(results)} simulated. Report: {out / 'report.json'}")
+    return 1 if failures else 0
+
+
+def summarise(results):
+    """Totals across the whole run: tips per deck slot, reagent per reservoir well, fullest well."""
+    tips, reservoirs, fullest = defaultdict(int), defaultdict(float), None
+    for run in results:
+        for box, n in run.get("tip_boxes", {}).items():
+            tips[box] += n
+        for row in run.get("liquid", []):
+            if "reservoir" in row["labware"]:
+                reservoirs[(run["robot"], row["slot"], row["well"])] += row["aspirated"]
+            elif fullest is None or row["dispensed"] > fullest["dispensed"]:
+                fullest = row
+    return {"tips_per_slot": dict(tips),
+            # json keys must be strings
+            "reservoir_uses": {" | ".join(k): round(v, 1) for k, v in reservoirs.items()},
+            "fullest_well": fullest}
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -84,6 +84,8 @@ class Extractor:
         self.deck = json.loads(deck_cfg.read_text()) if deck_cfg.exists() else None
         self.deck_cache = {}
         self.plate_types = defaultdict(dict)  # plate id -> {labware type: [protocols]} (deck check)
+        self.localfns = {}    # helper functions defined inside run_experiment, expanded at their call site
+        self.fndepth = 0
 
     # ---------- helpers ----------
     def canon(self, loc):
@@ -176,6 +178,9 @@ class Extractor:
                        if not NOISE_RE.search(t) and not PHASE_RE.match(t)]
             self.caption = caption[-1] if caption else ""
             self.prev_end = getattr(stmt, "end_lineno", stmt.lineno)
+            if isinstance(stmt, ast.FunctionDef):
+                self.localfns[stmt.name] = stmt   # expanded where it is called, not here
+                continue
             if isinstance(stmt, ast.For) and self.loop_values(stmt) is not None:
                 self.unroll(stmt)
                 continue
@@ -273,6 +278,15 @@ class Extractor:
         if not isinstance(value, ast.Call):
             return
         name = call_name(value)
+        if name in self.localfns and self.fndepth < 5:
+            fn = self.localfns[name]
+            keep = self.prev_end
+            self.fndepth += 1
+            self.prev_end = fn.lineno
+            self.walk(fn.body)
+            self.fndepth -= 1
+            self.prev_end = keep
+            return
         if name.endswith("submit_workflow"):
             self.submit(value, stmt.lineno)
         elif name.endswith("push_new_assay_plate_resource"):
@@ -424,7 +438,11 @@ class Extractor:
         pname = Path(proto).name
         tracked = self.robot_slots(node)
         plate = {p["id"]: p for p in self.plates}
-        if all(r in ("module", "chute") or any(w in t for w in self.STATIC_WORDS) for r, t in deck.values()):
+        # slots or labware still holding a $template (filled in per run) cannot be checked
+        deck = {slot: (role, ltype) for slot, (role, ltype) in deck.items()
+                if not slot.startswith("$") and not str(ltype).startswith("$")}
+        if not deck or all(r in ("module", "chute") or any(w in t for w in self.STATIC_WORDS)
+                           for r, t in deck.values()):
             return  # utility protocol (temperature, tip boxes): touches no plates
         for slot, (role, ltype) in sorted(deck.items()):
             static = role in ("module", "chute") or any(w in ltype for w in self.STATIC_WORDS)
