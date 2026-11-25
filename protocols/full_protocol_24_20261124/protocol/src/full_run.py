@@ -442,16 +442,8 @@ class PDApp(ExperimentScript,): # TODO
              transfers_directory / "thermocycler_to_flex.yaml"
         )
 
-        controls_to_flex = (
-             transfers_directory / "controls_to_flex.yaml"
-        )
-
         controls_rack_to_ot2 = (
              transfers_directory / "controls_rack_to_ot2.yaml"
-        )
-
-        sybrgreen_to_flex = (
-             transfers_directory / "sybrgreen_to_flex.yaml"
         )
 
         empty_pcr_to_ot2 = (
@@ -500,18 +492,6 @@ class PDApp(ExperimentScript,): # TODO
 
         seal_and_thermocycle_pcr = (
              transfers_directory / "seal_and_thermocycle_pcr.yaml"
-        )
-
-        dd_controls_flex_to_ot2 = (
-             transfers_directory / "dd_controls_to_flex.yaml"
-        )
-
-        sybrgreen_flex_to_hidex = (
-             transfers_directory / "sybrgreen_flex_to_hidex.yaml"
-        )
-
-        sybrgreen_hidex_to_rack = (
-             transfers_directory / "sybrgreen_hidex_to_rack.yaml"
         )
 
         dispose_diluted_and_rmf = (
@@ -578,7 +558,6 @@ class PDApp(ExperimentScript,): # TODO
         cfps_ot2_protocol = protocol_directory / "cell_free_pd_ot2_v2.py"
         fdglu_flex_protocol = protocol_directory / "pd_fdglu_flex_v2.py"
         run_hidex = run_directory / "run_hidex.yaml"
-        run_hidex_sybr = run_directory / "run_hidex_sybr.yaml"
         ot2_rmf_removal_protocol = protocol_directory / "pd_fdglu_ot2_rmf_removal.py"
 
 

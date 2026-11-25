@@ -273,28 +273,20 @@ class MasterPDApp(ExperimentApplication):
             run_flex_wf.resolve(),
             file_inputs={"flex_protocol": (protocol_dir / "pcr_A4_to_C1.py").resolve()},
         )
-        self.workcell_client.submit_workflow((transfers_dir / "controls_to_flex.yaml").resolve())
-        self.workcell_client.submit_workflow(
-            run_flex_wf.resolve(),
-            file_inputs={"flex_protocol": (protocol_dir / "pcr_A4_to_B1.py").resolve()},
-        )
-        self.workcell_client.submit_workflow((transfers_dir / "sybrgreen_to_flex.yaml").resolve())
-        self.workcell_client.submit_workflow(
-            run_flex_wf.resolve(),
-            file_inputs={"flex_protocol": (protocol_dir / "pcr_A4_to_C2.py").resolve()},
-        )
+        # This version: no SYBR plate to Flex C2, and the controls plate skips Flex B1
+        # (it goes straight from the rack to the OT-2 before the OT-2 dilution).
         wait_minutes(self.TEMP_EQ_MIN, "Flex temp block equilibration before Detect/Dilute")
 
-        # Flex DD: water+sybrgreen (p1000, 2 col-tips) + dilution+pcr+controls (p50, 2*cols+1 col-tips)
-        self._check_flex_200ul(2 * TIPS_PER_COLUMN, transfers_dir)
-        self._check_flex_50ul((2 * cols + 1) * TIPS_PER_COLUMN, transfers_dir)
+        # Flex DD (SYBR Green removed): water (p1000, 1 col-tip) + dilution (p50, cols col-tips)
+        self._check_flex_200ul(1 * TIPS_PER_COLUMN, transfers_dir)
+        self._check_flex_50ul(cols * TIPS_PER_COLUMN, transfers_dir)
         self.workcell_client.submit_workflow(
             run_flex_wf.resolve(),
             file_inputs={"flex_protocol": (protocol_dir / "pd_dd_v2_flex.py").resolve()},
             payload=payload,
         )
-        self.tips_flex_200ul.use_cols(2)
-        self.tips_flex_50ul.use_cols(2 * cols + 1)
+        self.tips_flex_200ul.use_cols(1)
+        self.tips_flex_50ul.use_cols(cols)
 
         self.workcell_client.submit_workflow(
             run_flex_wf.resolve(),
@@ -303,6 +295,9 @@ class MasterPDApp(ExperimentApplication):
         self.workcell_client.submit_workflow((transfers_dir / "pcr_plate_to_ot2_block.yaml").resolve())
         self._push_plate("exchange_nest_low_narrow")
         self.workcell_client.submit_workflow((transfers_dir / "pcr_plate_to_ot2_block_2.yaml").resolve())
+
+        # Controls plate straight from rack1_row3_nest1 to OT-2 nest 1
+        self.workcell_client.submit_workflow((transfers_dir / "controls_rack_to_ot2.yaml").resolve())
 
         # OT-2 DD: water + pcr→water + controls (cols+2 col-tips)
         self._check_ot2_20ul((cols + 2) * TIPS_PER_COLUMN, transfers_dir, rack_count=1)
