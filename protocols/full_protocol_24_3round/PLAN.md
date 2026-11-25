@@ -172,6 +172,4 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 - [ ] **OT-2 trash**: about 620 used 20 µL tips over 3 rounds. Check that the OT-2 trash bin holds that many.
 - [ ] **Reagent volumes**: load at least the simulator totals above plus dead volume. On the fragments plate the
       simulator draws 108 µL per well from GG mix column 9 and 72 µL per well from each PCR mix column.
-- [ ] **`src/master_pd_experiment.py`** is still the single-run driver and refers to workflows this run no longer
-      uses. Decide: port it to 3 rounds, or delete it from this version.
 - [ ] Durations are estimates; real timings need `tools/export_madsci_history.py` on the lab network.
