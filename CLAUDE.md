@@ -11,7 +11,8 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
   `Protein_Design/full_protocol_24`, branch PD_full_loop, commit e4bc261 (2026-11-11). Treat it as read-only and
   make variants with `./new_version.sh <from> <to> "title"`; change it only when the user asks. It is no longer
   identical to e4bc261: `config/source.json` lists the local changes (2026-11-25: declare the parked controls
-  plate on OT-2 D1).
+  plate on OT-2 D1). It has `deck.json` and `contents.json` now, so the deck check and the liquid pages work
+  there too; its contents still include the SYBR Green reagent and controls column.
 - `tools/`: extract_events.py (AST-only parse of full_run.py, never executes it), build_player.py,
   player_template.html, export_madsci_history.py. `tests/make_synthetic_history.py` makes FAKE data for testing only.
 
