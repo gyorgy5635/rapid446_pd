@@ -50,6 +50,7 @@ def collect_ot2_replacement_variables(payload: dict) -> dict:
     # 3-round run: round-specific values ($round_num, $pcr_mm_start_well) and the starting tips of this run
     replacement_dict.update(payload.get("round_vars", {}))
     replacement_dict.update(payload.get("tip_starts", {}))
+    replacement_dict.update(payload.get("swap_vars", {}))
     return replacement_dict
 
 
@@ -78,8 +79,10 @@ class TipLedger:
     spares: full boxes waiting in Flex staging slots; swap() puts one in place of the current box.
     """
 
-    def __init__(self, name, racks, unit="column", spares=0):
-        self.name, self.racks, self.unit, self.spares = name, racks, unit, spares
+    def __init__(self, name, racks, unit="column", spare_slots=(), tip_type=None, deck_slot=None):
+        self.name, self.racks, self.unit = name, racks, unit
+        self.spare_slots = list(spare_slots)   # staging slots holding full boxes, used in order
+        self.tip_type, self.deck_slot = tip_type, deck_slot
         self.per_rack = 12 if unit == "column" else 96
         self.used = 0
 
@@ -90,14 +93,20 @@ class TipLedger:
     def remaining(self):
         return self.capacity - self.used
 
+    @property
+    def spares(self):
+        return len(self.spare_slots)
+
     def needs_swap(self, n):
-        return n > self.remaining() and self.spares > 0
+        return n > self.remaining() and self.spare_slots
 
     def swap(self):
-        if self.spares <= 0:
+        """Take the next spare box; returns the $variables for flex_tips_swap.py."""
+        if not self.spare_slots:
             raise RuntimeError(f"{self.name}: no spare tip box left to swap in")
-        self.spares -= 1
+        spare = self.spare_slots.pop(0)
         self.used = 0
+        return {"tip_type": self.tip_type, "deck_slot": self.deck_slot, "spare_slot": spare}
 
     def take(self, n):
         if n > self.remaining():

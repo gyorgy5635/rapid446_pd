@@ -41,7 +41,7 @@ config = {
 }
 
 # 3-round run: 50 uL 8-channel tip boxes, in the order the tip counter in full_run.py uses them (12 columns each).
-FLEX50_TIP_SLOTS = ['A2', 'C2', 'C3']
+FLEX50_TIP_SLOTS = ['A2']          # one 8-channel 50 uL box on deck; spares wait in staging and are swapped in by the gripper
 FLEX50_TIP_START = int("$flex50_tip_start")
 
 

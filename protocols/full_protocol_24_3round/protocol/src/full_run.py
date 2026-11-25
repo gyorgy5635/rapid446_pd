@@ -383,7 +383,7 @@ class PDApp(ExperimentScript,): # TODO
         dilution_ot2_protocol = protocol_directory / "pd_dilute_1to50_ot2.py"
         cfps_lyo_flex_protocol = protocol_directory / "cell_free_lyo_flex.py"
         fdglu_flex_protocol = protocol_directory / "pd_fdglu_flex_v2.py"
-        flex_tips_200_swap = protocol_directory / "flex_tips_200_swap.py"
+        flex_tips_swap = protocol_directory / "flex_tips_swap.py"
 
         # Flex gripper moves (A4 is the PF400 handoff)
         A4_to_B1 = protocol_directory / "pcr_A4_to_B1.py"
@@ -400,12 +400,32 @@ class PDApp(ExperimentScript,): # TODO
         # TIP PLAN ===============================================================
         # Every Opentrons run starts with fresh tip tracking, so the first tip of each run is counted
         # here and passed into the protocol. Rack order must match the TIP slots in the protocols.
+        # Only A1 (200 uL), A2 (50 uL 8-channel) and A3 (50 uL single) hold tip boxes on the Flex deck: a tall box in
+        # C2/C3 blocks single-tip moves to B2/B3 (PartialTipMovementNotAllowedError). Spares wait in staging slots and
+        # the gripper swaps them in, dropping the empty box down the waste chute.
         tips = {
-            "ot2_20": helper_functions.TipLedger("OT-2 20 uL", racks=7),               # D3 D2 C2 B1 B2 B3 A2
-            "flex_200": helper_functions.TipLedger("Flex 200 uL", racks=1, spares=1),  # A1, full spare on staging B4
-            "flex_50": helper_functions.TipLedger("Flex 50 uL 8-channel", racks=3),    # A2 C2 C3
+            "ot2_20": helper_functions.TipLedger("OT-2 20 uL", racks=7),  # D3 D2 C2 B1 B2 B3 A2
+            "flex_200": helper_functions.TipLedger(
+                "Flex 200 uL", racks=1, tip_type="opentrons_flex_96_tiprack_200ul",
+                deck_slot="A1", spare_slots=["D4"]),
+            "flex_50": helper_functions.TipLedger(
+                "Flex 50 uL 8-channel", racks=1, tip_type="opentrons_flex_96_tiprack_50ul",
+                deck_slot="A2", spare_slots=["B4", "C4"]),
             "flex_50_single": helper_functions.TipLedger("Flex 50 uL single", racks=1, unit="tip"),  # A3
         }
+
+        def swap_tip_box(ledger):
+            """Gripper swap: empty box to the waste chute, full spare from staging onto the deck slot."""
+            payload["swap_vars"] = ledger.swap()
+            payload["current_flex_protocol"] = helper_functions.generate_ot2_protocol(
+                flex_tips_swap, helper_functions.collect_ot2_replacement_variables(payload))
+            self.workcell_client.submit_workflow(
+                run_flex_wf.resolve(),
+                file_inputs={
+                    "flex_protocol": payload["current_flex_protocol"],
+                },
+            )
+            payload["swap_vars"] = {}
 
         payload = {}
         oracle_id = 1008  # design used for round 1; later rounds use the id returned by the previous upload
@@ -522,14 +542,7 @@ class PDApp(ExperimentScript,): # TODO
 
             # PCR master mix (column 9 + round) into the PCR plate: 1 column of 200 uL tips per sample column
             if tips["flex_200"].needs_swap(n_cols):
-                payload["current_flex_protocol"] = flex_tips_200_swap
-                workflow = self.workcell_client.submit_workflow(
-                    run_flex_wf.resolve(),
-                    file_inputs={
-                        "flex_protocol": payload["current_flex_protocol"],
-                    },
-                )
-                tips["flex_200"].swap()
+                swap_tip_box(tips["flex_200"])
 
             payload["tip_starts"] = {"flex200_tip_start": tips["flex_200"].take(n_cols)}
             ot2_replacement_variables = helper_functions.collect_ot2_replacement_variables(payload)
@@ -681,6 +694,9 @@ class PDApp(ExperimentScript,): # TODO
             self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
 
             # 24 uL water into columns 1-4 (one tip column), then per column: mix diluted PCR, add 6 uL, mix 5 x 20 uL slowly
+            if tips["flex_50"].needs_swap(n_cols + 2):
+                swap_tip_box(tips["flex_50"])
+
             payload["tip_starts"] = {"flex50_tip_start": tips["flex_50"].take(n_cols + 2)}
             ot2_replacement_variables = helper_functions.collect_ot2_replacement_variables(payload)
             temp_ot2_file_str = helper_functions.generate_ot2_protocol(cfps_lyo_flex_protocol, ot2_replacement_variables)
@@ -806,14 +822,9 @@ class PDApp(ExperimentScript,): # TODO
 
             # FDGlu assay: 1 column of 200 uL tips, (n_cols + 1) columns of 50 uL, 6 single 50 uL tips
             if tips["flex_200"].needs_swap(1):
-                payload["current_flex_protocol"] = flex_tips_200_swap
-                workflow = self.workcell_client.submit_workflow(
-                    run_flex_wf.resolve(),
-                    file_inputs={
-                        "flex_protocol": payload["current_flex_protocol"],
-                    },
-                )
-                tips["flex_200"].swap()
+                swap_tip_box(tips["flex_200"])
+            if tips["flex_50"].needs_swap(n_cols + 1):
+                swap_tip_box(tips["flex_50"])
 
             payload["tip_starts"] = {
                 "flex200_tip_start": tips["flex_200"].take(1),

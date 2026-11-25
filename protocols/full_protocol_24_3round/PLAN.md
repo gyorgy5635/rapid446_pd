@@ -56,21 +56,29 @@ Every used plate goes back to the nest it came from, so nothing collides between
 **OT-2**: C1 cold block (fragments / PCR plate), C3 cold block (GG / dilution plate), D1 controls plate during the
 dilution only, A1 reservoir, 20 µL tips on D3, D2, C2, B1, B2, B3, A2 (7 racks, loaded at the start).
 
-**Flex**: A1 200 µL tips, A2 + C2 + C3 50 µL tips (8-channel), A3 50 µL tips (single-tip only), B1 cold block,
-C1 cold block, B2 cell-free plate, B3 FDGlu plate, D1 heater-shaker, D2 reservoir, D3 waste chute, A4 PF400 handoff,
-**B4 spare full 200 µL box, C4 empty** (landing spot for a swap).
+**Flex**: A1 200 µL tips, A2 50 µL tips (8-channel), A3 50 µL tips (single-tip only), B1 cold block, C1 cold block,
+B2 cell-free plate, B3 FDGlu plate, D1 heater-shaker, D2 reservoir, D3 waste chute, A4 PF400 handoff,
+staging **B4 + C4 spare 50 µL boxes, D4 spare 200 µL box**.
+
+Only A1-A3 hold tip boxes: the simulator rejects a box in C2 or C3, because with a single-tip (partial nozzle)
+configuration the pipette would collide with it on the way to B2/B3 (`PartialTipMovementNotAllowedError`). Spares
+therefore wait in staging, and `flex_tips_swap.py` has the gripper drop the empty box down the waste chute and put
+the spare in its place, between protocol runs.
 
 ## Tip plan (24 combinations per round)
 
-| Tips | Per round | 3 rounds | On deck | Margin |
-|---|---|---|---|---|
-| OT-2 20 µL | 26 columns (GG 3 + 12 singles, PCR 6, dilution 5) | 78 columns | 7 racks = 84 columns | 6 columns |
-| Flex 200 µL | 4 columns (PCR mix 3, FDGlu 1) | 12 columns | A1 = 12 columns, + spare on B4 | 0, spare covers it |
-| Flex 50 µL 8-channel | 9 columns (cell-free 5, FDGlu 4) | 27 columns | A2 + C2 + C3 = 36 columns | 9 columns |
-| Flex 50 µL single | 6 tips (FDGlu) | 18 tips | A3 = 96 tips | 78 tips |
+Counted by the simulator over the whole 3-round run (24 combinations), not estimated:
 
-So **no tip-box swapping is needed** for 3 rounds of up to 24 combinations, provided the extra boxes are on deck at the
-start. `full_run.py` counts tips (`TipLedger` in `helper_functions.py`) and passes the first unused tip into each
+| Tips | Per round | 3 rounds | Boxes | Margin |
+|---|---|---|---|---|
+| OT-2 20 µL | 208 tips (GG 120, PCR 48, dilution 40) | 624 tips | 7 racks on deck = 672 | 48 tips |
+| Flex 200 µL (A1) | 32 tips (PCR mix 24, FDGlu 8) | 96 tips | exactly 1 box; spare on D4 unused | 0 |
+| Flex 50 µL 8-channel (A2) | 72 tips (cell-free 40, FDGlu 32) | 216 tips | 1 on deck + 2 spares, 2 gripper swaps | 72 tips |
+| Flex 50 µL single (A3) | 6 tips (FDGlu) | 18 tips | 1 box | 78 tips |
+
+The OT-2 needs **no** tip-box swapping: 7 racks cover all 3 rounds. On the Flex the 8-channel 50 µL box is swapped
+twice by the gripper (during rounds 2 and 3). The 200 µL box comes out exactly full at 96 tips, so the D4 spare is
+there for the case where a round has more combinations. `full_run.py` counts tips (`TipLedger` in `helper_functions.py`) and passes the first unused tip into each
 protocol (`$ot2_tip_start`, `$flex200_tip_start`, `$flex50_tip_start`, `$flex50_single_start`). If a 200 µL step would
 run past the A1 box, the Flex gripper swaps in the B4 spare (`flex_tips_200_swap.py`, A1 → C4, B4 → A1; no PF400).
 If any other box would run out, the run stops with an error instead of crashing a pipette.
@@ -89,6 +97,33 @@ If any other box would run out, the run stops with an error instead of crashing 
 | `flex_tips_200_swap.py`, `pcr_B2_to_A4.py` | **New** Flex gripper moves. |
 | `helper_functions.py` | `TipLedger`, `combination_counts`, round/tip variables passed into protocols. |
 | `workflows/transfers/*.yaml`, `rounds/*_r{1,2,3}.yaml` | New transfers for the cold block, resealing, returning plates; one file per round where the nest differs. |
+
+## Simulation (real Opentrons simulator)
+
+`tools/simulate_protocols.py` renders every protocol exactly as `full_run.py` would for all 3 rounds (combinations
+from `incoming/combinations_oracle_1008.json`, the round's master-mix column, the tip start positions) and runs the
+Opentrons simulator on each, then reports tips and liquid from the command log. Two virtualenvs are needed, because
+the Flex needs a recent opentrons and OT-2 support was dropped after 9.x:
+
+    python3 -m venv /tmp/otenv  && /tmp/otenv/bin/pip  install opentrons
+    python3 -m venv /tmp/ot2env && /tmp/ot2env/bin/pip install 'opentrons==8.8.2'
+    python3 -I tools/simulate_protocols.py --version full_protocol_24_3round \
+        --flex-python /tmp/otenv/bin/python --ot2-python /tmp/ot2env/bin/python
+
+Current result: **20/20 runs simulate, no overfilled well, no tip box run dry.** The fullest well in any run is the
+FDGlu plate at 140 µL of 360 µL. It found two real errors, both now fixed: tip boxes in C2/C3 collided with
+single-tip moves (see the Flex layout), and the GG and PCR plates disagreed about labware.
+
+### Reagents to load (simulator totals for 3 rounds, before dead volume)
+
+| Reservoir | Well | Total |
+|---|---|---|
+| OT-2 slot A1 | A1 (water) | 8.5 mL |
+| Flex D2 | A1 (water, cell-free) | 2.3 mL |
+| Flex D2 | A6 (FDGlu substrate) | 9.6 mL |
+| Flex D2 | A12 | receives the removed RMF |
+
+A 12-well reservoir holds 15 mL per well, so each fits, but the FDGlu well at 9.6 mL has the least room to spare.
 
 ## Checks the run map now does
 
@@ -127,11 +162,8 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
       tough plate before the PF400 moves one.
 - [ ] **Lyophilized cell-free plate**: confirm the plates really are tough plates (`cell_free_lyo_flex.py` assumes so).
 - [ ] **OT-2 trash**: about 620 used 20 µL tips over 3 rounds. Check that the OT-2 trash bin holds that many.
-- [ ] **Reagent volumes**: OT-2 reservoir well 1 water ≥ 10 mL (dilution 7 mL + PCR 1.4 mL); Flex reservoir water
-      ≥ 2.5 mL and FDGlu substrate (column 6) ≥ 10 mL; GG mix column 9 ≥ 108 µL per well + dead volume;
-      PCR mix columns 10-12 ≥ 72 µL per well + dead volume.
-- [ ] **Simulation**: no protocol has been run through `opentrons_simulate` yet (the opentrons package is not
-      installed here).
+- [ ] **Reagent volumes**: load at least the simulator totals above plus dead volume. On the fragments plate the
+      simulator draws 108 µL per well from GG mix column 9 and 72 µL per well from each PCR mix column.
 - [ ] **`src/master_pd_experiment.py`** is still the single-run driver and refers to workflows this run no longer
       uses. Decide: port it to 3 rounds, or delete it from this version.
 - [ ] Durations are estimates; real timings need `tools/export_madsci_history.py` on the lab network.

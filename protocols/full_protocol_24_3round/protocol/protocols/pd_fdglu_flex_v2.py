@@ -81,7 +81,7 @@ config = {
 }
 
 # 3-round run: tip boxes and start positions, counted by full_run.py (each Opentrons run starts fresh).
-FLEX50_TIP_SLOTS = ['A2', 'C2', 'C3']          # 8-channel 50 uL boxes, 12 columns each
+FLEX50_TIP_SLOTS = ['A2']          # one 8-channel 50 uL box on deck; spares wait in staging and are swapped in by the gripper
 FLEX50_TIP_START = int("$flex50_tip_start")
 FLEX50_SINGLE_SLOT = 'A3'                      # 50 uL box used only for single-tip pickups
 FLEX50_SINGLE_START = int("$flex50_single_start")
