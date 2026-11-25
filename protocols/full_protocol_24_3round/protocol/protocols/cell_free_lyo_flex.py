@@ -27,7 +27,7 @@ config = {
     'water_well': 1,               # reservoir well (1-indexed)
 
     # Labware
-    # TODO: confirm the lyophilized plates are the same Opentrons tough plate (offsets below assume it)
+    # lyophilized reagents come in the same Opentrons tough plate (confirmed 2026-11-25)
     'cfps_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
     'diluted_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
     'reagent_plate_type': 'nest_12_reservoir_15ml',

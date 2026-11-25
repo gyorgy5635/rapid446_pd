@@ -145,6 +145,7 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 - Rack 2's nests are named like rack 1's: `rack2_row1_nest1`, which is what the workflows already use.
 - The single-run variant `full_protocol_24_20261124` is ported to the tough plate as well. The baseline
   `full_protocol_24` keeps its `protocol/` untouched: it is a working copy used in previous runs.
+- The lyophilized cell-free plates are tough plates too, so every plate in this run is the same labware.
 
 ## Assumptions I made (please confirm or correct)
 
@@ -168,7 +169,6 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
       like rack 1 (`rack2_row1_nest1`), which is what the workflows assume.
 - [ ] **Offsets for the new tip slots**: the plate offsets are unchanged and proven, but a labware position check is
       still needed for OT-2 tips on D2, C2, B1, B2, B3, A2 and Flex tips on A3 (and the staging spares B4, C4, D4).
-- [ ] **Lyophilized cell-free plate**: confirm the plates really are tough plates (`cell_free_lyo_flex.py` assumes so).
 - [ ] **OT-2 trash**: about 620 used 20 µL tips over 3 rounds. Check that the OT-2 trash bin holds that many.
 - [ ] **Reagent volumes**: load at least the simulator totals above plus dead volume. On the fragments plate the
       simulator draws 108 µL per well from GG mix column 9 and 72 µL per well from each PCR mix column.

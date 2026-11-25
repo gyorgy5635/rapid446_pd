@@ -26,7 +26,8 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
 
 ## Confirmed by the user (2026-11-25)
 - Opentrons tough plate, catalog 991-00076, has run the _24 protocol for >8 rounds; existing offsets and PF400 grip
-  attributes work with it. `full_protocol_24_20261124` and `_3round` use it everywhere; FDGlu stays Corning flat.
+  attributes work with it. `full_protocol_24_20261124` and `_3round` use it everywhere, including the lyophilized cell-free plates; FDGlu
+  stays Corning flat.
 - `full_protocol_24`'s `protocol/` must stay untouched: it is the working copy used in previous runs (its `config/`
   still tracks workcell changes).
 - `cold_block_ext` keeps that name for now; rack 2 nests are `rack2_row1_nest1` style.
