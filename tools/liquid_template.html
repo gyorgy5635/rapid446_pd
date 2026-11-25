@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liquid handling</title>
+<style>
+:root {
+  --bg: #11131a; --panel: #181b24; --ink: #e8eaf0; --muted: #959cb0; --line: #2a2f3d; --slot: #1f2430;
+  --accent: #6ea8fe; --accent-soft: #1b2a44; --warn: #f0b429;
+  --c0: #7a8396; --c1: #6ea8fe; --c2: #7ee3a8; --c3: #f5a3c7; --c4: #f0b429;
+  --c5: #b79cff; --c6: #5fd4d6; --c7: #ff9f7a; --c8: #9fe06a; --c9: #e86a8a;
+  --f-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f6f7fb; --panel: #ffffff; --ink: #1b1f2a; --muted: #5d6478; --line: #dde1ea; --slot: #eef1f7;
+    --accent: #2563eb; --accent-soft: #e3ecfd;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 20px 16px 48px; background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 14px; line-height: 1.45; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 16px; }
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+h1 { font-size: 1.4rem; margin: 0; }
+.sub { color: var(--muted); font-size: 0.85rem; }
+a { color: var(--accent); }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 20px; font-variant-numeric: tabular-nums; }
+.stats div { display: grid; }
+.stats b { font-size: 1.2rem; font-weight: 600; }
+.stats span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+  min-width: 0; overflow: hidden; }
+h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 0 0 10px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 12px; }
+.lw { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.lw h3 { margin: 0; font-size: 0.95rem; }
+.lw .meta { color: var(--muted); font-size: 0.75rem; font-family: var(--f-mono); }
+.wellmap { width: 100%; height: auto; display: block; margin-top: 6px; }
+.wellmap .w { stroke: var(--line); stroke-width: 0.6; fill: var(--slot); }
+.wellmap .lab { font-family: var(--f-mono); font-size: 3.1px; fill: var(--muted); }
+.wellmap .used { stroke: var(--accent); stroke-width: 0.8; }
+.key { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.72rem; color: var(--muted); margin-top: 8px; }
+.key i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 4px; vertical-align: -1px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+th { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.05em; padding: 4px 8px; position: sticky; top: 0; background: var(--panel); }
+td { padding: 3px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+td.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--muted); }
+td.t { font-family: var(--f-mono); overflow-wrap: anywhere; }
+.k { font-family: var(--f-mono); font-size: 0.7rem; }
+.k.aspirate { color: var(--c7); } .k.dispense { color: var(--c2); } .k.pick_up_tip { color: var(--c1); }
+.k.drop_tip { color: var(--c0); } .k.mix { color: var(--c5); } .k.transfer { color: var(--muted); }
+.scroll { max-height: clamp(260px, 56vh, 620px); overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-gutter: stable; margin: 0 -16px -14px; border-top: 1px solid var(--line); }
+.hint { color: var(--muted); font-size: 0.8rem; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; background: var(--panel);
+  cursor: pointer; font-size: 0.76rem; color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 id="title">Liquid handling</h1>
+      <div class="sub" id="sub"></div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <section class="card">
+    <h2>Labware</h2>
+    <p class="hint" style="margin-top:0">Wells the protocol fills are shaded by how much ends up in them; a blue
+      ring marks a well it draws from. Colours on a starting reagent follow the run map. Volumes are what the
+      protocol asks for, netted from the simulated commands: the simulator does not track what is really in a well.</p>
+    <div class="grid" id="labware"></div>
+  </section>
+
+  <section class="card">
+    <h2>Commands</h2>
+    <div class="filters" id="filters"></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>#</th><th>Step</th><th>µL</th><th>Well</th><th>Slot</th><th>Command</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+const RUN = /*__RUN__*/null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const ROWS = "ABCDEFGH";
+
+document.title = `R${RUN.round} ${RUN.protocol} · liquid handling`;
+$("title").textContent = RUN.protocol.replace(/\.py$/, "");
+$("sub").innerHTML = `Round ${RUN.round} · ${esc(RUN.robot)} · ${esc(RUN.version)} · `
+  + `<a href="../pd_run_map.html">back to the run map</a>`;
+$("stats").innerHTML = [
+  [RUN.counts.commands, "commands"], [RUN.counts.tips, "tips used"], [RUN.counts.wells, "wells touched"],
+].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
+
+const reagentColor = (r) => `var(--c${(RUN.reagents[r] || {}).color || 0})`;
+
+// Shade a well by how full it ends up, relative to the fullest well on that labware.
+function shade(net, max) {
+  if (net <= 0) return null;
+  const f = Math.max(0.18, Math.min(1, net / (max || 1)));
+  return `color-mix(in srgb, var(--accent) ${Math.round(f * 100)}%, var(--slot))`;
+}
+
+$("labware").innerHTML = RUN.cards.map(lw => {
+  const pad = 7, cw = 7.4, ch = lw.rows === 1 ? 20 : 7.4;
+  const w = pad * 2 + lw.cols * cw, h = pad * 2 + lw.rows * ch + 4;
+  const maxNet = Math.max(0, ...Object.values(lw.wells).map(v => v.net));
+  let svg = "";
+  for (let c = 1; c <= lw.cols; c++) {
+    svg += `<text class="lab" x="${pad + (c - 0.5) * cw}" y="${pad - 1.5}" text-anchor="middle">${c}</text>`;
+    for (let r = 0; r < lw.rows; r++) {
+      const name = `${ROWS[r]}${c}`, v = lw.wells[name], start = lw.start[name];
+      const cx = pad + (c - 0.5) * cw, cy = pad + 2 + (r + 0.5) * ch;
+      let fill = null, tip = `${name} · untouched`;
+      if (lw.is_tips) {
+        const used = lw.tip_wells.includes(name);
+        fill = used ? "var(--c0)" : null;
+        tip = `${name} · ${used ? "tip used" : "tip unused"}`;
+      } else if (v) {
+        fill = shade(v.net, maxNet) || (start ? reagentColor(start.reagent) : null);
+        tip = `${name} · in ${v.in} µL, out ${v.out} µL, net ${v.net} µL`
+            + (start ? ` · starts with ${esc((RUN.reagents[start.reagent] || {}).label || start.reagent)}` : "");
+      } else if (start) {
+        fill = reagentColor(start.reagent);
+        tip = `${name} · ${esc((RUN.reagents[start.reagent] || {}).label || start.reagent)}, not used here`;
+      }
+      const cls = "w" + (v && v.out > 0 ? " used" : "");
+      const style = fill ? ` style="fill:${fill}"` : "";
+      svg += lw.rows === 1
+        ? `<rect class="${cls}" x="${cx - cw / 2 + 0.7}" y="${pad + 2}" width="${cw - 1.4}" height="${ch - 1.4}" rx="1.2"${style}><title>${tip}</title></rect>`
+        : `<circle class="${cls}" cx="${cx}" cy="${cy}" r="${cw / 2 - 0.9}"${style}><title>${tip}</title></circle>`;
+    }
+  }
+  const meta = lw.is_tips
+    ? `${lw.tips} tips in ${lw.pickups} pick-ups`
+    : `${Object.keys(lw.wells).length} wells touched`;
+  const key = lw.is_tips ? `<span><i style="background:var(--c0)"></i>used</span>`
+    : `<span><i style="background:var(--accent)"></i>ends with liquid</span><span><i style="border:1px solid var(--accent);background:transparent"></i>drawn from</span>`;
+  return `<div class="lw">
+    <h3>${esc(lw.name)}</h3>
+    <div class="meta">slot ${esc(lw.slot)} · ${esc(lw.load_name)} · ${meta}</div>
+    <svg class="wellmap" viewBox="0 0 ${w} ${h}" role="img" aria-label="Wells of ${esc(lw.name)}">${svg}</svg>
+    <div class="key">${key}</div>
+  </div>`;
+}).join("");
+
+const KINDS = [...new Set(RUN.commands.map(c => c.k))];
+let hidden = new Set();
+$("filters").innerHTML = KINDS.map(k =>
+  `<button class="chip" aria-pressed="true" data-k="${k}">${k.replace(/_/g, " ")}</button>`).join("");
+$("filters").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  const k = b.dataset.k;
+  hidden.has(k) ? hidden.delete(k) : hidden.add(k);
+  b.setAttribute("aria-pressed", !hidden.has(k));
+  draw();
+});
+
+function draw() {
+  $("rows").innerHTML = RUN.commands.map((c, i) => [c, i])
+    .filter(([c]) => !hidden.has(c.k))
+    .map(([c, i]) => `<tr><td class="n">${i + 1}</td><td><span class="k ${c.k}">${c.k.replace(/_/g, " ")}</span></td>`
+      + `<td class="n">${c.v == null ? "" : c.v}</td><td class="n">${esc(c.w)}</td><td class="n">${esc(c.s)}</td>`
+      + `<td class="t">${esc(c.t)}</td></tr>`).join("");
+}
+draw();
+</script>
+</body>
+</html>

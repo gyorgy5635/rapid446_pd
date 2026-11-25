@@ -16,6 +16,7 @@ def main():
     ap.add_argument("--layout", type=Path, required=True)
     ap.add_argument("--template", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--liquid", type=Path, help="folder of built liquid-handling pages, linked when present")
     a = ap.parse_args()
 
     def compact(path):
@@ -27,6 +28,8 @@ def main():
         if marker not in html:
             raise SystemExit(f"marker {marker} missing from template")
         html = html.replace(marker, compact(path))
+    keys = sorted(p.stem for p in a.liquid.glob("*.html")) if a.liquid and a.liquid.is_dir() else []
+    html = html.replace("/*__LIQUID__*/null", json.dumps(keys, separators=(",", ":")))
     a.out.write_text(html)
     print(f"wrote {a.out} ({len(html) / 1024:.0f} KB)")
 

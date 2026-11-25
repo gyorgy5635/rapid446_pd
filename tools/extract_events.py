@@ -579,8 +579,10 @@ class Extractor:
             est = self.dur["protocols"].get(pname, self.dur["protocols"]["_default"])
             label = self.dur.get("protocol_labels", {}).get(pname, pname)
             deck = sorted(p for loc, p in self.state.items() if loc.startswith(node))
+            # which tracked plate is on which deck slot, so the liquid-handling page can name them
+            deck_plates = self.robot_slots(node) if self.deck is not None else None
             self.add_step(line, call_id, kind="protocol", mover=node, node=node, action="run_protocol",
-                          protocol=pname, detail=label, plates=deck,
+                          protocol=pname, detail=label, plates=deck, deck_plates=deck_plates or None,
                           duration=est + delay, dsrc="code" if delay else "estimate")
             return
         # any other instrument action

@@ -155,6 +155,16 @@ well map per labware:
 Everything else starts empty and is listed in `empty_at_start`, so the extractor can warn when a
 plate is neither described nor declared empty.
 
+## Liquid-handling pages
+
+After simulating, `./build.sh` writes a page per protocol run under `viz/liquid/`, linked from each
+protocol step in the run map. Phase 1 is static: per-plate well maps, tip use per box, and the full
+command list. The numbers come straight from the simulated run, so for example the round 1 dilution
+page shows 24 wells drawn from the PCR plate, 32 wells filled in the dilution plate (24 samples plus
+the controls column), 40 tips from two boxes, and 106 commands.
+
+Still to come: phase 2 adds a scrubber and animation, phase 3 liquid identity and mixing.
+
 ## Checks the run map now does
 
 `./build.sh` follows the round loop (3 iterations) and tracks every plate. For this version (it has `config/deck.json`)

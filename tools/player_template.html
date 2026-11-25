@@ -287,6 +287,13 @@ svg.mini { width: 100%; height: auto; display: block; }
 <script>
 const EV = /*__EVENTS__*/null;
 const LAYOUT_FILE = /*__LAYOUT__*/null;
+// Liquid-handling pages, built from the Opentrons simulation; empty when it has not been run.
+const LIQUID = /*__LIQUID__*/null;
+const liquidKey = (st) => st && st.protocol ? `r${roundOf(st) || 1}_${st.protocol.replace(/\.py$/, "")}` : null;
+const liquidHref = (st) => {
+  const k = liquidKey(st);
+  return LIQUID && k && LIQUID.includes(k) ? `liquid/${k}.html` : null;
+};
 const REPO_URL = EV.meta.script_url;  // null for a local variant: line numbers are shown without links
 const srcLink = (line, text) => REPO_URL ? `<a href="${REPO_URL}#L${line}" target="_blank" rel="noopener">${text}</a>` : text;
 const CELL = { w: 78, h: 58 }, PL = { w: 62, h: 42 }, PAD = 14, TOP = 48;
@@ -958,7 +965,8 @@ function updateUI() {
       <dl>
         ${call ? `<dt>Workflow</dt><dd><code>${esc(call.workflow)}</code></dd>` : ""}
         ${gripOf(st) ? `<dt>Grip</dt><dd>${gripText(st)}</dd>` : ""}
-        ${st.protocol ? `<dt>Protocol</dt><dd><code>${esc(st.protocol)}</code></dd>` : ""}
+        ${st.protocol ? `<dt>Protocol</dt><dd><code>${esc(st.protocol)}</code>${liquidHref(st)
+            ? ` <a class="src-tag code" href="${liquidHref(st)}">liquid handling →</a>` : ""}</dd>` : ""}
         ${call && call.caption ? `<dt>Script note</dt><dd>${esc(call.caption)}</dd>` : ""}
         <dt>Source</dt><dd>${srcLink(st.line, `full_run.py line ${st.line}`)}</dd>
         <dt>Duration</dt><dd>~${fmtDur(st.duration_s)}<span class="src-tag ${st.duration_source !== "estimate" ? "code" : ""}">${SRC_LABEL[st.duration_source] || st.duration_source}${st.measured_runs > 1 ? ` · median of ${st.measured_runs} runs` : ""}</span>${st.wait_before_s ? `<br><span class="hint">plus ${fmtDur(st.wait_before_s)} waiting before this workflow started</span>` : ""}${st.hold_note ? `<br><span class="hint">${esc(st.hold_note)}</span>` : ""}</dd>

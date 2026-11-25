@@ -130,6 +130,18 @@ python3 -I tools/simulate_protocols.py --version full_protocol_24_3round \
 Rendered protocols and `report.json` land in `protocols/<version>/viz/simulated/` (not committed).
 `incoming/combinations_oracle_1008.json` is a real design-server payload, used as the default input.
 
+## Liquid-handling pages
+Once a version has been simulated, `./build.sh` also writes one page per protocol run to
+`protocols/<version>/viz/liquid/` (not committed) with `tools/build_liquid_player.py`. Each page
+shows the labware that run touches, a well map per plate (shaded by how much liquid ends up in each
+well, ringed where the protocol draws from it), which tips came out of which box, and the full
+command list with a filter per command type. Starting contents come from `config/contents.json`.
+
+The run map links to them: a protocol step's "Protocol" line gets a **liquid handling →** link when
+the page exists, so a run that has not been simulated simply shows no link. Volumes are what the
+protocol asks for, netted from the simulated commands — the simulator does not track what is really
+in a well.
+
 ## Known limits
 - Durations are placeholders until a MADSci history export is added, except the 150 min CFPS
   incubation (from `pcr_A4_to_D1.py`).

@@ -18,6 +18,10 @@ for name in "${names[@]}"; do
   hist=()
   [[ -f "$v/viz/madsci_history.json" ]] && hist=(--history "$v/viz/madsci_history.json")
   python3 -I tools/extract_events.py --app "$v/protocol" --config "$v/config" --out "$v/viz/events.json" "${hist[@]}"
+  # liquid-handling pages, only when tools/simulate_protocols.py has been run for this version
+  if [[ -f "$v/viz/simulated/report.json" ]]; then
+    python3 -I tools/build_liquid_player.py --version "$name"
+  fi
   python3 -I tools/build_player.py --events "$v/viz/events.json" --layout "$v/config/layout.json" \
-    --template tools/player_template.html --out "$v/viz/pd_run_map.html"
+    --template tools/player_template.html --out "$v/viz/pd_run_map.html" --liquid "$v/viz/liquid"
 done
