@@ -42,14 +42,15 @@ Temperature modules are switched on once at the start and off after round 3.
 | Location | Holds |
 |---|---|
 | `cold_block_ext` (TODO real name) | Fragments plate, sealed, all rounds |
-| `rack2_row1_nest1` (TODO real name) | Controls plate, reused every round |
+| `rack2_row1_nest1` | Controls plate, reused every round (rack2 is the second 5 × 3 nest rack) |
 | `rack1_row1_nest{n}` | Golden Gate plate, round n |
 | `rack1_row2_nest{n}` | PCR plate, round n |
 | `rack1_row3_nest{n}` | Dilution plate, round n |
 | `rack1_row4_nest{n}` | Lyophilized cell-free plate, round n |
 | `rack1_row5_nest{n}` | FDGlu assay plate, round n |
 
-Every used plate goes back to the nest it came from, so nothing collides between rounds.
+Every used plate goes back to the nest it came from, so nothing collides between rounds. Rack 1 is full (15 nests);
+rack 2 holds the controls plate in row 1 nest 1 and has 14 free nests for spares or a fourth round.
 
 ## Deck layouts
 
@@ -152,8 +153,9 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 
 ## Open items before a real run
 
-- [ ] **MADSci**: create the cooling-block location and the controls nest, teach the PF400, replace the placeholder
-      names `cold_block_ext` and `rack2_row1_nest1` (in `workflows/transfers/*.yaml`, `full_run.py`, `config/`).
+- [ ] **MADSci**: create the cooling-block location and teach the PF400; replace the placeholder name
+      `cold_block_ext` (in `workflows/transfers/*.yaml`, `full_run.py`, `config/`). Confirm rack 2's nests are named
+      like rack 1 (`rack2_row1_nest1`), which is what the workflows assume.
 - [ ] **Offsets (now needed for every plate)**: all PCR plates changed from the NEST 100 µL to the Opentrons 200 µL
       tough plate, so the `set_offset` values carried over from the single run no longer apply. Run a labware
       position check for every plate slot, plus OT-2 tips on D2, C2, B1, B2, B3, A2 and Flex tips on C2, C3, A3, B4.

@@ -15,8 +15,10 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
 
 ## Workcell facts confirmed by the user
 - Layout follows `incoming/PD.arrangement.pptx`: Flex top-left; sealer, thermocycler (PCR), Hidex and peeler in a row;
-  PF400 on a linear rail below them, able to reach everything; exchange bottom-left; OT-2 below the rail under the Hidex;
-  plate nests to its right.
+  PF400 on a linear rail below them, able to reach everything; exchange bottom-left; OT-2 below the rail; plate nests
+  to its right.
+- 2026-11-25: a second nest rack exists (rack2, 5 rows × 3, same naming as rack1). In the 3-round layout the OT-2 moved
+  left and rack2 sits between it and rack1. Only `full_protocol_24_3round/config/layout.json` has it so far.
 - Exchange = re-grip nest: place, home, pick up; `exchange_narrow`/`exchange_wide` are the same nest gripped on different sides.
 - Flex A4 is the only Flex slot the PF400 serves (handoff); the Flex gripper moves plates between A4 and other slots.
 - Equal screen time per step is fine; real durations are shown as text.
