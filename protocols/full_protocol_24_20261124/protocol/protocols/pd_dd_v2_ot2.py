@@ -40,13 +40,13 @@ config = {
     'temperature': 4,  # °C
 
     # Labware
-    'pcr_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
-    'diluted_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
+    'pcr_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
+    'diluted_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
     'reagent_plate_type': 'nest_12_reservoir_15ml',
     'tip_rack_type_20_01': 'opentrons_96_filtertiprack_20ul',
     'pipette_type_20': 'p20_single_gen2',
     'pipette_type_20_multi': 'p20_multi_gen2',
-    'controls_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
+    'controls_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
 
     # Deck positions
     'temp_module_01_position': 'C1',

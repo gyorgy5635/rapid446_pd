@@ -32,8 +32,8 @@ config = {
     'temperature': 4,  # °C
 
     # Labware
-    'fragments_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
-    'pcr_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
+    'fragments_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
+    'pcr_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
     'reagent_plate_type': 'nest_12_reservoir_15ml',
     'tip_rack_type_50_01': 'opentrons_flex_96_tiprack_50ul',
     'tip_rack_type_50_02': 'opentrons_flex_96_tiprack_50ul',
@@ -81,7 +81,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     chute = protocol.load_waste_chute()
 
-    pcr_plate = protocol.load_labware('nest_96_wellplate_100ul_pcr_full_skirt', "A4")
+    pcr_plate = protocol.load_labware('opentrons_96_wellplate_200ul_pcr_full_skirt', "A4")
 
 
 

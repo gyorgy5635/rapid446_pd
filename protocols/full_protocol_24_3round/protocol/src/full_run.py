@@ -178,8 +178,8 @@ class PDApp(ExperimentScript,): # TODO
                     attributes={
                         # Common attributes
                         "plate_height": 14, 
-                        "description": "TEST 96-well PLATE",
-                        "catalog_number": "SP-2396",
+                        "description": "Opentrons Tough 96 Well Plate 200 uL PCR Full Skirt",
+                        "catalog_number": "991-00076",
 
                         # PF400 specific attributes
                         "pf400_grip_height": 6,

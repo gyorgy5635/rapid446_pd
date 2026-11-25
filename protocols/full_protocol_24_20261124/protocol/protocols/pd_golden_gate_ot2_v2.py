@@ -68,8 +68,8 @@ config = {
     'temperature': 4,  # °C
 
     # Labware
-    'fragments_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt', # nest_96_wellplate_100ul_pcr_full_skirt
-    'gg_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt', # nest_96_wellplate_100ul_pcr_full_skirt
+    'fragments_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt', # opentrons_96_wellplate_200ul_pcr_full_skirt
+    'gg_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt', # opentrons_96_wellplate_200ul_pcr_full_skirt
     'tip_rack_type_50_01': 'opentrons_96_filtertiprack_20ul',
     'tip_rack_type_50_02': 'opentrons_96_filtertiprack_20ul',
     'pipette_type_20': 'p20_single_gen2',

@@ -23,7 +23,7 @@ config = {
     # Temperature settings
     'temperature': 4,  # °C
 
-    'cfps_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
+    'cfps_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
     'reagent_plate_type': 'nest_12_reservoir_15ml',
     'tip_rack_type_20_01': 'opentrons_96_filtertiprack_20ul',
     'pipette_type_20': 'p20_single_gen2',

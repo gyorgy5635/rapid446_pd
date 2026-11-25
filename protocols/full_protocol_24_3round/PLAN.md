@@ -136,6 +136,16 @@ script on purpose (forgot controls, left fragments on the Flex, never emptied th
 
 Current result: **no warnings**: no movement conflicts, no deck conflicts, no labware mismatches.
 
+## Confirmed by the user (2026-11-25)
+
+- The Opentrons tough plate (catalog **991-00076**) has run the `_24` protocol for more than 8 rounds. The existing
+  `set_offset` values and the PF400 grip attributes work with it, so neither needed changing; only the plate
+  resource's catalog number and description in `full_run.py` were wrong and are now fixed.
+- `cold_block_ext` stays as the location name for now.
+- Rack 2's nests are named like rack 1's: `rack2_row1_nest1`, which is what the workflows already use.
+- The single-run variant `full_protocol_24_20261124` is ported to the tough plate as well. The baseline
+  `full_protocol_24` keeps its `protocol/` untouched: it is a working copy used in previous runs.
+
 ## Assumptions I made (please confirm or correct)
 
 1. Cold block and new nest are reached through the exchange's narrow side, like the rack and peeler.
@@ -156,12 +166,8 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 - [ ] **MADSci**: create the cooling-block location and teach the PF400; replace the placeholder name
       `cold_block_ext` (in `workflows/transfers/*.yaml`, `full_run.py`, `config/`). Confirm rack 2's nests are named
       like rack 1 (`rack2_row1_nest1`), which is what the workflows assume.
-- [ ] **Offsets (now needed for every plate)**: all PCR plates changed from the NEST 100 µL to the Opentrons 200 µL
-      tough plate, so the `set_offset` values carried over from the single run no longer apply. Run a labware
-      position check for every plate slot, plus OT-2 tips on D2, C2, B1, B2, B3, A2 and Flex tips on C2, C3, A3, B4.
-- [ ] **PF400 grip attributes**: `push_new_assay_plate_resource(labware_type="pcr")` in `full_run.py` still uses
-      `plate_height` 14 and `pf400_grip_height` 6 (catalog SP-2396, from the NEST plate). Check these against the
-      tough plate before the PF400 moves one.
+- [ ] **Offsets for the new tip slots**: the plate offsets are unchanged and proven, but a labware position check is
+      still needed for OT-2 tips on D2, C2, B1, B2, B3, A2 and Flex tips on A3 (and the staging spares B4, C4, D4).
 - [ ] **Lyophilized cell-free plate**: confirm the plates really are tough plates (`cell_free_lyo_flex.py` assumes so).
 - [ ] **OT-2 trash**: about 620 used 20 µL tips over 3 rounds. Check that the OT-2 trash bin holds that many.
 - [ ] **Reagent volumes**: load at least the simulator totals above plus dead volume. On the fragments plate the
