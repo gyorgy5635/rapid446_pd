@@ -88,7 +88,13 @@ svg#map { display: block; width: 100%; min-width: 640px; height: auto; touch-act
 .banner text { fill: var(--warn); font-weight: 600; font-size: 13px; }
 
 /* transport */
-.transport { display: grid; gap: 8px; padding: 12px 14px 14px; border-top: 1px solid var(--line); }
+/* --thumb is the slider knob: the track it slides along is inset by half of it at each end, so the
+   bands and labels are inset by the same amount to line up with the slider. min-width:0 everywhere
+   lets the rows shrink inside the panel; without it a row of many labels cannot shrink below its
+   longest words, widens this grid and is then clipped by .stage. */
+.transport { --thumb: 16px; display: grid; gap: 8px; padding: 12px 14px 14px; border-top: 1px solid var(--line); }
+.transport > * { min-width: 0; }
+.roundbands, .bands, .bandlabels { margin-inline: calc(var(--thumb) / 2); }
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .btn { border: 1px solid var(--line); background: var(--panel); border-radius: 7px; padding: 6px 12px; cursor: pointer; font-weight: 500; }
 .btn:hover { border-color: var(--accent); }
@@ -99,16 +105,25 @@ svg#map { display: block; width: 100%; min-width: 640px; height: auto; touch-act
 label.inline { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); }
 select { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 4px 6px; }
 .roundbands { display: flex; gap: 3px; margin-bottom: 4px; }
-.roundbands button { flex: 1; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--muted);
+.roundbands button { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--muted);
   font: 600 0.68rem/1.6 var(--f-body); text-transform: uppercase; letter-spacing: 0.07em; cursor: pointer; padding: 1px 4px;
   overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .roundbands button:hover { background: var(--slot); }
 .roundbands button.cur { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .bands { display: flex; height: 8px; border-radius: 4px; overflow: hidden; }
 .bands div { min-width: 2px; cursor: pointer; }
-input[type=range] { width: 100%; accent-color: var(--accent); margin: 0; }
+/* Styled explicitly so the thumb size is known and the bands above can line up with the track. */
+input[type=range] { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: var(--thumb);
+  margin: 0; background: transparent; cursor: pointer; }
+input[type=range]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--slot); border: 1px solid var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: var(--thumb); height: var(--thumb); border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--panel); box-sizing: border-box; margin-top: calc((6px - var(--thumb)) / 2); }
+input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--slot); border: 1px solid var(--line); }
+input[type=range]::-moz-range-thumb { width: var(--thumb); height: var(--thumb); border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--panel); box-sizing: border-box; }
 .bandlabels { display: flex; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-.bandlabels div { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-right: 4px; }
+.bandlabels div { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-right: 4px; }
 
 /* side panel */
 aside { display: grid; gap: 12px; min-width: 0; }
