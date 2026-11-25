@@ -98,6 +98,12 @@ svg#map { display: block; width: 100%; min-width: 640px; height: auto; touch-act
 .clock b { color: var(--ink); font-weight: 500; }
 label.inline { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); }
 select { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 4px 6px; }
+.roundbands { display: flex; gap: 3px; margin-bottom: 4px; }
+.roundbands button { flex: 1; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--muted);
+  font: 600 0.68rem/1.6 var(--f-body); text-transform: uppercase; letter-spacing: 0.07em; cursor: pointer; padding: 1px 4px;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.roundbands button:hover { background: var(--slot); }
+.roundbands button.cur { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .bands { display: flex; height: 8px; border-radius: 4px; overflow: hidden; }
 .bands div { min-width: 2px; cursor: pointer; }
 input[type=range] { width: 100%; accent-color: var(--accent); margin: 0; }
@@ -106,7 +112,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); margin: 0; }
 
 /* side panel */
 aside { display: grid; gap: 12px; min-width: 0; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0;
+        overflow: hidden; }   /* clip the full-bleed scroll panels to the rounded corners */
 .card h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-family: var(--f-body); margin-bottom: 8px; }
 .now .phase { display: inline-block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .now .idx { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); margin-left: 8px; }
@@ -119,7 +126,10 @@ aside { display: grid; gap: 12px; min-width: 0; }
 .src-tag { font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); margin-left: 4px; }
 .src-tag.code { border-color: var(--accent); color: var(--accent); }
 
-.steps { max-height: 420px; overflow-y: auto; margin: 0 -16px -14px; border-top: 1px solid var(--line); }
+/* Full-bleed list: the negative margins reach the card's border, so the card clips it.
+   The height follows the window, so the panel and its scrollbar always fit on screen. */
+.steps { max-height: clamp(220px, 46vh, 460px); overflow-y: auto; overscroll-behavior: contain;
+         scrollbar-gutter: stable; margin: 0 -16px -14px; border-top: 1px solid var(--line); }
 .steps .ph { position: sticky; top: 0; background: var(--panel); font-family: var(--f-display); font-weight: 600; font-size: 0.9rem; padding: 8px 16px 4px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; z-index: 1; }
 .steps .ph span { font-family: var(--f-mono); font-weight: 400; font-size: 0.75rem; color: var(--muted); }
 .steps button.row { display: grid; grid-template-columns: 2.4em 3.6em minmax(0, 1fr); gap: 6px; width: 100%; text-align: left; border: 0; background: none; padding: 5px 16px; cursor: pointer; font-size: 0.8rem; align-items: baseline; }
@@ -151,7 +161,8 @@ textarea#layoutOut { width: 100%; height: 160px; font-family: var(--f-mono); fon
 .loctable .pl { display: inline-flex; align-items: center; gap: 4px; font-family: var(--f-mono); font-size: 0.7rem; }
 .loctable .pl i { width: 12px; height: 9px; border-radius: 2px; display: inline-block; }
 .loctable .role { display: block; color: var(--muted); font-size: 0.7rem; }
-.locwrap { max-height: 360px; overflow-y: auto; }
+.locwrap { max-height: clamp(200px, 38vh, 420px); overflow-y: auto; overscroll-behavior: contain;
+           scrollbar-gutter: stable; }
 .setups { display: grid; gap: 10px; }
 .setups-head h2 { font-size: 1.25rem; }
 .setups-head .hint { margin: 2px 0 0; max-width: 75ch; }
@@ -196,8 +207,9 @@ svg.mini { width: 100%; height: auto; display: block; }
             <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select>
           </label>
           <button class="btn" id="btnEdit" aria-pressed="false">Edit layout</button>
-          <div class="clock">Step <b id="stepNum">0</b> / <span id="stepTot"></span> · <span id="clockLabel">est.</span> <b id="clock">T+0:00</b></div>
+          <div class="clock"><span id="roundBox" hidden>Round <b id="roundNum">1</b> / <span id="roundTot"></span> · </span>Step <b id="stepNum">0</b> / <span id="stepTot"></span> · <span id="clockLabel">est.</span> <b id="clock">T+0:00</b></div>
         </div>
+        <div class="roundbands" id="roundbands" hidden></div>
         <div class="bands" id="bands"></div>
         <input type="range" id="scrub" min="0" value="0" aria-label="Scrub through steps">
         <div class="bandlabels" id="bandlabels"></div>
@@ -589,6 +601,22 @@ function setPlaying(v) {
 
 // ---------- UI ----------
 function phaseIndex(name) { return EV.phases.findIndex(p => p.name === name); }
+// Multi-round runs prefix every phase with "R2 · " (extract_events unrolls the round loop).
+const ROUND_RE = /^R(\d+)\b/;
+const roundOf = (step) => step && ROUND_RE.test(step.phase) ? +ROUND_RE.exec(step.phase)[1] : null;
+const ROUNDS = Math.max(0, ...EV.steps.map(s => roundOf(s) || 0));
+// Round shown at each scrub position: steps outside a round (Setup, Finish, anything between
+// rounds) keep the round last reached, so finishing the run does not snap back to round 1.
+const ROUND_AT = (() => {
+  const first = EV.steps.map(roundOf).find(Boolean) || 1, at = [];
+  let cur = 0;
+  for (let t = 0; t <= N; t++) {
+    cur = (t > 0 && roundOf(EV.steps[t - 1])) || cur;
+    at.push(cur || first);
+  }
+  return at;
+})();
+
 const PH_COLORS = ["var(--c1)", "var(--c3)", "var(--c6)", "var(--c7)", "var(--c4)", "var(--c5)", "var(--c2)"];
 function buildStatic() {
   const m = EV.meta;
@@ -599,13 +627,32 @@ function buildStatic() {
     [m.flex_gripper_moves, "Flex gripper moves"], [fmtDur(m.estimated_total_s), TIMING ? `run time · ${Math.round(100 * TIMING.measured_steps / N)}% measured` : "est. run time"],
   ].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
   $("stepTot").textContent = N;
+  if (ROUNDS > 1) { $("roundBox").hidden = false; $("roundTot").textContent = ROUNDS; }
   if (EV.meta.title) $("pageHead").textContent = EV.meta.title;
   if (TIMING) $("clockLabel").textContent = "";
   buildLocations();
   buildSetups();
   $("scrub").max = N;
   $("bands").innerHTML = EV.phases.map((p, i) => `<div style="flex:${p.last - p.first + 1};background:${PH_COLORS[i % PH_COLORS.length]}" title="${p.name}" data-first="${p.first}"></div>`).join("");
-  $("bandlabels").innerHTML = EV.phases.map(p => `<div style="flex:${p.last - p.first + 1}">${p.name}</div>`).join("");
+  // the round strip above already names the round, so the phase labels drop the "Rn · " prefix
+  $("bandlabels").innerHTML = EV.phases.map(p =>
+    `<div style="flex:${p.last - p.first + 1}">${ROUNDS > 1 ? p.name.replace(/^R\d+\s*·\s*/, "") : p.name}</div>`).join("");
+  if (ROUNDS > 1) {
+    const span = {};   // round -> [first step index, last step index]
+    EV.steps.forEach(st => {
+      const r = roundOf(st);
+      if (!r) return;
+      span[r] = span[r] ? [span[r][0], st.i] : [st.i, st.i];
+    });
+    $("roundbands").hidden = false;
+    $("roundbands").innerHTML = Object.entries(span).map(([r, [a, b]]) =>
+      `<button type="button" style="flex:${b - a + 1}" data-round="${r}" data-first="${a}"
+         title="Jump to the start of round ${r}">Round ${r}</button>`).join("");
+    $("roundbands").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      setPlaying(false); go(+b.dataset.first);
+    });
+  }
   $("bands").addEventListener("click", e => { const f = e.target.dataset.first; if (f) { setPlaying(false); go(+f); } });
 
   $("legend").innerHTML = EV.plates.map(p => `<button class="chip" aria-pressed="false" data-id="${p.id}" title="${p.name}"><i style="background:${plateColor(p)}"></i>${p.short}</button>`).join("");
@@ -815,6 +862,11 @@ function exportPNG(svgEl, heading, filename, note) {
 function updateUI() {
   updateLocations();
   $("stepNum").textContent = t; $("scrub").value = t; $("clock").textContent = fmtClock(elapsed[t]);
+  if (ROUNDS > 1) {
+    const r = ROUND_AT[t];
+    $("roundNum").textContent = r;
+    for (const b of $("roundbands").children) b.classList.toggle("cur", +b.dataset.round === r);
+  }
   if (!playing) $("btnPlay").textContent = t >= N ? "Replay" : "Play";
   const st = EV.steps[t - 1];
   const now = $("now");

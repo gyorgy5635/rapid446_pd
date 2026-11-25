@@ -38,6 +38,9 @@ contents into a new folder (or branch) in the GitHub repo, then put the repo, br
 - Jaws on the plate show the grip side. `exchange_narrow` and `exchange_wide` are the same nest; the
   name says which side the arm grips. A plate placed wide and picked up narrow is shown as a re-grip.
 - Link to a specific step with `pd_run_map.html#step-42`.
+- A multi-round run (phases named `R1 ·`, `R2 ·` …) gets a round strip above the phase bands and a
+  `Round n / N` counter next to the step counter. Click a round to jump to its first step. Single-run
+  versions have no rounds, so neither appears.
 
 ## Measured timings from MADSci
 1. On a machine that can reach the workcell manager (standard library only, no MADSci install needed):
