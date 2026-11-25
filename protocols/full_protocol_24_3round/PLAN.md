@@ -168,7 +168,18 @@ as you step or scrub, so the round 1 dilution page goes from nothing at step 0, 
 at step 20, to 32 filled wells and 40 tips at step 106. The per-command volumes the animation
 replays are the same numbers the totals are summed from, so the two cannot disagree.
 
-Still to come: phase 3, liquid identity and mixing.
+Phase 3 tracks what the liquid *is*. Wells are coloured by their dominant reagent and the tooltip
+gives the breakdown, plate contents carry from one run into the next (following the plate, not the
+slot), and mixtures are tracked through the whole chain: an FDGlu well ends up reading
+`120 µL · FDGlu substrate 100 µL + Water 19.9 µL + PCR master mix 0.1 µL + …`, tracing back five
+protocols to the fragment stocks. Across all 20 runs **no liquid is of unknown origin**, which
+means `contents.json` accounts for everything the protocols draw.
+
+Building this found a real bug in the earlier phases: the simulator prints a `mix()`'s own
+aspirate and dispense one nesting level deeper, and the old reader treated every following
+command as part of the mix, so the real transfer after a `mix_before` was dropped. Tip and reagent
+totals were unaffected, but per-well volumes were: the PCR master mix never appeared in the PCR
+plate. Commands are now matched by nesting level in both the report and the pages.
 
 ## Checks the run map now does
 

@@ -98,6 +98,7 @@ tr.done td { color: var(--muted); }
     <p class="hint" style="margin-top:0">Wells the protocol fills are shaded by how much ends up in them; a blue
       ring marks a well it draws from. Colours on a starting reagent follow the run map. Volumes are what the
       protocol asks for, netted from the simulated commands: the simulator does not track what is really in a well.</p>
+    <div class="key" id="runLegend" style="margin:0 0 10px"></div>
     <div class="grid" id="labware"></div>
   </section>
 
@@ -145,6 +146,7 @@ $("stats").innerHTML = [
 ].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
 
 const reagentColor = (r) => `var(--c${(RUN.reagents[r] || {}).color || 0})`;
+const reagentLabel = (r) => (RUN.reagents[r] || {}).label || (r === "unknown" ? "unknown liquid" : r);
 
 // Shade a well by how full it ends up, relative to the fullest well on that labware.
 function shade(net, max) {
@@ -178,7 +180,7 @@ $("labware").innerHTML = RUN.cards.map(lw => {
                           : `${Object.keys(lw.wells).length} wells touched over the run`;
   const key = lw.is_tips
     ? `<span><i style="background:var(--c0)"></i>tip used</span>`
-    : `<span><i style="background:var(--accent)"></i>holds liquid</span><span><i style="border:1px solid var(--warn);background:transparent"></i>in this command</span>`;
+    : `<span><i style="border:1px solid var(--warn);background:transparent"></i>in this command</span>`;
   return `<div class="lw">
     <h3>${esc(lw.name)}</h3>
     <div class="meta">slot ${esc(lw.slot)} · ${esc(lw.load_name)} · ${meta}</div>
@@ -189,34 +191,58 @@ $("labware").innerHTML = RUN.cards.map(lw => {
 
 for (const el of document.querySelectorAll(".wellmap .w")) cellOf[el.dataset.id] = el;
 
+// every reagent this run touches, in the order they first appear
+const seen = [];
+for (const lw of RUN.cards) for (const m of Object.values(lw.comp0 || {})) for (const r of Object.keys(m)) if (!seen.includes(r)) seen.push(r);
+for (const lw of RUN.cards) for (const f of Object.values(lw.start || {})) if (!seen.includes(f.reagent)) seen.push(f.reagent);
+for (const c of RUN.commands) for (const r of Object.keys(c.comp || {})) if (!seen.includes(r)) seen.push(r);
+$("runLegend").innerHTML = seen.map(r =>
+  `<span><i style="background:${reagentColor(r)}"></i>${esc(reagentLabel(r))}</span>`).join("");
+
 // Fullest well of each labware over the whole run, so the shading scale does not jump about.
 const peak = {};
 for (const lw of RUN.cards) {
-  peak[lw.key] = Math.max(1, ...Object.values(lw.wells).map(v => v.net));
+  peak[lw.key] = Math.max(1, ...Object.values(lw.wells).map(v => v.net),
+                          ...Object.values(lw.comp0 || {}).map(m => Object.values(m).reduce((a, b) => a + b, 0)));
 }
 
 // ---- playback --------------------------------------------------------------
 const N = RUN.commands.length;
 let t = N, playing = false, timer = null;
 
+// Composition of every well: what the run carried in, plus what each command moves. A command's
+// comp says what the liquid is made of per well, so a well ends up holding named reagents rather
+// than an anonymous volume.
 function stateAt(step) {
-  const vol = {}, tips = {};
+  const comp = {}, tips = {};
+  for (const lw of RUN.cards) {
+    for (const [w, mix] of Object.entries(lw.comp0 || {})) comp[`${lw.key}|${w}`] = { ...mix };
+  }
   for (let i = 0; i < step; i++) {
     const c = RUN.commands[i];
     if (c.tips) for (const w of c.tips) tips[`${c.lw}|${w}`] = true;
-    if (c.dv != null) for (const w of c.wells) {
-      const id = `${c.lw}|${w}`;
-      vol[id] = (vol[id] || 0) + c.dv;
+    if (c.dv == null || !c.comp) continue;
+    const sign = c.dv > 0 ? 1 : -1;
+    for (const w of c.wells) {
+      const id = `${c.lw}|${w}`, cell = comp[id] = comp[id] || {};
+      for (const [r, v] of Object.entries(c.comp)) {
+        cell[r] = (cell[r] || 0) + sign * v;
+        if (Math.abs(cell[r]) < 0.001) delete cell[r];
+      }
     }
   }
-  return { vol, tips };
+  return { comp, tips };
 }
 
-const reagentLabel = (r) => (RUN.reagents[r] || {}).label || r;
+const total = (mix) => Object.values(mix || {}).reduce((a, b) => a + b, 0);
+const dominant = (mix) => Object.entries(mix).sort((a, b) => b[1] - a[1])[0];
+const mixText = (mix) => Object.entries(mix).sort((a, b) => b[1] - a[1])
+  .map(([r, v]) => `${reagentLabel(r)} ${v.toFixed(1)} µL`).join(" + ");
+
 let painted = {};
 
 function paint(step) {
-  const { vol, tips } = stateAt(step);
+  const { comp, tips } = stateAt(step);
   const cur = step > 0 ? RUN.commands[step - 1] : null;
   const active = new Set();
   if (cur) {
@@ -228,21 +254,23 @@ function paint(step) {
 
   for (const [id, el] of Object.entries(cellOf)) {
     const lwKey = id.slice(0, id.lastIndexOf("|")), well = id.slice(id.lastIndexOf("|") + 1);
-    const lw = lwOf[lwKey], v = vol[id] || 0, start = startOf[id];
+    const lw = lwOf[lwKey], mix = comp[id] || {}, v = total(mix), start = startOf[id];
     let fill = "", title;
     if (lw && lw.is_tips) {
       fill = tips[id] ? "var(--c0)" : "";
       title = `${well} · ${tips[id] ? "tip used" : "tip in place"}`;
-    } else if (v > 0.0001) {
-      const f = Math.max(0.18, Math.min(1, v / peak[lwKey]));
-      fill = `color-mix(in srgb, var(--accent) ${Math.round(f * 100)}%, var(--slot))`;
-      title = `${well} · ${v.toFixed(1)} µL added so far`;
+    } else if (v > 0.001) {
+      // colour says what is in the well, depth of colour says how much
+      const [top] = dominant(mix);
+      const f = Math.max(0.35, Math.min(1, v / peak[lwKey]));
+      fill = `color-mix(in srgb, ${reagentColor(top)} ${Math.round(f * 100)}%, var(--slot))`;
+      title = `${well} · ${v.toFixed(1)} µL · ${mixText(mix)}`;
     } else if (start) {
-      fill = reagentColor(start.reagent);
-      title = `${well} · ${reagentLabel(start.reagent)}`
-        + (v < -0.0001 ? ` · ${(-v).toFixed(1)} µL taken so far` : "");
+      fill = `color-mix(in srgb, ${reagentColor(start.reagent)} 55%, var(--slot))`;
+      title = `${well} · ${reagentLabel(start.reagent)}, stock loaded by hand`
+        + (v < -0.001 ? ` · ${(-v).toFixed(1)} µL taken so far` : "");
     } else {
-      title = v < -0.0001 ? `${well} · ${(-v).toFixed(1)} µL taken, nothing declared here` : `${well} · empty`;
+      title = v < -0.001 ? `${well} · ${(-v).toFixed(1)} µL taken, nothing declared here` : `${well} · empty`;
     }
     const want = fill + "|" + active.has(id);
     if (painted[id] !== want) {

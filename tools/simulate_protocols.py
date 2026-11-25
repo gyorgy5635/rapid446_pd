@@ -112,32 +112,34 @@ def tally(log):
     mount was configured with is tracked (SINGLE takes 1 tip, COLUMN takes 8): the hardware channel
     count alone would count every single-tip pick-up as 8. An 8-channel step also touches 8 wells,
     so a plate column is expanded to its 8 wells, while a reservoir well is hit by every channel at
-    once and takes 8x the volume. A mix() moves liquid in place and is left out of both totals.
+    once and takes 8x the volume. A mix() moves liquid in place, and the simulator prints its
+    aspirate/dispense pairs one nesting level deeper, so those are skipped by level.
     """
     boxes = defaultdict(lambda: {"tips": 0, "pickups": 0})
     wells = defaultdict(lambda: {"aspirated": 0.0, "dispensed": 0.0})
     active = {}        # mount -> active nozzle count
-    mixing = False
+    mix_level = None   # inside a mix(): its own aspirate/dispense pairs move nothing
 
     def nozzles(cmd):
         return active.get(cmd["mount"], cmd["channels"] or 1)
 
     for cmd in log:
-        kind = cmd["kind"]
+        kind, level = cmd["kind"], cmd.get("level", 0)
+        if mix_level is not None and level <= mix_level:
+            mix_level = None
         if kind == "configure":
             style = (cmd["style"] or "").upper()
             active[cmd["mount"]] = 1 if "SINGLE" in style else 8 if "COLUMN" in style else (cmd["channels"] or 1)
             continue
         if kind == "mix":
-            mixing = True
+            mix_level = level
             continue
         if kind == "pick_up_tip":
-            mixing = False
             box = boxes[f"{cmd['labware']} on {cmd['slot']}"]
             box["tips"] += nozzles(cmd)
             box["pickups"] += 1
         elif kind in ("aspirate", "dispense"):
-            if mixing or cmd["labware"] is None or cmd["volume"] is None:
+            if mix_level is not None or cmd["labware"] is None or cmd["volume"] is None:
                 continue
             n = nozzles(cmd)
             field = "aspirated" if kind == "aspirate" else "dispensed"
@@ -149,8 +151,6 @@ def tally(log):
                 rows = "ABCDEFGH"[:n] if n > 1 and row == "A" else row
                 for r in rows:
                     wells[(cmd["labware"], cmd["slot"], f"{r}{col}")][field] += cmd["volume"]
-        else:
-            mixing = False
 
     liquid = [{"labware": lw, "slot": slot, "well": w,
                "aspirated": round(v["aspirated"], 1), "dispensed": round(v["dispensed"], 1)}

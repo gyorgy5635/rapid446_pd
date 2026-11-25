@@ -8,6 +8,10 @@ OT-2 can use different opentrons versions.
 The run log has no machine-readable command type, so commands are classified by the text the
 simulator prints; everything else (pipette channels, well, labware, volume) comes from the
 objects in the payload. The channel count is what turns "picked up a tip" into "used 8 tips".
+
+Each entry's nesting level is kept too: a mix() or a transfer() prints its own aspirate and
+dispense commands one level deeper, and those move no net liquid, so a reader has to tell them
+from the real ones.
 """
 import json
 import sys
@@ -66,6 +70,7 @@ def main():
                 pass
         out.append({
             "kind": kind_of(text),
+            "level": entry.get("level", 0),
             "style": str(payload.get("style") or "") or None,   # nozzle layout: SINGLE, COLUMN, ALL...
             "mount": str(getattr(instrument, "mount", "") or "") or None,
             "text": text.strip(),

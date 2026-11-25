@@ -137,6 +137,14 @@ shows the labware that run touches, a well map per plate (shaded by how much liq
 well, ringed where the protocol draws from it), which tips came out of which box, and the full
 command list with a filter per command type. Starting contents come from `config/contents.json`.
 
+Wells are coloured by **what is in them**, not just how much: the dominant reagent gives the
+colour, depth of colour gives the volume, and the tooltip breaks the well down (`A1 · 24.0 µL ·
+PCR master mix 22.2 µL + Water 0.9 µL + Golden Gate mix 0.6 µL + Fragment stocks 0.4 µL`). A
+plate's contents carry from one run to the next, following the plate rather than the slot, so the
+dilution page sees the PCR products the PCR run put there. Liquid taken from a well declared in
+`contents.json` is that reagent; anything drawn from a well nothing declares is reported as
+unknown at build time, which is a useful check on the config.
+
 Each page also replays the run: Play, step, scrub or click a command, with the well maps and tip
 boxes updating as the liquid moves and the current command highlighted in amber. Space, arrow keys,
 Home and End work as in the run map, and `#step-42` links to one command. The page opens on the

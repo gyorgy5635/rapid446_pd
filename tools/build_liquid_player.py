@@ -35,37 +35,92 @@ def well_list(well, channels):
     return [well]
 
 
-def timeline(log, reservoir_names):
-    """One entry per command, with the wells it touches and the volume each one gains or loses.
+def take(comp, pure, volume):
+    """Remove `volume` from a well, proportionally to what is in it; return what came out.
 
-    The page replays these to get the state at any step, and the per-labware totals are summed from
-    the same list, so the animation and the totals can never disagree. A mix() moves liquid in place,
-    so it is listed but moves nothing.
+    A well that config/contents.json declares (a reagent stock, a reservoir, a lyophilised cake) is
+    a source of unknown size, so once its recorded contents run out the rest comes from that
+    declared reagent rather than going negative. A well nothing declared yields "unknown".
     """
-    out, active, mixing = [], {}, False
+    out, total = {}, sum(comp.values())
+    if total > 1e-9:
+        frac = min(1.0, volume / total)
+        for r, v in list(comp.items()):
+            moved = v * frac
+            out[r] = out.get(r, 0.0) + moved
+            comp[r] = v - moved
+            if comp[r] < 1e-9:
+                del comp[r]
+    short = volume - sum(out.values())
+    if short > 1e-9:
+        out[pure or "unknown"] = out.get(pure or "unknown", 0.0) + short
+    return out
+
+
+def timeline(log, lw_state):
+    """One entry per command: the wells it touches, the volume each gains or loses, and what that
+    liquid is made of.
+
+    lw_state maps a labware key to {"comp": {well: {reagent: uL}}, "pure": {well: reagent},
+    "reservoir": bool} and is updated as the run proceeds, so the caller can carry a plate's
+    contents into the next run that uses it.
+
+    An 8-channel step is modelled as one payload shared by its channels: each well of a column
+    normally holds the same thing, so the mixture carried is their average.
+    """
+    out, active, carried = [], {}, defaultdict(dict)
+    mix_level = None          # inside a mix(): its own aspirate/dispense pairs move nothing
     for cmd in log:
-        kind = cmd["kind"]
+        kind, level = cmd["kind"], cmd.get("level", 0)
+        if mix_level is not None and level <= mix_level:
+            mix_level = None
         if kind == "configure":
             style = (cmd["style"] or "").upper()
             active[cmd["mount"]] = 1 if "SINGLE" in style else 8 if "COLUMN" in style else (cmd["channels"] or 1)
             continue
         n = active.get(cmd["mount"], cmd["channels"] or 1)
+        key = f"{cmd['labware']}|{cmd['slot']}" if cmd["labware"] else None
         entry = {"k": kind, "v": cmd["volume"], "w": cmd["well"], "s": cmd["slot"],
-                 "t": cmd["text"][:160], "lw": f"{cmd['labware']}|{cmd['slot']}" if cmd["labware"] else None}
+                 "t": cmd["text"][:160], "lw": key}
         if kind == "mix":
-            mixing = True
+            mix_level = level
             entry["wells"] = well_list(cmd["well"], n)
         elif kind == "pick_up_tip":
-            mixing = False
             entry["tips"] = well_list(cmd["well"], n)
-        elif kind in ("aspirate", "dispense") and not mixing and cmd["labware"] and cmd["volume"] is not None:
-            is_res = cmd["labware"] in reservoir_names or "reservoir" in cmd["labware"]
-            # every channel draws from the same reservoir well, but from its own well on a plate
-            entry["wells"] = [cmd["well"]] if is_res else well_list(cmd["well"], n)
-            per = cmd["volume"] * n if is_res else cmd["volume"]
+        elif kind in ("aspirate", "dispense") and mix_level is None and key and cmd["volume"] is not None:
+            st = lw_state.setdefault(key, {"comp": {}, "pure": {}, "reservoir": "reservoir" in cmd["labware"]})
+            wells = [cmd["well"]] if st["reservoir"] else well_list(cmd["well"], n)
+            per = cmd["volume"] * n if st["reservoir"] else cmd["volume"]
+            entry["wells"] = wells
             entry["dv"] = per if kind == "dispense" else -per
-        elif kind not in ("aspirate", "dispense"):
-            mixing = False
+            payload = carried[cmd["mount"]]
+            if kind == "aspirate":
+                got = {}
+                for w in wells:
+                    for r, v in take(st["comp"].setdefault(w, {}), st["pure"].get(w), per).items():
+                        got[r] = got.get(r, 0.0) + v
+                for r, v in got.items():
+                    payload[r] = payload.get(r, 0.0) + v
+                entry["comp"] = {r: round(v / len(wells), 3) for r, v in got.items()}
+            else:
+                total_out, held = per * len(wells), sum(payload.values())
+                share = {}
+                if held > 1e-9:
+                    frac = min(1.0, total_out / held)
+                    for r, v in list(payload.items()):
+                        moved = v * frac
+                        share[r] = moved
+                        payload[r] = v - moved
+                        if payload[r] < 1e-9:
+                            del payload[r]
+                short = total_out - sum(share.values())
+                if short > 1e-9:
+                    share["unknown"] = share.get("unknown", 0.0) + short
+                entry["comp"] = {r: round(v / len(wells), 3) for r, v in share.items()}
+                for w in wells:
+                    comp = st["comp"].setdefault(w, {})
+                    for r, v in share.items():
+                        comp[r] = comp.get(r, 0.0) + v / len(wells)
         out.append(entry)
     return out
 
@@ -122,9 +177,16 @@ def main():
     out_dir = base / "viz" / "liquid"
     out_dir.mkdir(parents=True, exist_ok=True)
     template = a.template.read_text()
-    index, written = [], 0
+    index, written, unknown = [], 0, []
 
-    for run in report["runs"]:
+    # What each plate holds, carried from one run to the next: the dilution run has to see the PCR
+    # products the PCR run put there. Keyed by tracked plate id, or by node:slot for a reservoir.
+    world = {}
+
+    def identity(plate_id, node, coord):
+        return plate_id or f"{node}:{coord}"
+
+    for run in sorted(report["runs"], key=lambda r: (r["round"], report["runs"].index(r))):
         if not run.get("ok"):
             continue
         stem = f"r{run['round']}_{Path(run['protocol']).stem}"
@@ -132,12 +194,32 @@ def main():
         if not log_path.exists():
             continue
         log = json.loads(log_path.read_text())
-        reservoir_names = {lw["key"] for lw in contents["labware"] if lw["format"].startswith("reservoir")}
-        tl = timeline(log, reservoir_names)
-        state = totals(tl)
-
         deck = deck_of.get((str(run["round"]), run["protocol"]), {})
         node = "ot2_patrick" if run["robot"] == "OT-2" else "otflex_sandy"
+
+        # hand the labware on this deck whatever it already holds, then let the run change it
+        lw_state, ident_of = {}, {}
+        for cmd in log:
+            if not cmd["labware"] or f"{cmd['labware']}|{cmd['slot']}" in lw_state:
+                continue
+            key, slot = f"{cmd['labware']}|{cmd['slot']}", cmd["slot"]
+            coord = OT2_SLOT_COORD.get(slot, slot) if run["robot"] == "OT-2" else slot
+            ident = identity(deck.get(coord), node, coord)
+            start = start_by_plate.get(deck.get(coord)) or start_by_key.get(f"{node}:{coord}") or {}
+            held = world.setdefault(ident, {})
+            lw_state[key] = {"comp": held,
+                             "pure": {w: f["reagent"] for w, f in (start.get("wells") or {}).items()},
+                             "reservoir": "reservoir" in cmd["labware"]}
+            ident_of[key] = ident
+        before = {k: json.loads(json.dumps(v["comp"])) for k, v in lw_state.items()}
+
+        tl = timeline(log, lw_state)
+        state = totals(tl)
+        for key, st in lw_state.items():
+            world[ident_of.get(key, key)] = st["comp"]
+        for e in tl:
+            if "unknown" in (e.get("comp") or {}):
+                unknown.append(f"round {run['round']} {run['protocol']}: {e['t'][:90]}")
         cards = []
         for key, lw in sorted(state.items()):
             load_name, slot = key.split("|")
@@ -146,6 +228,8 @@ def main():
             start = start_by_plate.get(plate_id) or start_by_key.get(f"{node}:{coord}")
             is_res = "reservoir" in load_name
             cards.append({
+                "comp0": {w: {r: round(v, 2) for r, v in c.items()}
+                          for w, c in (before.get(key) or {}).items() if c},
                 "key": key, "slot": slot if slot == coord else f"{slot} ({coord})", "load_name": load_name,
                 "name": plate_names.get(plate_id) or (start or {}).get("label") or load_name,
                 "is_tips": lw["is_tips"], "tips": lw["tips"], "pickups": lw["pickups"],
@@ -173,6 +257,10 @@ def main():
 
     (out_dir / "index.json").write_text(json.dumps(index, indent=1))
     print(f"wrote {written} liquid pages to {out_dir}")
+    if unknown:
+        print(f"  {len(unknown)} command(s) move liquid of unknown origin; first few:")
+        for line in unknown[:5]:
+            print(f"    {line}")
     return 0
 
 
