@@ -8,5 +8,8 @@
   "commit": "e4bc261ada888ceb50e51382e10a597b55978cac",
   "commit_date": "2026-11-11",
   "derived_from": null,
-  "repo_blob_url": "https://github.com/AD-SDL/rapid446_applications/blob/e4bc261ada888ceb50e51382e10a597b55978cac/Protein_Design/full_protocol_24"
+  "repo_blob_url": "https://github.com/AD-SDL/rapid446_applications/blob/e4bc261ada888ceb50e51382e10a597b55978cac/Protein_Design/full_protocol_24",
+  "local_changes": [
+    "2026-11-25 cell_free_pd_ot2_v2.py: declare the controls plate parked on OT-2 D1 (the robot was not told it was there). No pipetting change."
+  ]
 }

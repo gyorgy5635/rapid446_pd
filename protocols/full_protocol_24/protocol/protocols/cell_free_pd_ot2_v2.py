@@ -38,6 +38,11 @@ config = {
     'diluted_plate_position': 'C3',
     'reagent_plate_position': 'A1',
     'tip_rack_position_20_01': 'D3',
+
+    # The controls plate is parked on D1 between the dilution and the FDGlu assay. This protocol
+    # does not pipette from it, but it has to be declared or the robot does not know it is there.
+    'controls_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
+    'controls_plate_position': 'D1',
 }
 
 def calculate_total_combinations(combinations):
@@ -110,6 +115,9 @@ def run(protocol: protocol_api.ProtocolContext):
     diluted_plate.set_offset(x=0.7, y=0.30, z=0.2)
 
     reagent_plate = protocol.load_labware(config['reagent_plate_type'], config['reagent_plate_position'])
+
+    # declared, not used: the controls plate waits here until the FDGlu assay
+    controls_plate = protocol.load_labware(config['controls_plate_type'], config['controls_plate_position'])
 
     tiprack_20_1 = protocol.load_labware(
         load_name=config['tip_rack_type_20_01'], location=config['tip_rack_position_20_01']
