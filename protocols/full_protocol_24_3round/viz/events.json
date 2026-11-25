@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24_20261124",
   "script_url": null,
-  "generated": "2026-11-25T14:21:52",
+  "generated": "2026-11-25T14:47:15",
   "workflow_calls": 184,
   "steps": 386,
   "pf400_moves": 237,
@@ -10561,5 +10561,948 @@
    ]
   }
  ],
+ "contents": {
+  "reagents": {
+   "fragments": {
+    "label": "Fragment stocks",
+    "color": 1
+   },
+   "gg_mix": {
+    "label": "Golden Gate master mix (3x volume, shared by all rounds)",
+    "color": 2
+   },
+   "pcr_mix": {
+    "label": "PCR master mix (one column per round)",
+    "color": 3
+   },
+   "controls": {
+    "label": "Controls",
+    "color": 4
+   },
+   "cfps_lyo": {
+    "label": "Cell-free reagents, lyophilized",
+    "color": 8
+   },
+   "water": {
+    "label": "Water",
+    "color": 6
+   },
+   "fdglu": {
+    "label": "FDGlu substrate",
+    "color": 9
+   },
+   "rmf_waste": {
+    "label": "Empty: receives the RMF removed from the cell-free plate",
+    "color": 0
+   }
+  },
+  "labware": [
+   {
+    "key": "cold_block_ext",
+    "format": "96",
+    "rows": 8,
+    "cols": 12,
+    "label": "Fragments, tough plate (sealed; GG mix col 9, PCR mix col 10-12)",
+    "plate": "p1",
+    "wells": {
+     "A1": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "A2": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "A3": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "A4": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "A5": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "A6": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "A7": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "A8": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "B1": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "B2": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "B3": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "B4": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "B5": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "B6": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "B7": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "B8": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "C1": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "C2": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "C3": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "C4": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "C5": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "C6": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "C7": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "C8": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "D1": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "D2": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "D3": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "D4": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "D5": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "D6": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "D7": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "D8": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "E1": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "E2": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "E3": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "E4": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "E5": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "E6": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "E7": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "E8": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "F1": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "F2": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "F3": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "F4": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "F5": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "F6": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "F7": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "F8": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "G1": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "G2": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "G3": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "G4": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "G5": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "G6": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "G7": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "G8": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "H1": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "H2": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "H3": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "H4": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "H5": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "H6": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "H7": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "H8": {
+      "reagent": "fragments",
+      "note": "columns 1-8, sources picked per combination"
+     },
+     "A9": {
+      "reagent": "gg_mix",
+      "note": "3x volume: one column serves all 3 rounds"
+     },
+     "B9": {
+      "reagent": "gg_mix",
+      "note": "3x volume: one column serves all 3 rounds"
+     },
+     "C9": {
+      "reagent": "gg_mix",
+      "note": "3x volume: one column serves all 3 rounds"
+     },
+     "D9": {
+      "reagent": "gg_mix",
+      "note": "3x volume: one column serves all 3 rounds"
+     },
+     "E9": {
+      "reagent": "gg_mix",
+      "note": "3x volume: one column serves all 3 rounds"
+     },
+     "F9": {
+      "reagent": "gg_mix",
+      "note": "3x volume: one column serves all 3 rounds"
+     },
+     "G9": {
+      "reagent": "gg_mix",
+      "note": "3x volume: one column serves all 3 rounds"
+     },
+     "H9": {
+      "reagent": "gg_mix",
+      "note": "3x volume: one column serves all 3 rounds"
+     },
+     "A10": {
+      "reagent": "pcr_mix",
+      "note": "round 1"
+     },
+     "B10": {
+      "reagent": "pcr_mix",
+      "note": "round 1"
+     },
+     "C10": {
+      "reagent": "pcr_mix",
+      "note": "round 1"
+     },
+     "D10": {
+      "reagent": "pcr_mix",
+      "note": "round 1"
+     },
+     "E10": {
+      "reagent": "pcr_mix",
+      "note": "round 1"
+     },
+     "F10": {
+      "reagent": "pcr_mix",
+      "note": "round 1"
+     },
+     "G10": {
+      "reagent": "pcr_mix",
+      "note": "round 1"
+     },
+     "H10": {
+      "reagent": "pcr_mix",
+      "note": "round 1"
+     },
+     "A11": {
+      "reagent": "pcr_mix",
+      "note": "round 2"
+     },
+     "B11": {
+      "reagent": "pcr_mix",
+      "note": "round 2"
+     },
+     "C11": {
+      "reagent": "pcr_mix",
+      "note": "round 2"
+     },
+     "D11": {
+      "reagent": "pcr_mix",
+      "note": "round 2"
+     },
+     "E11": {
+      "reagent": "pcr_mix",
+      "note": "round 2"
+     },
+     "F11": {
+      "reagent": "pcr_mix",
+      "note": "round 2"
+     },
+     "G11": {
+      "reagent": "pcr_mix",
+      "note": "round 2"
+     },
+     "H11": {
+      "reagent": "pcr_mix",
+      "note": "round 2"
+     },
+     "A12": {
+      "reagent": "pcr_mix",
+      "note": "round 3"
+     },
+     "B12": {
+      "reagent": "pcr_mix",
+      "note": "round 3"
+     },
+     "C12": {
+      "reagent": "pcr_mix",
+      "note": "round 3"
+     },
+     "D12": {
+      "reagent": "pcr_mix",
+      "note": "round 3"
+     },
+     "E12": {
+      "reagent": "pcr_mix",
+      "note": "round 3"
+     },
+     "F12": {
+      "reagent": "pcr_mix",
+      "note": "round 3"
+     },
+     "G12": {
+      "reagent": "pcr_mix",
+      "note": "round 3"
+     },
+     "H12": {
+      "reagent": "pcr_mix",
+      "note": "round 3"
+     }
+    },
+    "filled": 96
+   },
+   {
+    "key": "rack2_row1_nest1",
+    "format": "96",
+    "rows": 8,
+    "cols": 12,
+    "label": "Controls (Opentrons Tough PCR)",
+    "plate": "p4",
+    "wells": {
+     "A1": {
+      "reagent": "controls",
+      "note": "column 1: into the dilution plate, every round"
+     },
+     "B1": {
+      "reagent": "controls",
+      "note": "column 1: into the dilution plate, every round"
+     },
+     "C1": {
+      "reagent": "controls",
+      "note": "column 1: into the dilution plate, every round"
+     },
+     "D1": {
+      "reagent": "controls",
+      "note": "column 1: into the dilution plate, every round"
+     },
+     "E1": {
+      "reagent": "controls",
+      "note": "column 1: into the dilution plate, every round"
+     },
+     "F1": {
+      "reagent": "controls",
+      "note": "column 1: into the dilution plate, every round"
+     },
+     "G1": {
+      "reagent": "controls",
+      "note": "column 1: into the dilution plate, every round"
+     },
+     "H1": {
+      "reagent": "controls",
+      "note": "column 1: into the dilution plate, every round"
+     },
+     "F3": {
+      "reagent": "controls",
+      "note": "wells 22-24: into the FDGlu plate, every round"
+     },
+     "G3": {
+      "reagent": "controls",
+      "note": "wells 22-24: into the FDGlu plate, every round"
+     },
+     "H3": {
+      "reagent": "controls",
+      "note": "wells 22-24: into the FDGlu plate, every round"
+     }
+    },
+    "filled": 11
+   },
+   {
+    "key": "rack1_row4_nest1",
+    "format": "96",
+    "rows": 8,
+    "cols": 12,
+    "label": "Cell-free, lyophilized R1",
+    "plate": "p8",
+    "wells": {
+     "A1": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "A2": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "A3": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "A4": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "B1": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "B2": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "B3": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "B4": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "C1": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "C2": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "C3": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "C4": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "D1": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "D2": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "D3": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "D4": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "E1": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "E2": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "E3": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "E4": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "F1": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "F2": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "F3": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "F4": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "G1": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "G2": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "G3": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "G4": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "H1": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "H2": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "H3": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     },
+     "H4": {
+      "reagent": "cfps_lyo",
+      "note": "round 1, room temperature"
+     }
+    },
+    "filled": 32
+   },
+   {
+    "key": "rack1_row4_nest2",
+    "format": "96",
+    "rows": 8,
+    "cols": 12,
+    "label": "Cell-free, lyophilized R2",
+    "plate": "p13",
+    "wells": {
+     "A1": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "A2": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "A3": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "A4": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "B1": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "B2": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "B3": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "B4": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "C1": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "C2": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "C3": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "C4": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "D1": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "D2": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "D3": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "D4": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "E1": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "E2": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "E3": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "E4": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "F1": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "F2": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "F3": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "F4": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "G1": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "G2": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "G3": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "G4": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "H1": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "H2": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "H3": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     },
+     "H4": {
+      "reagent": "cfps_lyo",
+      "note": "round 2, room temperature"
+     }
+    },
+    "filled": 32
+   },
+   {
+    "key": "rack1_row4_nest3",
+    "format": "96",
+    "rows": 8,
+    "cols": 12,
+    "label": "Cell-free, lyophilized R3",
+    "plate": "p18",
+    "wells": {
+     "A1": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "A2": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "A3": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "A4": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "B1": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "B2": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "B3": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "B4": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "C1": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "C2": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "C3": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "C4": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "D1": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "D2": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "D3": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "D4": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "E1": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "E2": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "E3": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "E4": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "F1": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "F2": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "F3": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "F4": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "G1": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "G2": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "G3": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "G4": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "H1": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "H2": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "H3": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     },
+     "H4": {
+      "reagent": "cfps_lyo",
+      "note": "round 3, room temperature"
+     }
+    },
+    "filled": 32
+   },
+   {
+    "key": "ot2_patrick:A1",
+    "format": "reservoir12",
+    "rows": 1,
+    "cols": 12,
+    "label": "OT-2 reagent reservoir (slot 10)",
+    "plate": null,
+    "wells": {
+     "A1": {
+      "reagent": "water",
+      "note": "8.5 mL used over 3 rounds"
+     }
+    },
+    "filled": 1
+   },
+   {
+    "key": "otflex_sandy:D2",
+    "format": "reservoir12",
+    "rows": 1,
+    "cols": 12,
+    "label": "Flex reagent reservoir (D2)",
+    "plate": null,
+    "wells": {
+     "A1": {
+      "reagent": "water",
+      "note": "2.3 mL used over 3 rounds"
+     },
+     "A6": {
+      "reagent": "fdglu",
+      "note": "9.6 mL used over 3 rounds"
+     },
+     "A12": {
+      "reagent": "rmf_waste",
+      "note": "destination, not a reagent"
+     }
+    },
+    "filled": 3
+   }
+  ]
+ },
  "warnings": []
 }

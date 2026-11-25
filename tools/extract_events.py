@@ -80,6 +80,8 @@ class Extractor:
         self.dirs = {"run_directory": "workflows/run_instrument",
                      "transfers_directory": "workflows/transfers",
                      "protocol_directory": "protocols"}
+        contents_cfg = config / "contents.json"
+        self.contents_raw = json.loads(contents_cfg.read_text()) if contents_cfg.exists() else None
         deck_cfg = config / "deck.json"
         self.deck = json.loads(deck_cfg.read_text()) if deck_cfg.exists() else None
         self.deck_cache = {}
@@ -315,6 +317,67 @@ class Extractor:
             if len(types) > 1:
                 desc = "; ".join(f"{t} in {', '.join(ps)}" for t, ps in types.items())
                 self.warn(0, f"LABWARE MISMATCH {names[pid]} is declared as different labware: {desc}")
+
+    # ---------- starting labware contents (only when config/contents.json exists) ----------
+    FORMATS = {"96": ("ABCDEFGH", 12), "reservoir12": ("A", 12)}
+
+    def expand_wells(self, spec, rows, cols, where):
+        """'A6', 'A1:H8' or a comma-separated mix of both -> a list of well names."""
+        out = []
+        for part in str(spec).split(","):
+            part = part.strip()
+            ends = part.split(":")
+            try:
+                corners = [(r[0], int(r[1:])) for r in ends]
+            except ValueError:
+                self.warn(0, f"contents.json {where}: cannot read well '{part}'")
+                continue
+            (r1, c1), (r2, c2) = (corners[0], corners[-1])
+            if r1 not in rows or r2 not in rows or not (1 <= c1 <= cols) or not (1 <= c2 <= cols):
+                self.warn(0, f"contents.json {where}: well '{part}' is outside a {len(rows)}x{cols} labware")
+                continue
+            for r in rows[min(rows.index(r1), rows.index(r2)):max(rows.index(r1), rows.index(r2)) + 1]:
+                for c in range(min(c1, c2), max(c1, c2) + 1):
+                    out.append(f"{r}{c}")
+        return out
+
+    def build_contents(self):
+        """Starting contents per labware, with well ranges expanded and checked."""
+        cfg = self.contents_raw
+        if not cfg:
+            return None
+        reagents = cfg.get("reagents", {})
+        starts = {p["start"]: p for p in self.plates}
+        out = []
+        for key, entry in (cfg.get("labware") or {}).items():
+            fmt = entry.get("format", "96")
+            if fmt not in self.FORMATS:
+                self.warn(0, f"contents.json {key}: unknown format '{fmt}'")
+                continue
+            rows, cols = self.FORMATS[fmt]
+            wells = {}
+            for fill in entry.get("fill") or []:
+                if fill.get("reagent") not in reagents:
+                    self.warn(0, f"contents.json {key}: unknown reagent '{fill.get('reagent')}'")
+                    continue
+                for w in self.expand_wells(fill.get("wells", ""), rows, cols, key):
+                    if w in wells:
+                        self.warn(0, f"contents.json {key}: well {w} is filled twice")
+                    wells[w] = {"reagent": fill["reagent"], "note": fill.get("note", "")}
+            plate = starts.get(self.canon(key))
+            out.append({"key": key, "format": fmt, "rows": len(rows), "cols": cols,
+                        "label": entry.get("label") or (plate or {}).get("name") or key,
+                        "plate": (plate or {}).get("id"), "wells": wells,
+                        "filled": len(wells)})
+        for key in cfg.get("empty_at_start") or []:
+            plate = starts.get(self.canon(key))
+            if plate is None:
+                self.warn(0, f"contents.json empty_at_start: no plate starts at {key}")
+        known = {c["key"] for c in out} | set(cfg.get("empty_at_start") or [])
+        for loc, plate in starts.items():
+            if loc not in known and plate["kind"] != "tips":
+                self.warn(0, f"contents.json does not say what {plate['name']} holds at the start")
+        return {"reagents": reagents, "labware": out}
 
     # ---------- deck check (only when config/deck.json exists) ----------
     STATIC_WORDS = ("tiprack", "reservoir")
@@ -622,6 +685,7 @@ class Extractor:
             "steps": self.steps,
             "final_state": final,
             "locations": sorted(self.loc_use.values(), key=lambda u: u["name"]),
+            "contents": self.build_contents(),
             "warnings": self.warnings,
         }
 

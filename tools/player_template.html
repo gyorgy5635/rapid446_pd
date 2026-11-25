@@ -196,6 +196,11 @@ svg.mini { width: 100%; height: auto; display: block; }
 .setup-card dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; margin: 0; font-size: 0.78rem; }
 .setup-card dt { color: var(--muted); }
 .setup-card dd { margin: 0; overflow-wrap: anywhere; }
+.wellmap { width: 100%; height: auto; display: block; margin-top: 4px; }
+.wellmap .w { stroke: var(--line); stroke-width: 0.6; fill: var(--slot); }
+.wellmap .lab { font-family: var(--f-mono); font-size: 3.1px; fill: var(--muted); }
+.contents-card .fills { font-size: 0.74rem; color: var(--muted); display: grid; gap: 2px; margin-top: 6px; }
+.contents-card .fills i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 5px; }
 .toast { font-size: 0.8rem; color: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .inst.busy .inst-body { animation: none; } }
 </style>
@@ -260,6 +265,15 @@ svg.mini { width: 100%; height: auto; display: block; }
       <div class="card" id="checks"></div>
     </aside>
   </div>
+
+  <section class="setups" id="contentsSection" hidden>
+    <div class="setups-head">
+      <h2>Starting labware contents</h2>
+      <p class="hint">What is already in each plate and reservoir when the run starts, loaded by hand. Hover a well for the reagent and its note. Everything else starts empty and is filled during the run.</p>
+    </div>
+    <div class="legend" id="reagentLegend" style="margin-bottom:12px"></div>
+    <div class="setup-grid" id="contentsGrid"></div>
+  </section>
 
   <section class="setups">
     <div class="setups-head">
@@ -646,6 +660,7 @@ function buildStatic() {
   if (EV.meta.title) $("pageHead").textContent = EV.meta.title;
   if (TIMING) $("clockLabel").textContent = "";
   buildLocations();
+  buildContents();
   buildSetups();
   $("scrub").max = N;
   $("bands").innerHTML = EV.phases.map((p, i) => `<div style="flex:${p.last - p.first + 1};background:${PH_COLORS[i % PH_COLORS.length]}" title="${p.name}" data-first="${p.first}"></div>`).join("");
@@ -770,6 +785,50 @@ function miniDeck(svgEl, inst, ox, oy, solid, ghost) {
   }
   return geo;
 }
+function buildContents() {
+  const C = EV.contents;
+  if (!C || !C.labware || !C.labware.length) return;
+  $("contentsSection").hidden = false;
+  const colorOf = (r) => `var(--c${(C.reagents[r] || {}).color || 0})`;
+  $("reagentLegend").innerHTML = Object.entries(C.reagents)
+    .map(([k, r]) => `<span class="chip" style="cursor:default"><i style="background:${colorOf(k)}"></i>${esc(r.label)}</span>`).join("");
+
+  const ROWS = "ABCDEFGH";
+  $("contentsGrid").innerHTML = C.labware.map(lw => {
+    // one mini plate: 12 columns across, 8 rows down (a 12-well reservoir is one tall row)
+    const pad = 7, cw = 7.4, ch = lw.rows === 1 ? 20 : 7.4;
+    const w = pad * 2 + lw.cols * cw, h = pad * 2 + lw.rows * ch + 4;
+    let svg = "";
+    for (let c = 1; c <= lw.cols; c++) {
+      svg += `<text class="lab" x="${pad + (c - 0.5) * cw}" y="${pad - 1.5}" text-anchor="middle">${c}</text>`;
+      for (let r = 0; r < lw.rows; r++) {
+        const name = `${ROWS[r]}${c}`, fill = lw.wells[name];
+        const cx = pad + (c - 0.5) * cw, cy = pad + 2 + (r + 0.5) * ch;
+        const style = fill ? ` style="fill:${colorOf(fill.reagent)}"` : "";
+        const tip = fill ? `${name} · ${esc((C.reagents[fill.reagent] || {}).label || fill.reagent)}${fill.note ? " · " + esc(fill.note) : ""}`
+                         : `${name} · empty`;
+        svg += lw.rows === 1
+          ? `<rect class="w" x="${cx - cw / 2 + 0.7}" y="${pad + 2}" width="${cw - 1.4}" height="${ch - 1.4}" rx="1.2"${style}><title>${tip}</title></rect>`
+          : `<circle class="w" cx="${cx}" cy="${cy}" r="${cw / 2 - 0.9}"${style}><title>${tip}</title></circle>`;
+      }
+    }
+    const used = {};
+    for (const f of Object.values(lw.wells)) {
+      const k = f.reagent + "|" + f.note;
+      used[k] = (used[k] || 0) + 1;
+    }
+    const lines = Object.entries(used).map(([k, n]) => {
+      const [reagent, note] = k.split("|");
+      return `<div><i style="background:${colorOf(reagent)}"></i>${n} well${n > 1 ? "s" : ""} · ${esc((C.reagents[reagent] || {}).label || reagent)}${note ? " — " + esc(note) : ""}</div>`;
+    }).join("");
+    return `<div class="setup-card contents-card">
+      <h3 style="margin:0;font-size:0.95rem">${esc(lw.label)}</h3>
+      <svg class="wellmap" viewBox="0 0 ${w} ${h}" role="img" aria-label="Filled wells of ${esc(lw.label)}">${svg}</svg>
+      <div class="fills">${lines}</div>
+    </div>`;
+  }).join("");
+}
+
 function buildSetups() {
   const ot2 = layout.instruments.find(i => i.kind === "ot2"), flex = layout.instruments.find(i => i.kind === "flex");
   const box = $("setups"); box.innerHTML = "";

@@ -139,6 +139,22 @@ single-tip moves (see the Flex layout), and the GG and PCR plates disagreed abou
 
 A 12-well reservoir holds 15 mL per well, so each fits, but the FDGlu well at 9.6 mL has the least room to spare.
 
+## Starting labware contents
+
+`config/contents.json` records what is loaded by hand before the run, and the player draws it as a
+well map per labware:
+
+| Labware | Filled at the start |
+|---|---|
+| Fragments plate | columns 1-8 fragment stocks, column 9 Golden Gate mix (3x volume), columns 10/11/12 PCR mix for rounds 1/2/3 |
+| Controls plate | column 1 (into the dilution plate) and wells 22-24 (into the FDGlu plate), every round |
+| Cell-free plates | columns 1-4, lyophilized, room temperature (one plate per round) |
+| OT-2 reservoir, slot 10 | A1 water |
+| Flex reservoir, D2 | A1 water, A6 FDGlu substrate, A12 empty and receives the removed RMF |
+
+Everything else starts empty and is listed in `empty_at_start`, so the extractor can warn when a
+plate is neither described nor declared empty.
+
 ## Checks the run map now does
 
 `./build.sh` follows the round loop (3 iterations) and tracks every plate. For this version (it has `config/deck.json`)

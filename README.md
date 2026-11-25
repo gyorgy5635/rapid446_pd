@@ -60,6 +60,14 @@ otherwise is shown as waiting time. Steps with no match keep their estimate, and
 every duration as measured, from code, or estimate.
 `tests/make_synthetic_history.py` produces a fake export for testing. Never copy its output into `viz/`.
 
+## Starting labware contents
+If a version has `config/contents.json`, the player shows a well map per plate and reservoir: which
+wells are filled before the run and with what. Wells take a single name (`A6`), a rectangular range
+(`A1:H8`) or a comma-separated mix, and each fill names a reagent from the file's `reagents` block.
+The extractor checks every range against the labware format and warns about unknown reagents,
+wells filled twice and tracked plates the file says nothing about. Plates that start empty go in
+`empty_at_start` so the check stays meaningful.
+
 ## Deck setup by phase
 Under the map there is one OT-2 + Flex picture per phase, generated from the tracked state.
 Solid plates are on the deck when the phase starts. Dashed plates are brought in during the phase,
@@ -96,6 +104,7 @@ All paths below are inside `protocols/<version>/`.
 | `config/durations.json` | duration estimates; `protocol.delay()` calls found in protocols are added automatically |
 | `config/source.json`    | name and title shown in the player, repo/branch/commit, link base for source lines |
 | `config/deck.json`      | optional: maps PF400 locations to Opentrons deck slots and turns on the deck check |
+| `config/contents.json`  | optional: which wells each plate and reservoir holds at the start, drawn as well maps in the player |
 
 To change the layout, use **Edit layout** in the player: drag the instruments, click
 **Copy layout JSON**, paste the result into `config/layout.json`, then run `./build.sh`.
