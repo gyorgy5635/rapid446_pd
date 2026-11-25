@@ -36,6 +36,9 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
 - Durations are estimates. The lab server (146.137.240.20) was unreachable from the original machine; real timings need
   `tools/export_madsci_history.py` run on the lab network, with the output saved to `protocols/<version>/viz/madsci_history.json`.
 - Upstream bug noted: in full_run.py, `A4_to_A2` points at `pcr_A2_to_A4.py` (only used in a commented-out block).
+- Upstream bug noted: `cell_free_pd_ot2_v2.py` did not declare the controls plate parked on OT-2 D1, so the robot
+  did not know it was there. Fixed in `full_protocol_24_20261124` by declaring it (no pipetting change); the
+  baseline still has it, deliberately untouched.
 - Versions: `full_protocol_24_20261124` = single run, SYBR Green removed, controls rack → OT-2.
   `full_protocol_24_3round` = 3-round experiment (user requirements 2026-11-24); its `PLAN.md` holds the decisions,
   tip plan, assumptions and open items. Placeholder MADSci names there: `cold_block_ext`, `rack2_row1_nest1`.

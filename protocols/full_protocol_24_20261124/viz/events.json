@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24",
   "script_url": null,
-  "generated": "2026-11-25T16:37:33",
+  "generated": "2026-11-25T16:45:14",
   "workflow_calls": 63,
   "steps": 119,
   "pf400_moves": 68,
@@ -4156,10 +4156,5 @@
    }
   ]
  },
- "warnings": [
-  {
-   "line": 1100,
-   "message": "COLLISION RISK cell_free_pd_ot2_v2.py: Controls (Opentrons Tough PCR) is on ot2_patrick D1, but the protocol does not know it is there"
-  }
- ]
+ "warnings": []
 }
