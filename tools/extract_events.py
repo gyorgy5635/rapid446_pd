@@ -355,17 +355,23 @@ class Extractor:
                 self.warn(0, f"contents.json {key}: unknown format '{fmt}'")
                 continue
             rows, cols = self.FORMATS[fmt]
+            cap = entry.get("capacity_ul")
             wells = {}
             for fill in entry.get("fill") or []:
                 if fill.get("reagent") not in reagents:
                     self.warn(0, f"contents.json {key}: unknown reagent '{fill.get('reagent')}'")
                     continue
+                vol = fill.get("volume_ul")
+                if cap and vol and vol > cap:
+                    self.warn(0, f"contents.json {key}: {fill['wells']} starts with {vol} uL but the well holds {cap}")
                 for w in self.expand_wells(fill.get("wells", ""), rows, cols, key):
                     if w in wells:
                         self.warn(0, f"contents.json {key}: well {w} is filled twice")
                     wells[w] = {"reagent": fill["reagent"], "note": fill.get("note", "")}
+                    if vol is not None:
+                        wells[w]["volume_ul"] = vol
             plate = starts.get(self.canon(key))
-            out.append({"key": key, "format": fmt, "rows": len(rows), "cols": cols,
+            out.append({"key": key, "format": fmt, "rows": len(rows), "cols": cols, "capacity_ul": cap,
                         "label": entry.get("label") or (plate or {}).get("name") or key,
                         "plate": (plate or {}).get("id"), "wells": wells,
                         "filled": len(wells)})

@@ -35,12 +35,13 @@ def well_list(well, channels):
     return [well]
 
 
-def take(comp, pure, volume):
+def take(comp, pure, volume, short_note=None):
     """Remove `volume` from a well, proportionally to what is in it; return what came out.
 
-    A well that config/contents.json declares (a reagent stock, a reservoir, a lyophilised cake) is
-    a source of unknown size, so once its recorded contents run out the rest comes from that
-    declared reagent rather than going negative. A well nothing declared yields "unknown".
+    A well whose starting volume contents.json gives is finite: drawing more than it holds is a
+    real shortfall and is recorded, not quietly topped up. A well that is declared without a volume
+    is a stock of unknown size, so the remainder comes from that reagent. A well nothing declares
+    at all yields "unknown".
     """
     out, total = {}, sum(comp.values())
     if total > 1e-9:
@@ -53,7 +54,13 @@ def take(comp, pure, volume):
                 del comp[r]
     short = volume - sum(out.values())
     if short > 1e-9:
-        out[pure or "unknown"] = out.get(pure or "unknown", 0.0) + short
+        if short_note is not None:
+            # a well of known volume that has nothing left: the pipette takes air, and the caller
+            # reports the shortfall. "unknown" stays reserved for a gap in contents.json.
+            short_note.append(round(short, 1))
+            out["air"] = out.get("air", 0.0) + short
+        else:
+            out[pure or "unknown"] = out.get(pure or "unknown", 0.0) + short
     return out
 
 
@@ -68,7 +75,7 @@ def timeline(log, lw_state):
     An 8-channel step is modelled as one payload shared by its channels: each well of a column
     normally holds the same thing, so the mixture carried is their average.
     """
-    out, active, carried = [], {}, defaultdict(dict)
+    out, active, carried = [], {}, defaultdict(dict)   # mount -> {channel index: mixture}
     mix_level = None          # inside a mix(): its own aspirate/dispense pairs move nothing
     for cmd in log:
         kind, level = cmd["kind"], cmd.get("level", 0)
@@ -88,39 +95,47 @@ def timeline(log, lw_state):
         elif kind == "pick_up_tip":
             entry["tips"] = well_list(cmd["well"], n)
         elif kind in ("aspirate", "dispense") and mix_level is None and key and cmd["volume"] is not None:
-            st = lw_state.setdefault(key, {"comp": {}, "pure": {}, "reservoir": "reservoir" in cmd["labware"]})
-            wells = [cmd["well"]] if st["reservoir"] else well_list(cmd["well"], n)
-            per = cmd["volume"] * n if st["reservoir"] else cmd["volume"]
+            st = lw_state.setdefault(key, {"comp": {}, "pure": {}, "sized": set(),
+                                           "reservoir": "reservoir" in cmd["labware"]})
+            # Each channel is followed separately: a column is not always uniform (the FDGlu run
+            # empties three wells of one column), so averaging the payload would invent liquid.
+            chan = [cmd["well"]] * n if st["reservoir"] else well_list(cmd["well"], n)
+            wells = [cmd["well"]] if st["reservoir"] else chan
             entry["wells"] = wells
-            entry["dv"] = per if kind == "dispense" else -per
-            payload = carried[cmd["mount"]]
+            entry["dv"] = (cmd["volume"] * n if st["reservoir"] else cmd["volume"]) * (1 if kind == "dispense" else -1)
+            held = carried[cmd["mount"]]
+            moved = defaultdict(dict)      # well -> mixture moved in or out
             if kind == "aspirate":
-                got = {}
-                for w in wells:
-                    for r, v in take(st["comp"].setdefault(w, {}), st["pure"].get(w), per).items():
-                        got[r] = got.get(r, 0.0) + v
-                for r, v in got.items():
-                    payload[r] = payload.get(r, 0.0) + v
-                entry["comp"] = {r: round(v / len(wells), 3) for r, v in got.items()}
+                held.clear()
+                for i, w in enumerate(chan):
+                    short = [] if w in st["sized"] else None
+                    got = take(st["comp"].setdefault(w, {}), st["pure"].get(w), cmd["volume"], short)
+                    held[i] = got
+                    for r, v in got.items():
+                        moved[w][r] = moved[w].get(r, 0.0) + v
+                    if short:
+                        entry.setdefault("dry", []).append([w, short[0]])
             else:
-                total_out, held = per * len(wells), sum(payload.values())
-                share = {}
-                if held > 1e-9:
-                    frac = min(1.0, total_out / held)
-                    for r, v in list(payload.items()):
-                        moved = v * frac
-                        share[r] = moved
-                        payload[r] = v - moved
-                        if payload[r] < 1e-9:
-                            del payload[r]
-                short = total_out - sum(share.values())
-                if short > 1e-9:
-                    share["unknown"] = share.get("unknown", 0.0) + short
-                entry["comp"] = {r: round(v / len(wells), 3) for r, v in share.items()}
-                for w in wells:
+                for i, w in enumerate(chan):
+                    pay = held.get(i, {})
+                    total_held = sum(pay.values())
+                    give = {}
+                    if total_held > 1e-9:
+                        frac = min(1.0, cmd["volume"] / total_held)
+                        for r, v in list(pay.items()):
+                            give[r] = v * frac
+                            pay[r] = v - give[r]
+                            if pay[r] < 1e-9:
+                                del pay[r]
+                    rest = cmd["volume"] - sum(give.values())
+                    if rest > 1e-9:
+                        give["air"] = give.get("air", 0.0) + rest
                     comp = st["comp"].setdefault(w, {})
-                    for r, v in share.items():
-                        comp[r] = comp.get(r, 0.0) + v / len(wells)
+                    for r, v in give.items():
+                        comp[r] = comp.get(r, 0.0) + v
+                        moved[w][r] = moved[w].get(r, 0.0) + v
+            entry["comps"] = {w: {r: round(v, 3) for r, v in mix.items() if abs(v) > 1e-6}
+                              for w, mix in moved.items()}
         out.append(entry)
     return out
 
@@ -146,6 +161,12 @@ def totals(timeline_):
                 cell["in" if e["dv"] > 0 else "out"] += abs(e["dv"])
                 cell["touched"] += 1
     return labware
+
+
+def cards_name(deck, node, slot, run, names):
+    """Friendly name of the labware on a deck slot, for a warning line."""
+    coord = OT2_SLOT_COORD.get(slot, slot) if run["robot"] == "OT-2" else slot
+    return names.get(deck.get(coord))
 
 
 def main():
@@ -177,11 +198,11 @@ def main():
     out_dir = base / "viz" / "liquid"
     out_dir.mkdir(parents=True, exist_ok=True)
     template = a.template.read_text()
-    index, written, unknown = [], 0, []
+    index, written, unknown, dry = [], 0, [], []
 
     # What each plate holds, carried from one run to the next: the dilution run has to see the PCR
     # products the PCR run put there. Keyed by tracked plate id, or by node:slot for a reservoir.
-    world = {}
+    world, seeded = {}, set()
 
     def identity(plate_id, node, coord):
         return plate_id or f"{node}:{coord}"
@@ -207,8 +228,16 @@ def main():
             ident = identity(deck.get(coord), node, coord)
             start = start_by_plate.get(deck.get(coord)) or start_by_key.get(f"{node}:{coord}") or {}
             held = world.setdefault(ident, {})
+            declared = start.get("wells") or {}
+            if ident not in seeded:          # first run to use this labware: load the stocks
+                for w, f in declared.items():
+                    if f.get("volume_ul"):
+                        held.setdefault(w, {})[f["reagent"]] = float(f["volume_ul"])
+                seeded.add(ident)
             lw_state[key] = {"comp": held,
-                             "pure": {w: f["reagent"] for w, f in (start.get("wells") or {}).items()},
+                             "pure": {w: f["reagent"] for w, f in declared.items()
+                                      if f.get("volume_ul") is None},
+                             "sized": {w for w, f in declared.items() if f.get("volume_ul") is not None},
                              "reservoir": "reservoir" in cmd["labware"]}
             ident_of[key] = ident
         before = {k: json.loads(json.dumps(v["comp"])) for k, v in lw_state.items()}
@@ -220,6 +249,10 @@ def main():
         for e in tl:
             if "unknown" in (e.get("comp") or {}):
                 unknown.append(f"round {run['round']} {run['protocol']}: {e['t'][:90]}")
+            for w, missing in e.get("dry") or []:
+                dry.append(f"round {run['round']} {run['protocol']}: {w} of "
+                           f"{cards_name(deck, node, e['s'], run, plate_names) or e['lw']} "
+                           f"is {missing} uL short")
         cards = []
         for key, lw in sorted(state.items()):
             load_name, slot = key.split("|")
@@ -257,6 +290,10 @@ def main():
 
     (out_dir / "index.json").write_text(json.dumps(index, indent=1))
     print(f"wrote {written} liquid pages to {out_dir}")
+    if dry:
+        print(f"  {len(dry)} well(s) run dry; first few:")
+        for line in dry[:5]:
+            print(f"    {line}")
     if unknown:
         print(f"  {len(unknown)} command(s) move liquid of unknown origin; first few:")
         for line in unknown[:5]:

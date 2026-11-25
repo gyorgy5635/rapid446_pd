@@ -1,64 +1,181 @@
 {
-  "_comment": "What is already in each piece of labware when the run starts, so the run map can show which wells are filled. Keys are either a tracked plate's starting location (same keys as plates.json) or '<node>:<deck slot>' for a reservoir that never moves. 'wells' takes a single well (A6), a rectangular range (A1:H8) or a comma-separated list. Filled wells are shown as loaded by hand before the run; plates that start empty are listed in 'empty_at_start' instead.",
+  "_comment": "What is already in each piece of labware when the run starts, so the run map can show which wells are filled and the liquid pages can tell when a stock runs dry. Keys are either a tracked plate's starting location (same keys as plates.json) or '<node>:<deck slot>' for a reservoir that never moves. 'wells' takes a single well (A6), a rectangular range (A1:H8) or a comma-separated list. volume_ul is what each of those wells holds at the start: the simulated consumption over 3 rounds plus dead volume, so these are PROPOSED loading volumes, not measured ones. capacity_ul is the labware's well capacity, checked against volume_ul.",
   "reagents": {
-    "fragments": {"label": "Fragment stocks", "color": 1},
-    "gg_mix": {"label": "Golden Gate master mix (3x volume, shared by all rounds)", "color": 2},
-    "pcr_mix": {"label": "PCR master mix (one column per round)", "color": 3},
-    "controls": {"label": "Controls", "color": 4},
-    "cfps_lyo": {"label": "Cell-free reagents, lyophilized", "color": 8},
-    "water": {"label": "Water", "color": 6},
-    "fdglu": {"label": "FDGlu substrate", "color": 9},
-    "rmf_waste": {"label": "Empty: receives the RMF removed from the cell-free plate", "color": 0}
+    "fragments": {
+      "label": "Fragment stocks",
+      "color": 1
+    },
+    "gg_mix": {
+      "label": "Golden Gate master mix (3x volume, shared by all rounds)",
+      "color": 2
+    },
+    "pcr_mix": {
+      "label": "PCR master mix (one column per round)",
+      "color": 3
+    },
+    "controls": {
+      "label": "Controls",
+      "color": 4
+    },
+    "cfps_lyo": {
+      "label": "Cell-free reagents, lyophilized",
+      "color": 8
+    },
+    "water": {
+      "label": "Water",
+      "color": 6
+    },
+    "fdglu": {
+      "label": "FDGlu substrate",
+      "color": 9
+    },
+    "rmf_waste": {
+      "label": "Empty: receives the RMF removed from the cell-free plate",
+      "color": 0
+    }
   },
   "labware": {
     "cold_block_ext": {
       "format": "96",
       "fill": [
-        {"wells": "A1:H8", "reagent": "fragments", "note": "columns 1-8, sources picked per combination"},
-        {"wells": "A9:H9", "reagent": "gg_mix", "note": "3x volume: one column serves all 3 rounds"},
-        {"wells": "A10:H10", "reagent": "pcr_mix", "note": "round 1"},
-        {"wells": "A11:H11", "reagent": "pcr_mix", "note": "round 2"},
-        {"wells": "A12:H12", "reagent": "pcr_mix", "note": "round 3"}
-      ]
+        {
+          "wells": "A1:H8",
+          "reagent": "fragments",
+          "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+          "volume_ul": 150
+        },
+        {
+          "wells": "A9:H9",
+          "reagent": "gg_mix",
+          "note": "3x volume: 108 µL is drawn per well over the 3 rounds",
+          "volume_ul": 150
+        },
+        {
+          "wells": "A10:H10",
+          "reagent": "pcr_mix",
+          "note": "72 µL drawn in round 1",
+          "volume_ul": 120
+        },
+        {
+          "wells": "A11:H11",
+          "reagent": "pcr_mix",
+          "note": "72 µL drawn in round 2",
+          "volume_ul": 120
+        },
+        {
+          "wells": "A12:H12",
+          "reagent": "pcr_mix",
+          "note": "72 µL drawn in round 3",
+          "volume_ul": 120
+        }
+      ],
+      "capacity_ul": 200
     },
     "rack2_row1_nest1": {
       "format": "96",
       "fill": [
-        {"wells": "A1:H1", "reagent": "controls", "note": "column 1: into the dilution plate, every round"},
-        {"wells": "F3:H3", "reagent": "controls", "note": "wells 22-24: into the FDGlu plate, every round"}
-      ]
+        {
+          "wells": "A1:H1",
+          "reagent": "controls",
+          "note": "60 µL drawn over 3 rounds, into the dilution plate",
+          "volume_ul": 100
+        },
+        {
+          "wells": "F3:H3",
+          "reagent": "controls",
+          "note": "60 µL drawn over 3 rounds, into the FDGlu plate",
+          "volume_ul": 100
+        }
+      ],
+      "capacity_ul": 200
     },
     "rack1_row4_nest1": {
       "format": "96",
-      "fill": [{"wells": "A1:H4", "reagent": "cfps_lyo", "note": "round 1, room temperature"}]
+      "fill": [
+        {
+          "wells": "A1:H4",
+          "reagent": "cfps_lyo",
+          "note": "lyophilised: dry until the run adds 24 µL of water",
+          "volume_ul": 0
+        }
+      ],
+      "capacity_ul": 200
     },
     "rack1_row4_nest2": {
       "format": "96",
-      "fill": [{"wells": "A1:H4", "reagent": "cfps_lyo", "note": "round 2, room temperature"}]
+      "fill": [
+        {
+          "wells": "A1:H4",
+          "reagent": "cfps_lyo",
+          "note": "lyophilised: dry until the run adds 24 µL of water",
+          "volume_ul": 0
+        }
+      ],
+      "capacity_ul": 200
     },
     "rack1_row4_nest3": {
       "format": "96",
-      "fill": [{"wells": "A1:H4", "reagent": "cfps_lyo", "note": "round 3, room temperature"}]
+      "fill": [
+        {
+          "wells": "A1:H4",
+          "reagent": "cfps_lyo",
+          "note": "lyophilised: dry until the run adds 24 µL of water",
+          "volume_ul": 0
+        }
+      ],
+      "capacity_ul": 200
     },
     "ot2_patrick:A1": {
       "format": "reservoir12",
       "label": "OT-2 reagent reservoir (slot 10)",
-      "fill": [{"wells": "A1", "reagent": "water", "note": "8.5 mL used over 3 rounds"}]
+      "fill": [
+        {
+          "wells": "A1",
+          "reagent": "water",
+          "note": "8.5 mL drawn over 3 rounds, plus dead volume",
+          "volume_ul": 10000
+        }
+      ],
+      "capacity_ul": 15000
     },
     "otflex_sandy:D2": {
       "format": "reservoir12",
       "label": "Flex reagent reservoir (D2)",
       "fill": [
-        {"wells": "A1", "reagent": "water", "note": "2.3 mL used over 3 rounds"},
-        {"wells": "A6", "reagent": "fdglu", "note": "9.6 mL used over 3 rounds"},
-        {"wells": "A12", "reagent": "rmf_waste", "note": "destination, not a reagent"}
-      ]
+        {
+          "wells": "A1",
+          "reagent": "water",
+          "note": "2.3 mL drawn over 3 rounds, plus dead volume",
+          "volume_ul": 4000
+        },
+        {
+          "wells": "A6",
+          "reagent": "fdglu",
+          "note": "9.6 mL drawn over 3 rounds, plus dead volume",
+          "volume_ul": 11000
+        },
+        {
+          "wells": "A12",
+          "reagent": "rmf_waste",
+          "note": "starts empty: it receives the RMF removed from the cell-free plate",
+          "volume_ul": 0
+        }
+      ],
+      "capacity_ul": 15000
     }
   },
   "empty_at_start": [
-    "rack1_row1_nest1", "rack1_row1_nest2", "rack1_row1_nest3",
-    "rack1_row2_nest1", "rack1_row2_nest2", "rack1_row2_nest3",
-    "rack1_row3_nest1", "rack1_row3_nest2", "rack1_row3_nest3",
-    "rack1_row5_nest1", "rack1_row5_nest2", "rack1_row5_nest3"
+    "rack1_row1_nest1",
+    "rack1_row1_nest2",
+    "rack1_row1_nest3",
+    "rack1_row2_nest1",
+    "rack1_row2_nest2",
+    "rack1_row2_nest3",
+    "rack1_row3_nest1",
+    "rack1_row3_nest2",
+    "rack1_row3_nest3",
+    "rack1_row5_nest1",
+    "rack1_row5_nest2",
+    "rack1_row5_nest3"
   ]
 }

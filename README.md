@@ -64,8 +64,11 @@ every duration as measured, from code, or estimate.
 If a version has `config/contents.json`, the player shows a well map per plate and reservoir: which
 wells are filled before the run and with what. Wells take a single name (`A6`), a rectangular range
 (`A1:H8`) or a comma-separated mix, and each fill names a reagent from the file's `reagents` block.
-The extractor checks every range against the labware format and warns about unknown reagents,
-wells filled twice and tracked plates the file says nothing about. Plates that start empty go in
+Each fill can also carry `volume_ul`, what that well holds at the start, with `capacity_ul` per
+labware. The extractor checks every range against the labware format and warns about unknown
+reagents, wells filled twice, a starting volume over the well's capacity, and tracked plates the
+file says nothing about. A declared volume makes the stock finite on the liquid pages, so drawing
+more than it holds is reported as a shortfall instead of being topped up silently. Plates that start empty go in
 `empty_at_start` so the check stays meaningful.
 
 ## Deck setup by phase

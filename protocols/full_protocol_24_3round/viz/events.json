@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24_20261124",
   "script_url": null,
-  "generated": "2026-11-25T14:54:38",
+  "generated": "2026-11-25T16:13:42",
   "workflow_calls": 184,
   "steps": 386,
   "pf400_moves": 237,
@@ -10749,392 +10749,489 @@
     "format": "96",
     "rows": 8,
     "cols": 12,
+    "capacity_ul": 200,
     "label": "Fragments, tough plate (sealed; GG mix col 9, PCR mix col 10-12)",
     "plate": "p1",
     "wells": {
      "A1": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "A2": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "A3": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "A4": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "A5": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "A6": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "A7": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "A8": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "B1": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "B2": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "B3": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "B4": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "B5": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "B6": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "B7": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "B8": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "C1": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "C2": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "C3": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "C4": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "C5": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "C6": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "C7": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "C8": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "D1": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "D2": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "D3": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "D4": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "D5": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "D6": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "D7": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "D8": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "E1": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "E2": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "E3": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "E4": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "E5": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "E6": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "E7": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "E8": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "F1": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "F2": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "F3": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "F4": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "F5": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "F6": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "F7": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "F8": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "G1": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "G2": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "G3": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "G4": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "G5": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "G6": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "G7": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "G8": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "H1": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "H2": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "H3": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "H4": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "H5": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "H6": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "H7": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "H8": {
       "reagent": "fragments",
-      "note": "columns 1-8, sources picked per combination"
+      "note": "150 µL each; the heaviest-used stock gives up 72 µL over 3 rounds",
+      "volume_ul": 150
      },
      "A9": {
       "reagent": "gg_mix",
-      "note": "3x volume: one column serves all 3 rounds"
+      "note": "3x volume: 108 µL is drawn per well over the 3 rounds",
+      "volume_ul": 150
      },
      "B9": {
       "reagent": "gg_mix",
-      "note": "3x volume: one column serves all 3 rounds"
+      "note": "3x volume: 108 µL is drawn per well over the 3 rounds",
+      "volume_ul": 150
      },
      "C9": {
       "reagent": "gg_mix",
-      "note": "3x volume: one column serves all 3 rounds"
+      "note": "3x volume: 108 µL is drawn per well over the 3 rounds",
+      "volume_ul": 150
      },
      "D9": {
       "reagent": "gg_mix",
-      "note": "3x volume: one column serves all 3 rounds"
+      "note": "3x volume: 108 µL is drawn per well over the 3 rounds",
+      "volume_ul": 150
      },
      "E9": {
       "reagent": "gg_mix",
-      "note": "3x volume: one column serves all 3 rounds"
+      "note": "3x volume: 108 µL is drawn per well over the 3 rounds",
+      "volume_ul": 150
      },
      "F9": {
       "reagent": "gg_mix",
-      "note": "3x volume: one column serves all 3 rounds"
+      "note": "3x volume: 108 µL is drawn per well over the 3 rounds",
+      "volume_ul": 150
      },
      "G9": {
       "reagent": "gg_mix",
-      "note": "3x volume: one column serves all 3 rounds"
+      "note": "3x volume: 108 µL is drawn per well over the 3 rounds",
+      "volume_ul": 150
      },
      "H9": {
       "reagent": "gg_mix",
-      "note": "3x volume: one column serves all 3 rounds"
+      "note": "3x volume: 108 µL is drawn per well over the 3 rounds",
+      "volume_ul": 150
      },
      "A10": {
       "reagent": "pcr_mix",
-      "note": "round 1"
+      "note": "72 µL drawn in round 1",
+      "volume_ul": 120
      },
      "B10": {
       "reagent": "pcr_mix",
-      "note": "round 1"
+      "note": "72 µL drawn in round 1",
+      "volume_ul": 120
      },
      "C10": {
       "reagent": "pcr_mix",
-      "note": "round 1"
+      "note": "72 µL drawn in round 1",
+      "volume_ul": 120
      },
      "D10": {
       "reagent": "pcr_mix",
-      "note": "round 1"
+      "note": "72 µL drawn in round 1",
+      "volume_ul": 120
      },
      "E10": {
       "reagent": "pcr_mix",
-      "note": "round 1"
+      "note": "72 µL drawn in round 1",
+      "volume_ul": 120
      },
      "F10": {
       "reagent": "pcr_mix",
-      "note": "round 1"
+      "note": "72 µL drawn in round 1",
+      "volume_ul": 120
      },
      "G10": {
       "reagent": "pcr_mix",
-      "note": "round 1"
+      "note": "72 µL drawn in round 1",
+      "volume_ul": 120
      },
      "H10": {
       "reagent": "pcr_mix",
-      "note": "round 1"
+      "note": "72 µL drawn in round 1",
+      "volume_ul": 120
      },
      "A11": {
       "reagent": "pcr_mix",
-      "note": "round 2"
+      "note": "72 µL drawn in round 2",
+      "volume_ul": 120
      },
      "B11": {
       "reagent": "pcr_mix",
-      "note": "round 2"
+      "note": "72 µL drawn in round 2",
+      "volume_ul": 120
      },
      "C11": {
       "reagent": "pcr_mix",
-      "note": "round 2"
+      "note": "72 µL drawn in round 2",
+      "volume_ul": 120
      },
      "D11": {
       "reagent": "pcr_mix",
-      "note": "round 2"
+      "note": "72 µL drawn in round 2",
+      "volume_ul": 120
      },
      "E11": {
       "reagent": "pcr_mix",
-      "note": "round 2"
+      "note": "72 µL drawn in round 2",
+      "volume_ul": 120
      },
      "F11": {
       "reagent": "pcr_mix",
-      "note": "round 2"
+      "note": "72 µL drawn in round 2",
+      "volume_ul": 120
      },
      "G11": {
       "reagent": "pcr_mix",
-      "note": "round 2"
+      "note": "72 µL drawn in round 2",
+      "volume_ul": 120
      },
      "H11": {
       "reagent": "pcr_mix",
-      "note": "round 2"
+      "note": "72 µL drawn in round 2",
+      "volume_ul": 120
      },
      "A12": {
       "reagent": "pcr_mix",
-      "note": "round 3"
+      "note": "72 µL drawn in round 3",
+      "volume_ul": 120
      },
      "B12": {
       "reagent": "pcr_mix",
-      "note": "round 3"
+      "note": "72 µL drawn in round 3",
+      "volume_ul": 120
      },
      "C12": {
       "reagent": "pcr_mix",
-      "note": "round 3"
+      "note": "72 µL drawn in round 3",
+      "volume_ul": 120
      },
      "D12": {
       "reagent": "pcr_mix",
-      "note": "round 3"
+      "note": "72 µL drawn in round 3",
+      "volume_ul": 120
      },
      "E12": {
       "reagent": "pcr_mix",
-      "note": "round 3"
+      "note": "72 µL drawn in round 3",
+      "volume_ul": 120
      },
      "F12": {
       "reagent": "pcr_mix",
-      "note": "round 3"
+      "note": "72 µL drawn in round 3",
+      "volume_ul": 120
      },
      "G12": {
       "reagent": "pcr_mix",
-      "note": "round 3"
+      "note": "72 µL drawn in round 3",
+      "volume_ul": 120
      },
      "H12": {
       "reagent": "pcr_mix",
-      "note": "round 3"
+      "note": "72 µL drawn in round 3",
+      "volume_ul": 120
      }
     },
     "filled": 96
@@ -11144,52 +11241,64 @@
     "format": "96",
     "rows": 8,
     "cols": 12,
+    "capacity_ul": 200,
     "label": "Controls (Opentrons Tough PCR)",
     "plate": "p4",
     "wells": {
      "A1": {
       "reagent": "controls",
-      "note": "column 1: into the dilution plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the dilution plate",
+      "volume_ul": 100
      },
      "B1": {
       "reagent": "controls",
-      "note": "column 1: into the dilution plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the dilution plate",
+      "volume_ul": 100
      },
      "C1": {
       "reagent": "controls",
-      "note": "column 1: into the dilution plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the dilution plate",
+      "volume_ul": 100
      },
      "D1": {
       "reagent": "controls",
-      "note": "column 1: into the dilution plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the dilution plate",
+      "volume_ul": 100
      },
      "E1": {
       "reagent": "controls",
-      "note": "column 1: into the dilution plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the dilution plate",
+      "volume_ul": 100
      },
      "F1": {
       "reagent": "controls",
-      "note": "column 1: into the dilution plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the dilution plate",
+      "volume_ul": 100
      },
      "G1": {
       "reagent": "controls",
-      "note": "column 1: into the dilution plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the dilution plate",
+      "volume_ul": 100
      },
      "H1": {
       "reagent": "controls",
-      "note": "column 1: into the dilution plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the dilution plate",
+      "volume_ul": 100
      },
      "F3": {
       "reagent": "controls",
-      "note": "wells 22-24: into the FDGlu plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the FDGlu plate",
+      "volume_ul": 100
      },
      "G3": {
       "reagent": "controls",
-      "note": "wells 22-24: into the FDGlu plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the FDGlu plate",
+      "volume_ul": 100
      },
      "H3": {
       "reagent": "controls",
-      "note": "wells 22-24: into the FDGlu plate, every round"
+      "note": "60 µL drawn over 3 rounds, into the FDGlu plate",
+      "volume_ul": 100
      }
     },
     "filled": 11
@@ -11199,136 +11308,169 @@
     "format": "96",
     "rows": 8,
     "cols": 12,
+    "capacity_ul": 200,
     "label": "Cell-free, lyophilized R1",
     "plate": "p8",
     "wells": {
      "A1": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "A2": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "A3": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "A4": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B1": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B2": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B3": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B4": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C1": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C2": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C3": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C4": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D1": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D2": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D3": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D4": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E1": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E2": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E3": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E4": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F1": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F2": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F3": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F4": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G1": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G2": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G3": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G4": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H1": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H2": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H3": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H4": {
       "reagent": "cfps_lyo",
-      "note": "round 1, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      }
     },
     "filled": 32
@@ -11338,136 +11480,169 @@
     "format": "96",
     "rows": 8,
     "cols": 12,
+    "capacity_ul": 200,
     "label": "Cell-free, lyophilized R2",
     "plate": "p13",
     "wells": {
      "A1": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "A2": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "A3": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "A4": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B1": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B2": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B3": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B4": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C1": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C2": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C3": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C4": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D1": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D2": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D3": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D4": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E1": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E2": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E3": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E4": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F1": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F2": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F3": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F4": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G1": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G2": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G3": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G4": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H1": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H2": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H3": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H4": {
       "reagent": "cfps_lyo",
-      "note": "round 2, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      }
     },
     "filled": 32
@@ -11477,136 +11652,169 @@
     "format": "96",
     "rows": 8,
     "cols": 12,
+    "capacity_ul": 200,
     "label": "Cell-free, lyophilized R3",
     "plate": "p18",
     "wells": {
      "A1": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "A2": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "A3": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "A4": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B1": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B2": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B3": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "B4": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C1": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C2": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C3": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "C4": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D1": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D2": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D3": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "D4": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E1": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E2": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E3": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "E4": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F1": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F2": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F3": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "F4": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G1": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G2": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G3": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "G4": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H1": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H2": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H3": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      },
      "H4": {
       "reagent": "cfps_lyo",
-      "note": "round 3, room temperature"
+      "note": "lyophilised: dry until the run adds 24 µL of water",
+      "volume_ul": 0
      }
     },
     "filled": 32
@@ -11616,12 +11824,14 @@
     "format": "reservoir12",
     "rows": 1,
     "cols": 12,
+    "capacity_ul": 15000,
     "label": "OT-2 reagent reservoir (slot 10)",
     "plate": null,
     "wells": {
      "A1": {
       "reagent": "water",
-      "note": "8.5 mL used over 3 rounds"
+      "note": "8.5 mL drawn over 3 rounds, plus dead volume",
+      "volume_ul": 10000
      }
     },
     "filled": 1
@@ -11631,20 +11841,24 @@
     "format": "reservoir12",
     "rows": 1,
     "cols": 12,
+    "capacity_ul": 15000,
     "label": "Flex reagent reservoir (D2)",
     "plate": null,
     "wells": {
      "A1": {
       "reagent": "water",
-      "note": "2.3 mL used over 3 rounds"
+      "note": "2.3 mL drawn over 3 rounds, plus dead volume",
+      "volume_ul": 4000
      },
      "A6": {
       "reagent": "fdglu",
-      "note": "9.6 mL used over 3 rounds"
+      "note": "9.6 mL drawn over 3 rounds, plus dead volume",
+      "volume_ul": 11000
      },
      "A12": {
       "reagent": "rmf_waste",
-      "note": "destination, not a reagent"
+      "note": "starts empty: it receives the RMF removed from the cell-free plate",
+      "volume_ul": 0
      }
     },
     "filled": 3

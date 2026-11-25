@@ -146,7 +146,8 @@ $("stats").innerHTML = [
 ].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
 
 const reagentColor = (r) => `var(--c${(RUN.reagents[r] || {}).color || 0})`;
-const reagentLabel = (r) => (RUN.reagents[r] || {}).label || (r === "unknown" ? "unknown liquid" : r);
+const reagentLabel = (r) => (RUN.reagents[r] || {}).label
+  || ({ unknown: "liquid of unknown origin", air: "air (the well was empty)" }[r] || r);
 
 // Shade a well by how full it ends up, relative to the fullest well on that labware.
 function shade(net, max) {
@@ -195,7 +196,7 @@ for (const el of document.querySelectorAll(".wellmap .w")) cellOf[el.dataset.id]
 const seen = [];
 for (const lw of RUN.cards) for (const m of Object.values(lw.comp0 || {})) for (const r of Object.keys(m)) if (!seen.includes(r)) seen.push(r);
 for (const lw of RUN.cards) for (const f of Object.values(lw.start || {})) if (!seen.includes(f.reagent)) seen.push(f.reagent);
-for (const c of RUN.commands) for (const r of Object.keys(c.comp || {})) if (!seen.includes(r)) seen.push(r);
+for (const c of RUN.commands) for (const mix of Object.values(c.comps || {})) for (const r of Object.keys(mix)) if (!seen.includes(r)) seen.push(r);
 $("runLegend").innerHTML = seen.map(r =>
   `<span><i style="background:${reagentColor(r)}"></i>${esc(reagentLabel(r))}</span>`).join("");
 
@@ -221,11 +222,12 @@ function stateAt(step) {
   for (let i = 0; i < step; i++) {
     const c = RUN.commands[i];
     if (c.tips) for (const w of c.tips) tips[`${c.lw}|${w}`] = true;
-    if (c.dv == null || !c.comp) continue;
+    if (c.dv == null || !c.comps) continue;
     const sign = c.dv > 0 ? 1 : -1;
-    for (const w of c.wells) {
+    // comps gives each well its own mixture: the channels of one column can carry different things
+    for (const [w, mix] of Object.entries(c.comps)) {
       const id = `${c.lw}|${w}`, cell = comp[id] = comp[id] || {};
-      for (const [r, v] of Object.entries(c.comp)) {
+      for (const [r, v] of Object.entries(mix)) {
         cell[r] = (cell[r] || 0) + sign * v;
         if (Math.abs(cell[r]) < 0.001) delete cell[r];
       }
@@ -236,8 +238,14 @@ function stateAt(step) {
 
 const total = (mix) => Object.values(mix || {}).reduce((a, b) => a + b, 0);
 const dominant = (mix) => Object.entries(mix).sort((a, b) => b[1] - a[1])[0];
-const mixText = (mix) => Object.entries(mix).sort((a, b) => b[1] - a[1])
-  .map(([r, v]) => `${reagentLabel(r)} ${v.toFixed(1)} µL`).join(" + ");
+// Carrying a mixture through five protocols leaves sub-0.1 µL crumbs; show them as traces
+// rather than as "0.0 µL" or, after rounding, "-0.0 µL".
+const mixText = (mix) => {
+  const parts = Object.entries(mix).sort((a, b) => b[1] - a[1]);
+  const big = parts.filter(([, v]) => v >= 0.05), small = parts.filter(([, v]) => v < 0.05);
+  const text = big.map(([r, v]) => `${reagentLabel(r)} ${v.toFixed(1)} µL`).join(" + ");
+  return small.length ? `${text} + traces of ${small.map(([r]) => reagentLabel(r)).join(", ")}` : text;
+};
 
 let painted = {};
 
@@ -266,9 +274,11 @@ function paint(step) {
       fill = `color-mix(in srgb, ${reagentColor(top)} ${Math.round(f * 100)}%, var(--slot))`;
       title = `${well} · ${v.toFixed(1)} µL · ${mixText(mix)}`;
     } else if (start) {
-      fill = `color-mix(in srgb, ${reagentColor(start.reagent)} 55%, var(--slot))`;
-      title = `${well} · ${reagentLabel(start.reagent)}, stock loaded by hand`
-        + (v < -0.001 ? ` · ${(-v).toFixed(1)} µL taken so far` : "");
+      const dry = start.volume_ul === 0;
+      fill = dry ? "" : `color-mix(in srgb, ${reagentColor(start.reagent)} 55%, var(--slot))`;
+      title = `${well} · ${reagentLabel(start.reagent)}`
+        + (dry ? ", nothing liquid at the start" : start.volume_ul ? `, ${start.volume_ul} µL loaded by hand` : ", stock loaded by hand")
+        + (v < -0.001 ? ` · empty now` : "");
     } else {
       title = v < -0.001 ? `${well} · ${(-v).toFixed(1)} µL taken, nothing declared here` : `${well} · empty`;
     }

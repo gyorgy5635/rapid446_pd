@@ -141,6 +141,24 @@ A 12-well reservoir holds 15 mL per well, so each fits, but the FDGlu well at 9.
 
 ## Starting labware contents
 
+`contents.json` now also gives each stock a starting volume (and each labware a well capacity), so
+the liquid pages can tell when something runs out. The volumes below are **proposed**: simulated
+consumption over 3 rounds plus dead volume, not measured.
+
+| Well | Drawn over 3 rounds | Proposed load |
+|---|---|---|
+| Fragments, columns 1-8 | up to 72 µL from the busiest well | 150 µL each |
+| Golden Gate mix, column 9 | 108 µL per well | 150 µL |
+| PCR mix, columns 10/11/12 | 72 µL per well, one column per round | 120 µL each |
+| Controls, column 1 and F3-H3 | 60 µL per well | 100 µL |
+| OT-2 reservoir A1 (water) | 8.5 mL | 10 mL |
+| Flex reservoir A1 (water) | 2.3 mL | 4 mL |
+| Flex reservoir A6 (FDGlu) | 9.6 mL | 11 mL |
+
+Fragment draws depend on the combination list, so all 8 columns are loaded the same.
+
+### What is where
+
 `config/contents.json` records what is loaded by hand before the run, and the player draws it as a
 well map per labware:
 
@@ -225,6 +243,12 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 - [ ] **Offsets for the new tip slots**: the plate offsets are unchanged and proven, but a labware position check is
       still needed for OT-2 tips on D2, C2, B1, B2, B3, A2 and Flex tips on A3 (and the staging spares B4, C4, D4).
 - [ ] **OT-2 trash**: about 620 used 20 µL tips over 3 rounds. Check that the OT-2 trash bin holds that many.
-- [ ] **Reagent volumes**: load at least the simulator totals above plus dead volume. On the fragments plate the
-      simulator draws 108 µL per well from GG mix column 9 and 72 µL per well from each PCR mix column.
+- [ ] **Reagent volumes**: confirm the proposed loading volumes in `config/contents.json` (table above). They are
+      simulated consumption plus dead volume, not measured, and the dead volumes are guesses: 1-1.5 mL for a
+      reservoir well, 30-80 µL for a plate well.
+- [ ] **Empty wells drawn from**: in the FDGlu step the 8-channel transfer takes 20 µL from the whole of column 4 of
+      the cell-free plate, but `remove_rmf` has just emptied F4, G4 and H4, so three channels aspirate air each
+      round (9 wells over the run). Those three FDGlu positions then get real controls from `controls_to_dest`, so
+      the result looks intended, but it is worth confirming the air transfer is harmless. The same happens in the
+      single-run protocol.
 - [ ] Durations are estimates; real timings need `tools/export_madsci_history.py` on the lab network.
