@@ -1,0 +1,137 @@
+# 3-round PD run: plan and status
+
+Status: **draft, not run on any robot.** Started 2026-11-24 as a variant of `full_protocol_24_20261124`
+(SYBR Green removed, controls routed rack → OT-2). Run map: `./build.sh full_protocol_24_3round`, then open
+`viz/pd_run_map.html`. Estimated 28.5 h for 3 rounds (durations are estimates).
+
+## What changes compared with the single run
+
+1. **Three rounds** of Golden Gate → PCR → dilution → cell-free → FDGlu, one after the other. Each round gets its own
+   combinations from the design server (closed loop), with the Hidex result of the previous round uploaded first.
+2. **Fragments plate is shared by all rounds.** Fragment sources in columns 1-5, GG master mix in column 9 (3x volume),
+   PCR master mix in column 10 / 11 / 12 for round 1 / 2 / 3.
+3. **Fragments plate lives sealed on a new external cooling block** next to the peeler. Each round it is peeled, used
+   on the OT-2 (GG) and the Flex (PCR master mix), resealed and returned to the block, before the 3 h PCR program
+   starts (nothing else can run during PCR).
+4. **1:50 PCR dilution on the OT-2 only**: 98 µL water (5 × 19.6 µL, 20 µL tips) then 2 µL PCR, mixed at 20 µL.
+   The Flex dilution step is gone.
+5. **One plate type**: every PCR plate is the Opentrons 200 µL tough plate, so a plate keeps the same labware
+   definition wherever it goes (the single run mixed NEST 100 µL and Opentrons 200 µL for the same plate).
+6. **Cell-free on lyophilized plates**: three plates (one per round) at room temperature, reagents in columns 1-4.
+   On the Flex: 24 µL water, then per column mix the diluted PCR, add 6 µL, mix 5 × 20 µL slowly
+   (30 µL total, 250x final dilution of the PCR product). RMF/mix A/mix B steps are gone.
+7. **Tips are counted across runs**, no manual tip-box swaps (see Tip plan). Separate 50 µL boxes for single-tip
+   and 8-channel work on the Flex.
+8. **More nests**: one plate per type and round on rack 1, plus one added nest for the controls plate.
+
+## Run order (one round)
+
+| Stage | Steps |
+|---|---|
+| Golden Gate | fragments: cold block → peel → OT-2 C1 · GG plate Rn → OT-2 C3 · OT-2 GG (mix col 9 + fragments) · seal GG → thermocycler · 1 h |
+| PCR | GG plate: thermocycler → peel → OT-2 C3 · fragments OT-2 → Flex B1 · PCR plate Rn → Flex C1 · Flex PCR master mix (col 9+n) · PCR plate → OT-2 C1 · OT-2 water + GG → PCR · seal PCR → thermocycler (lid closed, not started) · fragments Flex → seal → cold block · GG plate → its nest · **PCR program 3 h** |
+| Dilute | PCR plate: thermocycler → peel → OT-2 C1 · dilution plate Rn → OT-2 C3 · controls → OT-2 D1 · OT-2 1:50 dilution · PCR plate → reseal → its nest |
+| Cell-free | diluted plate OT-2 → Flex C1 · cell-free plate Rn → Flex B2 · Flex rehydrate + 6 µL template · diluted plate → its nest · cell-free plate → seal → Flex heater-shaker D1, 150 min 37 °C |
+| FDGlu | controls OT-2 → Flex B1 · FDGlu plate Rn → Flex B3 · cell-free plate D1 → peel → B2 · Flex FDGlu setup · FDGlu plate → Hidex, read, upload |
+| Cleanup | FDGlu plate Hidex → its nest · cell-free plate → its nest · controls → its nest |
+
+Temperature modules are switched on once at the start and off after round 3.
+
+## Plates and nests
+
+| Location | Holds |
+|---|---|
+| `cold_block_ext` (TODO real name) | Fragments plate, sealed, all rounds |
+| `rack2_row1_nest1` (TODO real name) | Controls plate, reused every round |
+| `rack1_row1_nest{n}` | Golden Gate plate, round n |
+| `rack1_row2_nest{n}` | PCR plate, round n |
+| `rack1_row3_nest{n}` | Dilution plate, round n |
+| `rack1_row4_nest{n}` | Lyophilized cell-free plate, round n |
+| `rack1_row5_nest{n}` | FDGlu assay plate, round n |
+
+Every used plate goes back to the nest it came from, so nothing collides between rounds.
+
+## Deck layouts
+
+**OT-2**: C1 cold block (fragments / PCR plate), C3 cold block (GG / dilution plate), D1 controls plate during the
+dilution only, A1 reservoir, 20 µL tips on D3, D2, C2, B1, B2, B3, A2 (7 racks, loaded at the start).
+
+**Flex**: A1 200 µL tips, A2 + C2 + C3 50 µL tips (8-channel), A3 50 µL tips (single-tip only), B1 cold block,
+C1 cold block, B2 cell-free plate, B3 FDGlu plate, D1 heater-shaker, D2 reservoir, D3 waste chute, A4 PF400 handoff,
+**B4 spare full 200 µL box, C4 empty** (landing spot for a swap).
+
+## Tip plan (24 combinations per round)
+
+| Tips | Per round | 3 rounds | On deck | Margin |
+|---|---|---|---|---|
+| OT-2 20 µL | 26 columns (GG 3 + 12 singles, PCR 6, dilution 5) | 78 columns | 7 racks = 84 columns | 6 columns |
+| Flex 200 µL | 4 columns (PCR mix 3, FDGlu 1) | 12 columns | A1 = 12 columns, + spare on B4 | 0, spare covers it |
+| Flex 50 µL 8-channel | 9 columns (cell-free 5, FDGlu 4) | 27 columns | A2 + C2 + C3 = 36 columns | 9 columns |
+| Flex 50 µL single | 6 tips (FDGlu) | 18 tips | A3 = 96 tips | 78 tips |
+
+So **no tip-box swapping is needed** for 3 rounds of up to 24 combinations, provided the extra boxes are on deck at the
+start. `full_run.py` counts tips (`TipLedger` in `helper_functions.py`) and passes the first unused tip into each
+protocol (`$ot2_tip_start`, `$flex200_tip_start`, `$flex50_tip_start`, `$flex50_single_start`). If a 200 µL step would
+run past the A1 box, the Flex gripper swaps in the B4 spare (`flex_tips_200_swap.py`, A1 → C4, B4 → A1; no PF400).
+If any other box would run out, the run stops with an error instead of crashing a pipette.
+
+## Protocol changes
+
+| File | Change |
+|---|---|
+| `pd_golden_gate_ot2_v2.py` | GG mix from column 9 (`master_mix_start_well` 64). Tips from the counter across 7 racks. |
+| `pd_pcr_v2_flex.py` | PCR mix column from the round (`$pcr_mm_start_well` = 72/80/88). 200 µL start tip from the counter. |
+| `pd_pcr_v2_ot2.py` | Tips from the counter (was a fixed start at A4 of D3). |
+| `pd_dilute_1to50_ot2.py` | **New.** 98 µL water (5 × 19.6, one tip column, dispensed at the top), 2 µL PCR, mix 5 × 20 µL; controls column as before. |
+| `cell_free_lyo_flex.py` | **New.** 24 µL water to columns 1-4 (one tip column, at the top), per column: premix diluted PCR 3 × 20 µL, add 6 µL, mix 5 × 20 µL at 20% speed. |
+| `pd_fdglu_flex_v2.py` | Single tips from the A3 box (front to back), 8-channel tips across A2/C2/C3, 200 µL from the counter. RMF removal volume 30 µL (was 27.6). |
+| all protocols | Every PCR plate is now `opentrons_96_wellplate_200ul_pcr_full_skirt` (Opentrons tough plate). The FDGlu assay plate stays `corning_96_wellplate_360ul_flat` (flat bottom, for the Hidex read) and the reservoirs stay `nest_12_reservoir_15ml`. |
+| `flex_tips_200_swap.py`, `pcr_B2_to_A4.py` | **New** Flex gripper moves. |
+| `helper_functions.py` | `TipLedger`, `combination_counts`, round/tip variables passed into protocols. |
+| `workflows/transfers/*.yaml`, `rounds/*_r{1,2,3}.yaml` | New transfers for the cold block, resealing, returning plates; one file per round where the nest differs. |
+
+## Checks the run map now does
+
+`./build.sh` follows the round loop (3 iterations) and tracks every plate. For this version (it has `config/deck.json`)
+it also compares, at every pipetting step, the plates the protocol declares with the plates on that deck:
+missing plate, wrong plate, a plate the protocol does not know about (**collision risk**), a plate on a tip-rack or
+reservoir slot, and the same plate declared as different labware in different protocols. Tested by breaking the
+script on purpose (forgot controls, left fragments on the Flex, never emptied the Hidex): all three were caught.
+
+Current result: **no warnings**: no movement conflicts, no deck conflicts, no labware mismatches.
+
+## Assumptions I made (please confirm or correct)
+
+1. Cold block and new nest are reached through the exchange's narrow side, like the rack and peeler.
+2. Cell-free assembly happens on Flex B2 at room temperature; the diluted PCR waits on the cold block C1.
+3. PCR plate is resealed before going back to its nest; GG, dilution, cell-free and FDGlu plates go back unsealed.
+4. Controls plate: same wells every round (column 1 for the dilution, F3-H3 for FDGlu), so it needs 3x volume.
+5. Dilution plate controls column: 20 µL undiluted controls, as in the single run.
+6. Round 2 and 3 combinations come from `collect_combinations(oracle_id=<id returned by the previous upload>)`;
+   round 1 uses 1008 as before. The REST module is not in this repo, so this is unverified.
+7. "Verify combinations" pause only before round 1, so rounds 2-3 run unattended.
+8. Temperature modules stay on for the whole run (the single run switched OT-2 and Flex C1 off before the cell-free
+   incubation).
+9. At most 24 combinations per round; more stops the run (cell-free plates have 3 sample columns + controls).
+10. Mixing: diluted PCR premix 3 × 20 µL; reaction mix 5 × 20 µL at 20% flow; dilution mix 5 × 20 µL.
+
+## Open items before a real run
+
+- [ ] **MADSci**: create the cooling-block location and the controls nest, teach the PF400, replace the placeholder
+      names `cold_block_ext` and `rack2_row1_nest1` (in `workflows/transfers/*.yaml`, `full_run.py`, `config/`).
+- [ ] **Offsets (now needed for every plate)**: all PCR plates changed from the NEST 100 µL to the Opentrons 200 µL
+      tough plate, so the `set_offset` values carried over from the single run no longer apply. Run a labware
+      position check for every plate slot, plus OT-2 tips on D2, C2, B1, B2, B3, A2 and Flex tips on C2, C3, A3, B4.
+- [ ] **PF400 grip attributes**: `push_new_assay_plate_resource(labware_type="pcr")` in `full_run.py` still uses
+      `plate_height` 14 and `pf400_grip_height` 6 (catalog SP-2396, from the NEST plate). Check these against the
+      tough plate before the PF400 moves one.
+- [ ] **Lyophilized cell-free plate**: confirm the plates really are tough plates (`cell_free_lyo_flex.py` assumes so).
+- [ ] **OT-2 trash**: about 620 used 20 µL tips over 3 rounds. Check that the OT-2 trash bin holds that many.
+- [ ] **Reagent volumes**: OT-2 reservoir well 1 water ≥ 10 mL (dilution 7 mL + PCR 1.4 mL); Flex reservoir water
+      ≥ 2.5 mL and FDGlu substrate (column 6) ≥ 10 mL; GG mix column 9 ≥ 108 µL per well + dead volume;
+      PCR mix columns 10-12 ≥ 72 µL per well + dead volume.
+- [ ] **Simulation**: no protocol has been run through `opentrons_simulate` yet (the opentrons package is not
+      installed here).
+- [ ] **`src/master_pd_experiment.py`** is still the single-run driver and refers to workflows this run no longer
+      uses. Decide: port it to 3 rounds, or delete it from this version.
+- [ ] Durations are estimates; real timings need `tools/export_madsci_history.py` on the lab network.

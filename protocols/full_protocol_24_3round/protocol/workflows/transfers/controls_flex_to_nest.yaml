@@ -1,0 +1,19 @@
+name: controls flex to nest
+metadata:
+  author: Abe Stroka
+  info: '3-round run: controls plate from Flex A4 back to its nest at the end of a
+    round'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: otflex_sandy.deck_nest_A4
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: rack2_row1_nest1

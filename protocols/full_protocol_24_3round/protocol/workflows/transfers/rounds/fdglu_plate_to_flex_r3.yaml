@@ -1,0 +1,18 @@
+name: fdglu plate to flex r3
+metadata:
+  author: Abe Stroka
+  info: 'Round 3: empty FDGlu assay plate to Flex A4'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: rack1_row5_nest3
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: otflex_sandy.deck_nest_A4

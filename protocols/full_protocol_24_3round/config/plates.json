@@ -1,0 +1,122 @@
+{
+ "_comment": "Labware keyed by the location where full_run.py first registers it. 3-round layout: rack1 row = plate type, nest = round. 'role' is matched against the plate a protocol expects on a deck slot (deck check). cold_block_ext and rack2_row1_nest1 are placeholder names (TODO: real MADSci names).",
+ "cold_block_ext": {
+  "name": "Fragments, tough plate (sealed; GG mix col 9, PCR mix col 10-12)",
+  "short": "FRAG",
+  "kind": "pcr",
+  "color": 1,
+  "role": "fragments"
+ },
+ "rack2_row1_nest1": {
+  "name": "Controls (Opentrons Tough PCR)",
+  "short": "CTRL",
+  "kind": "pcr",
+  "color": 4,
+  "role": "controls"
+ },
+ "rack1_row1_nest1": {
+  "name": "Golden Gate R1",
+  "short": "GG1",
+  "kind": "pcr",
+  "color": 2,
+  "role": "gg"
+ },
+ "rack1_row2_nest1": {
+  "name": "PCR Product R1",
+  "short": "PCR1",
+  "kind": "pcr",
+  "color": 3,
+  "role": "pcr"
+ },
+ "rack1_row3_nest1": {
+  "name": "Diluted PCR 1:50 R1",
+  "short": "DIL1",
+  "kind": "pcr",
+  "color": 6,
+  "role": "diluted"
+ },
+ "rack1_row4_nest1": {
+  "name": "Cell-free, lyophilized R1",
+  "short": "CFPS1",
+  "kind": "pcr",
+  "color": 8,
+  "role": "cfps"
+ },
+ "rack1_row5_nest1": {
+  "name": "FDGlu Assay (Corning Assay) R1",
+  "short": "FDG1",
+  "kind": "flat",
+  "color": 9,
+  "role": "fdglu"
+ },
+ "rack1_row1_nest2": {
+  "name": "Golden Gate R2",
+  "short": "GG2",
+  "kind": "pcr",
+  "color": 2,
+  "role": "gg"
+ },
+ "rack1_row2_nest2": {
+  "name": "PCR Product R2",
+  "short": "PCR2",
+  "kind": "pcr",
+  "color": 3,
+  "role": "pcr"
+ },
+ "rack1_row3_nest2": {
+  "name": "Diluted PCR 1:50 R2",
+  "short": "DIL2",
+  "kind": "pcr",
+  "color": 6,
+  "role": "diluted"
+ },
+ "rack1_row4_nest2": {
+  "name": "Cell-free, lyophilized R2",
+  "short": "CFPS2",
+  "kind": "pcr",
+  "color": 8,
+  "role": "cfps"
+ },
+ "rack1_row5_nest2": {
+  "name": "FDGlu Assay (Corning Assay) R2",
+  "short": "FDG2",
+  "kind": "flat",
+  "color": 9,
+  "role": "fdglu"
+ },
+ "rack1_row1_nest3": {
+  "name": "Golden Gate R3",
+  "short": "GG3",
+  "kind": "pcr",
+  "color": 2,
+  "role": "gg"
+ },
+ "rack1_row2_nest3": {
+  "name": "PCR Product R3",
+  "short": "PCR3",
+  "kind": "pcr",
+  "color": 3,
+  "role": "pcr"
+ },
+ "rack1_row3_nest3": {
+  "name": "Diluted PCR 1:50 R3",
+  "short": "DIL3",
+  "kind": "pcr",
+  "color": 6,
+  "role": "diluted"
+ },
+ "rack1_row4_nest3": {
+  "name": "Cell-free, lyophilized R3",
+  "short": "CFPS3",
+  "kind": "pcr",
+  "color": 8,
+  "role": "cfps"
+ },
+ "rack1_row5_nest3": {
+  "name": "FDGlu Assay (Corning Assay) R3",
+  "short": "FDG3",
+  "kind": "flat",
+  "color": 9,
+  "role": "fdglu"
+ }
+}

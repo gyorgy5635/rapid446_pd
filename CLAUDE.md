@@ -25,4 +25,11 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
 - Durations are estimates. The lab server (146.137.240.20) was unreachable from the original machine; real timings need
   `tools/export_madsci_history.py` run on the lab network, with the output saved to `protocols/<version>/viz/madsci_history.json`.
 - Upstream bug noted: in full_run.py, `A4_to_A2` points at `pcr_A2_to_A4.py` (only used in a commented-out block).
-- Next: the user wants to make protocol variants (edit the yaml/py files in a new version folder).
+- Versions: `full_protocol_24_20261124` = single run, SYBR Green removed, controls rack → OT-2.
+  `full_protocol_24_3round` = 3-round experiment (user requirements 2026-11-24); its `PLAN.md` holds the decisions,
+  tip plan, assumptions and open items. Placeholder MADSci names there: `cold_block_ext`, `rack2_row1_nest1`.
+- 3-round decisions from the user: PCR master mix column 10/11/12 per round, GG mix column 9 shared; cell-free 24 µL
+  water + 6 µL diluted PCR; rounds sequential with new combinations each round; Flex staging B4/C4 can hold tip boxes
+  for on-deck swaps (PF400 tip-box swapping still has issues).
+- Each Opentrons run starts fresh tip tracking: in multi-round versions `full_run.py` counts tips (TipLedger) and
+  passes start tips into protocols as `$..._tip_start` template variables.

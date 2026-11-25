@@ -1,0 +1,19 @@
+name: diluted pcr ot2 to flex
+metadata:
+  author: Abe Stroka
+  info: '3-round run: diluted PCR plate from OT-2 nest 6 to Flex A4 for cell-free
+    assembly'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: ot2_patrick.deck_nest_6_temp_block
+    target: exchange_wide
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: otflex_sandy.deck_nest_A4

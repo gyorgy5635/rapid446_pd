@@ -1,0 +1,19 @@
+name: controls nest to ot2
+metadata:
+  author: Abe Stroka
+  info: '3-round run: controls plate from its own nest to OT-2 nest 1 (before the
+    dilution)'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: rack2_row1_nest1
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_wide
+    target: ot2_patrick.deck_nest_1
