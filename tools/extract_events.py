@@ -370,8 +370,13 @@ class Extractor:
                     wells[w] = {"reagent": fill["reagent"], "note": fill.get("note", "")}
                     if vol is not None:
                         wells[w]["volume_ul"] = vol
+            dry = {}
+            for spec in entry.get("expected_dry") or []:
+                for w in self.expand_wells(spec.get("wells", ""), rows, cols, key):
+                    dry[w] = spec.get("note", "")
             plate = starts.get(self.canon(key))
             out.append({"key": key, "format": fmt, "rows": len(rows), "cols": cols, "capacity_ul": cap,
+                        "expected_dry": dry,
                         "label": entry.get("label") or (plate or {}).get("name") or key,
                         "plate": (plate or {}).get("id"), "wells": wells,
                         "filled": len(wells)})

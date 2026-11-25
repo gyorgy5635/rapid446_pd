@@ -198,7 +198,7 @@ def main():
     out_dir = base / "viz" / "liquid"
     out_dir.mkdir(parents=True, exist_ok=True)
     template = a.template.read_text()
-    index, written, unknown, dry = [], 0, [], []
+    index, written, unknown, dry, expected = [], 0, [], [], 0
 
     # What each plate holds, carried from one run to the next: the dilution run has to see the PCR
     # products the PCR run put there. Keyed by tracked plate id, or by node:slot for a reservoir.
@@ -250,6 +250,11 @@ def main():
             if "unknown" in (e.get("comp") or {}):
                 unknown.append(f"round {run['round']} {run['protocol']}: {e['t'][:90]}")
             for w, missing in e.get("dry") or []:
+                coord = OT2_SLOT_COORD.get(e["s"], e["s"]) if run["robot"] == "OT-2" else e["s"]
+                decl = start_by_plate.get(deck.get(coord)) or start_by_key.get(f"{node}:{coord}") or {}
+                if w in (decl.get("expected_dry") or {}):
+                    expected += 1          # the run draws from this empty well on purpose
+                    continue
                 dry.append(f"round {run['round']} {run['protocol']}: {w} of "
                            f"{cards_name(deck, node, e['s'], run, plate_names) or e['lw']} "
                            f"is {missing} uL short")
@@ -290,6 +295,8 @@ def main():
 
     (out_dir / "index.json").write_text(json.dumps(index, indent=1))
     print(f"wrote {written} liquid pages to {out_dir}")
+    if expected:
+        print(f"  {expected} air draw(s) from wells contents.json expects to be empty")
     if dry:
         print(f"  {len(dry)} well(s) run dry; first few:")
         for line in dry[:5]:

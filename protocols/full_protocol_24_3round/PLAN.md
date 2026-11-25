@@ -155,6 +155,9 @@ consumption over 3 rounds plus dead volume, not measured.
 | Flex reservoir A1 (water) | 2.3 mL | 4 mL |
 | Flex reservoir A6 (FDGlu) | 9.6 mL | 11 mL |
 
+The fullest well of the run is an FDGlu control well at 120 µL of liquid in a 360 µL plate (it also takes 20 µL of
+air from an empty control well, which the old totals counted as liquid).
+
 Fragment draws depend on the combination list, so all 8 columns are loaded the same.
 
 ### What is where
@@ -219,6 +222,10 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 - The single-run variant `full_protocol_24_20261124` is ported to the tough plate as well. The baseline
   `full_protocol_24` keeps its `protocol/` untouched: it is a working copy used in previous runs.
 - The lyophilized cell-free plates are tough plates too, so every plate in this run is the same labware.
+- F4, G4 and H4 of the cell-free plate are the control positions: `remove_rmf` empties them and the 8-channel FDGlu
+  transfer then draws air from them, which is fine, because `controls_to_dest` puts the real controls into those
+  wells of the assay plate. `contents.json` lists them under `expected_dry`, so the build reports them as expected
+  air draws (9 over the run) and a genuine shortfall would still stand out.
 
 ## Assumptions I made (please confirm or correct)
 
@@ -246,9 +253,4 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 - [ ] **Reagent volumes**: confirm the proposed loading volumes in `config/contents.json` (table above). They are
       simulated consumption plus dead volume, not measured, and the dead volumes are guesses: 1-1.5 mL for a
       reservoir well, 30-80 µL for a plate well.
-- [ ] **Empty wells drawn from**: in the FDGlu step the 8-channel transfer takes 20 µL from the whole of column 4 of
-      the cell-free plate, but `remove_rmf` has just emptied F4, G4 and H4, so three channels aspirate air each
-      round (9 wells over the run). Those three FDGlu positions then get real controls from `controls_to_dest`, so
-      the result looks intended, but it is worth confirming the air transfer is harmless. The same happens in the
-      single-run protocol.
 - [ ] Durations are estimates; real timings need `tools/export_madsci_history.py` on the lab network.

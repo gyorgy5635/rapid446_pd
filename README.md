@@ -68,7 +68,9 @@ Each fill can also carry `volume_ul`, what that well holds at the start, with `c
 labware. The extractor checks every range against the labware format and warns about unknown
 reagents, wells filled twice, a starting volume over the well's capacity, and tracked plates the
 file says nothing about. A declared volume makes the stock finite on the liquid pages, so drawing
-more than it holds is reported as a shortfall instead of being topped up silently. Plates that start empty go in
+more than it holds is reported as a shortfall instead of being topped up silently. Wells a protocol
+draws from on purpose when they are empty go in `expected_dry`, so they are counted separately and
+a real shortfall still shows. Plates that start empty go in
 `empty_at_start` so the check stays meaningful.
 
 ## Deck setup by phase

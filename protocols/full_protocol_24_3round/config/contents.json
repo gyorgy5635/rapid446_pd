@@ -1,5 +1,5 @@
 {
-  "_comment": "What is already in each piece of labware when the run starts, so the run map can show which wells are filled and the liquid pages can tell when a stock runs dry. Keys are either a tracked plate's starting location (same keys as plates.json) or '<node>:<deck slot>' for a reservoir that never moves. 'wells' takes a single well (A6), a rectangular range (A1:H8) or a comma-separated list. volume_ul is what each of those wells holds at the start: the simulated consumption over 3 rounds plus dead volume, so these are PROPOSED loading volumes, not measured ones. capacity_ul is the labware's well capacity, checked against volume_ul.",
+  "_comment": "What is already in each piece of labware when the run starts, so the run map can show which wells are filled and the liquid pages can tell when a stock runs dry. Keys are either a tracked plate's starting location (same keys as plates.json) or '<node>:<deck slot>' for a reservoir that never moves. 'wells' takes a single well (A6), a rectangular range (A1:H8) or a comma-separated list. volume_ul is what each of those wells holds at the start: the simulated consumption over 3 rounds plus dead volume, so these are PROPOSED loading volumes, not measured ones. capacity_ul is the labware's well capacity, checked against volume_ul. expected_dry lists wells the run deliberately draws from when empty, so a genuine shortfall still stands out.",
   "reagents": {
     "fragments": {
       "label": "Fragment stocks",
@@ -99,7 +99,13 @@
           "volume_ul": 0
         }
       ],
-      "capacity_ul": 200
+      "capacity_ul": 200,
+      "expected_dry": [
+        {
+          "wells": "F4:H4",
+          "note": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate"
+        }
+      ]
     },
     "rack1_row4_nest2": {
       "format": "96",
@@ -111,7 +117,13 @@
           "volume_ul": 0
         }
       ],
-      "capacity_ul": 200
+      "capacity_ul": 200,
+      "expected_dry": [
+        {
+          "wells": "F4:H4",
+          "note": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate"
+        }
+      ]
     },
     "rack1_row4_nest3": {
       "format": "96",
@@ -123,7 +135,13 @@
           "volume_ul": 0
         }
       ],
-      "capacity_ul": 200
+      "capacity_ul": 200,
+      "expected_dry": [
+        {
+          "wells": "F4:H4",
+          "note": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate"
+        }
+      ]
     },
     "ot2_patrick:A1": {
       "format": "reservoir12",

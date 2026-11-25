@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24_20261124",
   "script_url": null,
-  "generated": "2026-11-25T16:13:42",
+  "generated": "2026-11-25T16:31:04",
   "workflow_calls": 184,
   "steps": 386,
   "pf400_moves": 237,
@@ -10750,6 +10750,7 @@
     "rows": 8,
     "cols": 12,
     "capacity_ul": 200,
+    "expected_dry": {},
     "label": "Fragments, tough plate (sealed; GG mix col 9, PCR mix col 10-12)",
     "plate": "p1",
     "wells": {
@@ -11242,6 +11243,7 @@
     "rows": 8,
     "cols": 12,
     "capacity_ul": 200,
+    "expected_dry": {},
     "label": "Controls (Opentrons Tough PCR)",
     "plate": "p4",
     "wells": {
@@ -11309,6 +11311,11 @@
     "rows": 8,
     "cols": 12,
     "capacity_ul": 200,
+    "expected_dry": {
+     "F4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate",
+     "G4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate",
+     "H4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate"
+    },
     "label": "Cell-free, lyophilized R1",
     "plate": "p8",
     "wells": {
@@ -11481,6 +11488,11 @@
     "rows": 8,
     "cols": 12,
     "capacity_ul": 200,
+    "expected_dry": {
+     "F4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate",
+     "G4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate",
+     "H4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate"
+    },
     "label": "Cell-free, lyophilized R2",
     "plate": "p13",
     "wells": {
@@ -11653,6 +11665,11 @@
     "rows": 8,
     "cols": 12,
     "capacity_ul": 200,
+    "expected_dry": {
+     "F4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate",
+     "G4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate",
+     "H4": "control positions: remove_rmf empties these, then the 8-channel FDGlu transfer takes air from them and controls_to_dest puts the real controls in the assay plate"
+    },
     "label": "Cell-free, lyophilized R3",
     "plate": "p18",
     "wells": {
@@ -11825,6 +11842,7 @@
     "rows": 1,
     "cols": 12,
     "capacity_ul": 15000,
+    "expected_dry": {},
     "label": "OT-2 reagent reservoir (slot 10)",
     "plate": null,
     "wells": {
@@ -11842,6 +11860,7 @@
     "rows": 1,
     "cols": 12,
     "capacity_ul": 15000,
+    "expected_dry": {},
     "label": "Flex reagent reservoir (D2)",
     "plate": null,
     "wells": {
