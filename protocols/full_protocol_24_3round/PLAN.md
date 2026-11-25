@@ -202,6 +202,45 @@ command as part of the mix, so the real transfer after a `mix_before` was droppe
 totals were unaffected, but per-well volumes were: the PCR master mix never appeared in the PCR
 plate. Commands are now matched by nesting level in both the report and the pages.
 
+## Labware position check: what to calibrate
+
+A position check is done on the robot in the Opentrons app, not from this repo. This is the list the protocols
+imply, so it can be worked through in one sitting. "Protocols" is how many of this version's protocols load that
+slot, i.e. how much depends on getting it right.
+
+**OT-2** (slot 2 stays empty so the PF400 can reach slot 1):
+
+| Slot | Labware | Protocols | Why |
+|---|---|---|---|
+| C1 (4) | tough plate on the cold block | 7 | plate type changed; offsets were set for the NEST plate |
+| C3 (6) | tough plate on the cold block | 6 | same |
+| D1 (1) | controls plate | 2 | no offset has ever been set here |
+| A1 (10) | reagent reservoir | 6 | never calibrated |
+| D3 (3) | 20 µL tips | 7 | the only tip slot with an offset today; it is also the swappable box |
+| C2 (5), B1 (7), B2 (8), B3 (9), A2 (11) | 20 µL tips | 3 each | new positions, never calibrated |
+
+**Flex**:
+
+| Slot | Labware | Protocols | Why |
+|---|---|---|---|
+| B1, C1 | tough plate on the cold block | 3, 4 | plate type changed |
+| B2 | cell-free plate | 2 | plate type changed |
+| B3 | Corning FDGlu assay plate | 1 | unchanged, but worth confirming |
+| D2 | reagent reservoir | 4 | never calibrated |
+| A1 | 200 µL tips | 3 | existing position |
+| A2 | 50 µL tips, 8-channel | 4 | existing position |
+| A3 | 50 µL tips, single-channel | 1 | new position |
+
+Staging B4, C4 and D4 hold the spare tip boxes. A position check does not apply there, because a pipette cannot
+reach a staging slot, but the **gripper** has to place a box accurately on A1/A2 after a swap, so those moves are
+worth a dry run with `flex_tips_swap.py` before trusting them in a 30-hour run.
+
+The other two versions need the same for their own, shorter lists: they use OT-2 D3 and D1 for tips, C1/C3/D1 for
+plates, and Flex A1/A2 plus B1/B2/B3/C1, and their plates changed type too.
+
+Once the offsets are measured, they go into the `set_offset` calls in each protocol. Several slots have none today,
+so those lines have to be added rather than edited; the repo can take the numbers whenever they exist.
+
 ## Checks the run map now does
 
 `./build.sh` follows the round loop (3 iterations) and tracks every plate. For this version (it has `config/deck.json`)
@@ -247,8 +286,9 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 - [ ] **MADSci**: create the cooling-block location and teach the PF400; replace the placeholder name
       `cold_block_ext` (in `workflows/transfers/*.yaml`, `full_run.py`, `config/`). Confirm rack 2's nests are named
       like rack 1 (`rack2_row1_nest1`), which is what the workflows assume.
-- [ ] **Offsets for the new tip slots**: the plate offsets are unchanged and proven, but a labware position check is
-      still needed for OT-2 tips on D2, C2, B1, B2, B3, A2 and Flex tips on A3 (and the staging spares B4, C4, D4).
+- [ ] **Labware position check** (see the checklist below): every plate moved from the NEST 100 µL definition to
+      the Opentrons tough plate, so the declared well depth changed everywhere, and six of the seven OT-2 tip slots
+      and Flex A3 are positions nothing has ever been calibrated in.
 - [ ] **OT-2 trash**: about 620 used 20 µL tips over 3 rounds. Check that the OT-2 trash bin holds that many.
 - [ ] **Reagent volumes**: confirm the proposed loading volumes in `config/contents.json` (table above). They are
       simulated consumption plus dead volume, not measured, and the dead volumes are guesses: 1-1.5 mL for a
