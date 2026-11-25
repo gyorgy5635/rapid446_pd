@@ -1,5 +1,5 @@
 {
-  "_comment": "Top-down map of the workcell, following incoming/PD.arrangement.pptx (Flex top-left; sealer, thermocycler, Hidex, peeler in a row; PF400 on a linear rail below them; exchange bottom-left; plate nests bottom-right). OT-2 below the rail under the Hidex, nests to its right (slide updated 2026-11-24). x/y are top-left corners in the viewBox drawing; drag instruments in the player's Edit layout mode, copy the JSON, and paste it here.",
+  "_comment": "Top-down map of the workcell, following incoming/PD.arrangement.pptx (Flex top-left; sealer, thermocycler, Hidex, peeler in a row; PF400 on a linear rail below them; exchange bottom-left; two plate-nest racks bottom-right, rack2 where the OT-2 used to sit). OT-2 below the rail under the Hidex, nests to its right (slide updated 2026-11-24). x/y are top-left corners in the viewBox drawing; drag instruments in the player's Edit layout mode, copy the JSON, and paste it here.",
   "viewBox": [
     1340,
     820
@@ -18,6 +18,15 @@
       "kind": "rack",
       "prefix": "rack1_",
       "x": 1050,
+      "y": 450
+    },
+    {
+      "id": "rack2",
+      "label": "Plate nests 2",
+      "sub": "rack2 · 5 rows × 3 (unused in this version)",
+      "kind": "rack",
+      "prefix": "rack2_",
+      "x": 760,
       "y": 450
     },
     {
@@ -98,7 +107,7 @@
       "nodes": [
         "ot2_patrick"
       ],
-      "x": 760,
+      "x": 440,
       "y": 450,
       "fixtures": {
         "4": "Temp 4 °C",
