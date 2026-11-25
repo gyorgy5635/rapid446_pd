@@ -75,6 +75,12 @@ this). The Flex gripper moves plates between A4 and the other deck slots.
    Flex gripper protocols named `pcr_<SRC>_to_<DST>.py` become moves. Every plate is tracked
    from where `push_new_assay_plate_resource()` first registers it. Each move is checked to make
    sure the source holds a plate and the destination is free.
+   `for x in (1, 2, 3)` / `for x in range(n)` loops are unrolled (phases are prefixed `R1 ·`, `R2 ·` when the
+   variable name contains "round"), f-string workflow paths are resolved, `if` tests on loop variables are
+   evaluated, and other `if` blocks are shown with their steps marked "(only if needed)".
+   If the version has `config/deck.json`, every pipetting protocol is also compared with the tracked deck:
+   missing or wrong plates, plates the protocol does not know about (collision risk), plates on tip-rack or
+   reservoir slots, and one plate declared as different labware in different protocols.
 2. `tools/build_player.py` embeds the event log and layout into `tools/player_template.html`.
 
 ## What you edit
@@ -86,6 +92,7 @@ All paths below are inside `protocols/<version>/`.
 | `config/layout.json`    | instrument positions (from incoming/PD.arrangement.pptx; OT-2 below the rail under the Hidex, nests to its right), deck fixtures, location aliases (`exchange_narrow`/`wide` -> `exchange`) |
 | `config/durations.json` | duration estimates; `protocol.delay()` calls found in protocols are added automatically |
 | `config/source.json`    | name and title shown in the player, repo/branch/commit, link base for source lines |
+| `config/deck.json`      | optional: maps PF400 locations to Opentrons deck slots and turns on the deck check |
 
 To change the layout, use **Edit layout** in the player: drag the instruments, click
 **Copy layout JSON**, paste the result into `config/layout.json`, then run `./build.sh`.
@@ -100,4 +107,5 @@ in its `source.json`, then run `./build.sh full_protocol_24`.
   incubation (from `pcr_A4_to_D1.py`).
 - Manual steps appear only where the script has `input()`. Steps people do by hand
   (adding master mix, etc.) are not in the code.
-- The script is linear today. If/for blocks would be expanded once, in source order, with a warning.
+- Loops other than constant `for` loops (while, for over a variable) are expanded once, with a warning.
+- The deck check reads protocol files with the AST; it does not simulate them (use `opentrons_simulate` for that).

@@ -74,6 +74,16 @@ class Extractor:
         self.bookkeeping = 0
         self.prev_end = 0
         self.loc_use = {}
+        self.loopvars = {}    # loop variable -> current value while a for-loop is unrolled
+        self.phase_prefix = ""
+        self.conditional = 0  # >0 while inside an if-block whose condition is only known at run time
+        self.dirs = {"run_directory": "workflows/run_instrument",
+                     "transfers_directory": "workflows/transfers",
+                     "protocol_directory": "protocols"}
+        deck_cfg = config / "deck.json"
+        self.deck = json.loads(deck_cfg.read_text()) if deck_cfg.exists() else None
+        self.deck_cache = {}
+        self.plate_types = defaultdict(dict)  # plate id -> {labware type: [protocols]} (deck check)
 
     # ---------- helpers ----------
     def canon(self, loc):
@@ -91,24 +101,39 @@ class Extractor:
                 out.append((ln, text))
         return out
 
+    def str_value(self, node):
+        """A string constant, or an f-string whose fields are loop variables currently bound."""
+        s = const_str(node)
+        if s is not None or not isinstance(node, ast.JoinedStr):
+            return s
+        out = []
+        for v in node.values:
+            if isinstance(v, ast.Constant):
+                out.append(str(v.value))
+            elif isinstance(v, ast.FormattedValue) and isinstance(v.value, ast.Name) and v.value.id in self.loopvars:
+                out.append(str(self.loopvars[v.value.id]))
+            else:
+                return None
+        return "".join(out)
+
     def path_expr(self, node):
-        """Resolve `dir / "file"` (possibly parenthesised) to a relative path."""
+        """Resolve `dir / "file"` (possibly parenthesised, f-string allowed) to a relative path."""
         if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
-            name = const_str(node.right)
+            name = self.str_value(node.right)
             base = node.left.id if isinstance(node.left, ast.Name) else None
-            folder = {"run_directory": "workflows/run_instrument",
-                      "transfers_directory": "workflows/transfers",
-                      "protocol_directory": "protocols"}.get(base)
+            folder = self.dirs.get(base)
             if name and folder:
                 return f"{folder}/{name}"
         return None
 
     def resolve(self, node):
+        if isinstance(node, ast.BinOp):
+            return self.path_expr(node)
         if isinstance(node, ast.Name):
             return self.paths.get(node.id) or self.env.get(node.id)
         if isinstance(node, ast.Subscript) and call_name(node.value) == "payload":
             return self.payload.get(const_str(node.slice))
-        if isinstance(node, ast.Call) and call_name(node).endswith(".resolve"):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "resolve":
             return self.resolve(node.func.value)
         if isinstance(node, ast.Call) and call_name(node).endswith("generate_ot2_protocol"):
             return self.resolve(node.args[0])
@@ -125,6 +150,7 @@ class Extractor:
             "color": cfg.get("color", 0),
             "start": self.canon(loc),
             "line": line,
+            **({"role": cfg["role"]} if cfg.get("role") else {}),
         })
         self.state[self.canon(loc)] = pid
         return pid
@@ -144,18 +170,82 @@ class Extractor:
             for ln, text in comments:
                 m = PHASE_RE.match(text)
                 if m:
-                    self.phase = " ".join(w.upper() if len(w) <= 3 else w.title()
+                    self.phase = self.phase_prefix + " ".join(w.upper() if len(w) <= 3 else w.title()
                                           for w in m.group(1).split()).replace("FD GLU", "FDGlu")
             caption = [t.strip().lstrip("#").strip() for ln, t in comments
                        if not NOISE_RE.search(t) and not PHASE_RE.match(t)]
             self.caption = caption[-1] if caption else ""
             self.prev_end = getattr(stmt, "end_lineno", stmt.lineno)
-            if isinstance(stmt, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
+            if isinstance(stmt, ast.For) and self.loop_values(stmt) is not None:
+                self.unroll(stmt)
+                continue
+            if isinstance(stmt, ast.If):
+                verdict = self.eval_test(stmt.test)
+                self.prev_end = stmt.lineno
+                if verdict is True:
+                    self.walk(stmt.body)
+                elif verdict is False:
+                    self.walk(stmt.orelse)
+                else:  # decided at run time (e.g. tip box swap): show the steps, marked as conditional
+                    self.conditional += 1
+                    self.walk(stmt.body)
+                    self.conditional -= 1
+                self.prev_end = getattr(stmt, "end_lineno", stmt.lineno)
+                continue
+            if isinstance(stmt, (ast.For, ast.While, ast.With, ast.Try)):
                 self.warn(stmt.lineno, f"{type(stmt).__name__} block: branches/loops are expanded once, in source order")
                 self.prev_end = stmt.lineno
                 self.walk(stmt.body)
                 continue
             self.statement(stmt)
+
+    def loop_values(self, stmt):
+        """Values of `for x in (1, 2, 3)` / `for x in range(...)` with constants, else None."""
+        if not isinstance(stmt.target, ast.Name):
+            return None
+        it = stmt.iter
+        if isinstance(it, (ast.Tuple, ast.List)) and all(isinstance(e, ast.Constant) for e in it.elts):
+            return [e.value for e in it.elts]
+        if isinstance(it, ast.Call) and call_name(it) == "range" and all(isinstance(a, ast.Constant) for a in it.args):
+            return list(range(*[a.value for a in it.args]))
+        return None
+
+    def unroll(self, stmt):
+        var = stmt.target.id
+        outer_prefix = self.phase_prefix
+        for v in self.loop_values(stmt):
+            self.loopvars[var] = v
+            if "round" in var:
+                self.phase_prefix = f"R{v} · "
+            self.prev_end = stmt.lineno
+            self.walk(stmt.body)
+        self.loopvars.pop(var, None)
+        self.phase_prefix = outer_prefix
+        self.prev_end = getattr(stmt, "end_lineno", stmt.lineno)
+
+    def eval_test(self, node):
+        """True/False for conditions on constants and bound loop variables; None if only known at run time."""
+        def ev(n):
+            if isinstance(n, ast.Constant):
+                return n.value
+            if isinstance(n, ast.Name) and n.id in self.loopvars:
+                return self.loopvars[n.id]
+            if isinstance(n, ast.UnaryOp) and isinstance(n.op, ast.Not):
+                return not ev(n.operand)
+            if isinstance(n, ast.BoolOp):
+                vals = [ev(x) for x in n.values]
+                return all(vals) if isinstance(n.op, ast.And) else any(vals)
+            if isinstance(n, ast.Compare) and len(n.ops) == 1:
+                a, b = ev(n.left), ev(n.comparators[0])
+                ops = {ast.Eq: a == b, ast.NotEq: a != b} if not isinstance(n.ops[0], (ast.Lt, ast.LtE, ast.Gt, ast.GtE)) else \
+                      {ast.Lt: a < b, ast.LtE: a <= b, ast.Gt: a > b, ast.GtE: a >= b}
+                if type(n.ops[0]) in ops:
+                    return ops[type(n.ops[0])]
+            raise ValueError
+        try:
+            return bool(ev(node))
+        except (ValueError, TypeError):
+            return None
 
     def statement(self, stmt):
         value = stmt.value if isinstance(stmt, (ast.Assign, ast.Expr)) else None
@@ -165,6 +255,9 @@ class Extractor:
         if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1:
             tgt = stmt.targets[0]
             p = self.path_expr(value)
+            if isinstance(tgt, ast.Name) and p and "." not in Path(p).name:
+                self.dirs[tgt.id] = p
+                return
             if isinstance(tgt, ast.Name) and p:
                 self.paths[tgt.id] = p
                 self.check_flex_name(tgt.id, p, stmt.lineno)
@@ -183,7 +276,7 @@ class Extractor:
         if name.endswith("submit_workflow"):
             self.submit(value, stmt.lineno)
         elif name.endswith("push_new_assay_plate_resource"):
-            loc = next((const_str(k.value) for k in value.keywords if k.arg == "location_name"), None)
+            loc = next((self.str_value(k.value) for k in value.keywords if k.arg == "location_name"), None)
             if not self.seen_workflow:
                 comment = self.caption
                 self.new_plate(loc, stmt.lineno, comment)
@@ -203,7 +296,156 @@ class Extractor:
             self.warn(line, f"Variable {var} points at {Path(path).name} (moves {m_file.group(1)}→{m_file.group(2)}, not {m_var.group(1)}→{m_var.group(2)})")
 
     def check_unused_assignments(self):
-        pass
+        names = {p["id"]: p["name"] for p in self.plates}
+        for pid, types in self.plate_types.items():
+            if len(types) > 1:
+                desc = "; ".join(f"{t} in {', '.join(ps)}" for t, ps in types.items())
+                self.warn(0, f"LABWARE MISMATCH {names[pid]} is declared as different labware: {desc}")
+
+    # ---------- deck check (only when config/deck.json exists) ----------
+    STATIC_WORDS = ("tiprack", "reservoir")
+
+    def protocol_deck(self, proto):
+        """{slot: (role, labware_type)} that an Opentrons protocol file declares, read with the AST."""
+        if proto in self.deck_cache:
+            return self.deck_cache[proto]
+        path = self.app / proto
+        deck = None
+        if path.exists():
+            try:
+                deck = self._read_deck(ast.parse(path.read_text()))
+            except SyntaxError:
+                deck = None
+        self.deck_cache[proto] = deck
+        return deck
+
+    def _read_deck(self, tree):
+        consts, config = {}, {}
+        for n in tree.body:
+            if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+                name = n.targets[0].id
+                if name == "config" and isinstance(n.value, ast.Dict):
+                    for k, v in zip(n.value.keys, n.value.values):  # entry by entry: templates hold int("$x") etc.
+                        try:
+                            config[const_str(k)] = ast.literal_eval(v)
+                        except (ValueError, SyntaxError):
+                            pass
+                    continue
+                try:
+                    consts[name] = ast.literal_eval(n.value)
+                except (ValueError, SyntaxError):
+                    continue
+        run = next((n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "run"), None)
+        if run is None:
+            return None
+
+        def val(n, loopvars):
+            if isinstance(n, ast.Constant):
+                return n.value
+            if isinstance(n, ast.Name):
+                return loopvars.get(n.id, consts.get(n.id))
+            if isinstance(n, ast.Subscript) and isinstance(n.value, ast.Name) and n.value.id == "config":
+                return config.get(const_str(n.slice))
+            return None
+
+        def role(n):
+            key = const_str(n.slice) if isinstance(n, ast.Subscript) else None
+            if not key:
+                return None
+            r = re.sub(r"(_initial)?(_plate)?_type(_\w+)?$", "", key)
+            return {"source": "fragments", "dest": "gg"}.get(r, r)
+
+        slots, items = {}, {}
+
+        def load(call, target, loopvars):
+            cn = call_name(call)
+            kw = {k.arg: k.value for k in call.keywords}
+            base = cn.rsplit(".", 1)[0] if "." in cn else ""
+            if cn.endswith("load_module"):
+                loc = kw.get("location", call.args[1] if len(call.args) > 1 else None)
+                slot = val(loc, loopvars) if loc is not None else None
+                if target and slot:
+                    slots[target] = slot
+                if slot:
+                    items.setdefault(slot, ("module", "module"))
+            elif cn.endswith("load_adapter"):
+                if target and base in slots:
+                    slots[target] = slots[base]
+            elif cn.endswith("load_waste_chute"):
+                items["D3"] = ("chute", "waste chute")
+            elif cn.endswith("load_labware"):
+                name_node = kw.get("load_name", call.args[0] if call.args else None)
+                ltype = val(name_node, loopvars) if name_node is not None else None
+                if base == "protocol":
+                    loc = kw.get("location", call.args[1] if len(call.args) > 1 else None)
+                    slot = val(loc, loopvars) if loc is not None else None
+                else:
+                    slot = slots.get(base)
+                if slot and ltype:
+                    items[slot] = (role(name_node) or "?", ltype)
+                    if target:
+                        slots[target] = slot
+
+        def visit(body, loopvars):
+            for st in body:
+                if isinstance(st, ast.For) and isinstance(st.target, ast.Name):
+                    seq = val(st.iter, loopvars)
+                    for v in (seq if isinstance(seq, (list, tuple)) else []):
+                        visit(st.body, {**loopvars, st.target.id: v})
+                    continue
+                value = st.value if isinstance(st, (ast.Assign, ast.Expr)) else None
+                target = st.targets[0].id if isinstance(st, ast.Assign) and isinstance(st.targets[0], ast.Name) else None
+                if isinstance(value, ast.Call):
+                    load(value, target, loopvars)
+                elif isinstance(value, ast.ListComp) and isinstance(value.elt, ast.Call):
+                    gen = value.generators[0]
+                    seq = val(gen.iter, loopvars)
+                    if isinstance(gen.target, ast.Name):
+                        for v in (seq if isinstance(seq, (list, tuple)) else []):
+                            load(value.elt, None, {**loopvars, gen.target.id: v})
+        visit(run.body, {})
+        return items
+
+    def robot_slots(self, node):
+        """{slot: plate id} the tracker has on this robot right now."""
+        cfg = (self.deck or {}).get(node, {})
+        out = {}
+        for loc, pid in self.state.items():
+            if "slots" in cfg and loc in cfg["slots"]:
+                out[cfg["slots"][loc]] = pid
+            elif cfg.get("prefix") and loc.startswith(cfg["prefix"]):
+                out[loc[len(cfg["prefix"]):]] = pid
+        return out
+
+    def check_deck(self, line, node, proto):
+        deck = self.protocol_deck(proto)
+        if deck is None:
+            return
+        pname = Path(proto).name
+        tracked = self.robot_slots(node)
+        plate = {p["id"]: p for p in self.plates}
+        if all(r in ("module", "chute") or any(w in t for w in self.STATIC_WORDS) for r, t in deck.values()):
+            return  # utility protocol (temperature, tip boxes): touches no plates
+        for slot, (role, ltype) in sorted(deck.items()):
+            static = role in ("module", "chute") or any(w in ltype for w in self.STATIC_WORDS)
+            pid = tracked.get(slot)
+            if static:
+                if pid and not (plate[pid]["kind"] == "tips" and "tiprack" in ltype):
+                    self.warn(line, f"COLLISION RISK {pname}: {plate[pid]['name']} sits on {node} {slot}, "
+                                    f"where the protocol expects {ltype}")
+                continue
+            if pid is not None:
+                self.plate_types[pid].setdefault(ltype, [])
+                if pname not in self.plate_types[pid][ltype]:
+                    self.plate_types[pid][ltype].append(pname)
+            if pid is None:
+                self.warn(line, f"{pname} pipettes from a {role} plate on {node} {slot}, but no plate is tracked there")
+            elif plate[pid].get("role") and role != "?" and plate[pid]["role"] != role:
+                self.warn(line, f"{pname} treats {node} {slot} as the {role} plate, but {plate[pid]['name']} is there")
+        for slot, pid in sorted(tracked.items()):
+            if slot not in deck and slot not in (self.deck.get(node, {}).get("ignore_slots") or []):
+                self.warn(line, f"COLLISION RISK {pname}: {plate[pid]['name']} is on {node} {slot}, "
+                                f"but the protocol does not know it is there")
 
     # ---------- workflows ----------
     def submit(self, call, line):
@@ -251,6 +493,8 @@ class Extractor:
                 self.move(call_id, line, src, dst, mover="flex_gripper", protocol=pname,
                           extra=delay, extra_src=dsrc)
                 return
+            if self.deck is not None:
+                self.check_deck(line, node, proto)
             est = self.dur["protocols"].get(pname, self.dur["protocols"]["_default"])
             label = self.dur.get("protocol_labels", {}).get(pname, pname)
             deck = sorted(p for loc, p in self.state.items() if loc.startswith(node))
@@ -304,6 +548,8 @@ class Extractor:
         return next((p["name"] for p in self.plates if p["id"] == pid), pid)
 
     def add_step(self, line, call_id, kind, mover, duration, dsrc, detail="", **kw):
+        if self.conditional:
+            detail = f"{detail} (only if needed)"
         step = {"i": len(self.steps), "phase": self.phase, "call": call_id, "line": line,
                 "kind": kind, "mover": mover, "detail": detail,
                 "duration_s": int(duration), "duration_source": dsrc}
@@ -312,6 +558,8 @@ class Extractor:
                 step["from" if k == "from_" else k] = v
         if kind == "pause":
             step["phase"] = self.phase
+        if self.conditional:
+            step["conditional"] = True
         self.steps.append(step)
 
     def result(self):
