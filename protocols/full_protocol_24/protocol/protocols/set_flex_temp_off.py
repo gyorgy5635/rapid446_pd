@@ -31,8 +31,8 @@ config = {
     'shaking_duration': 180,      # minutes (3 hours) for shaking (CFPS)
     'shaking_speed': 200,
 
-    'rmf_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
-    'cfps_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
+    'rmf_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
+    'cfps_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
     'tip_rack_type_50_01': 'opentrons_flex_96_filtertiprack_50ul',
     # 'tip_rack_type_50_02': 'opentrons_flex_96_filtertiprack_50ul',
     'tip_rack_type_200_01': 'opentrons_flex_96_filtertiprack_200ul',

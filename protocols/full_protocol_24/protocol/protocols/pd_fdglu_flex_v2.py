@@ -54,8 +54,8 @@ config = {
     'temperature': 4,  # °C
 
     # Labware
-    'controls_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',  # Diluted PCR products
-    'cfps_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt', # Reagent plate for reactions
+    'controls_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',  # Diluted PCR products
+    'cfps_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt', # Reagent plate for reactions
     'fdglu_plate_type': 'corning_96_wellplate_360ul_flat', # Internal standards
     'pcr_adapter_type': 'opentrons_96_pcr_adapter',  # Aluminum adapter for PCR plates
     'tip_rack_type_50_01': 'opentrons_flex_96_tiprack_50ul',

@@ -11,6 +11,6 @@
   "repo_blob_url": "https://github.com/AD-SDL/rapid446_applications/blob/e4bc261ada888ceb50e51382e10a597b55978cac/Protein_Design/full_protocol_24",
   "local_changes": [
     "2026-11-25 cell_free_pd_ot2_v2.py: declare the controls plate parked on OT-2 D1 (the robot was not told it was there). No pipetting change.",
-    "2026-11-25 pd_pcr_v2_flex.py / pd_pcr_v2_ot2.py: declare the fragments and Golden Gate plates as the Opentrons tough plate, matching pd_golden_gate_ot2_v2.py and the plates actually used. They said NEST 100 uL, a different well depth. The run's other plates are still declared NEST."
+    "2026-11-25 all protocols: every PCR plate is declared as the Opentrons tough plate (991-00076) instead of NEST 100 uL, matching the plates in use since well before this; the SYBR Green and FDGlu assay plates stay Corning flat bottom and the reservoirs stay NEST. full_run.py's plate resource now names that plate too. This supersedes the earlier two-line mismatch fix."
   ]
 }

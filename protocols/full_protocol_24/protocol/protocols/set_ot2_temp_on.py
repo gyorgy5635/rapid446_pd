@@ -27,8 +27,8 @@ config = {
     'shaking_duration': 180,      # minutes (3 hours) for shaking (CFPS)
     'shaking_speed': 200,
 
-    'cfps_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
-    'diluted_plate_type': 'nest_96_wellplate_100ul_pcr_full_skirt',
+    'cfps_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
+    'diluted_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
     'tip_rack_type_20_01': 'opentrons_96_filtertiprack_20ul',
     'reagent_plate_type': 'nest_12_reservoir_15ml',
 
