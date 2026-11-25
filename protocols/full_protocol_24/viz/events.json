@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications @ PD_full_loop @ e4bc261",
   "derived_from": null,
   "script_url": "https://github.com/AD-SDL/rapid446_applications/blob/e4bc261ada888ceb50e51382e10a597b55978cac/Protein_Design/full_protocol_24/src/full_run.py",
-  "generated": "2026-11-25T16:52:10",
+  "generated": "2026-11-25T16:54:28",
   "workflow_calls": 73,
   "steps": 135,
   "pf400_moves": 75,
@@ -4669,14 +4669,6 @@
   {
    "line": 560,
    "message": "Variable A4_to_A2 points at pcr_A2_to_A4.py (moves A2→A4, not A4→A2)"
-  },
-  {
-   "line": 0,
-   "message": "LABWARE MISMATCH Fragments (Opentrons Tough PCR) is declared as different labware: opentrons_96_wellplate_200ul_pcr_full_skirt in pd_golden_gate_ot2_v2.py; nest_96_wellplate_100ul_pcr_full_skirt in pd_pcr_v2_flex.py"
-  },
-  {
-   "line": 0,
-   "message": "LABWARE MISMATCH Golden Gate (Opentrons Tough PCR) is declared as different labware: opentrons_96_wellplate_200ul_pcr_full_skirt in pd_golden_gate_ot2_v2.py; nest_96_wellplate_100ul_pcr_full_skirt in pd_pcr_v2_ot2.py"
   }
  ]
 }
