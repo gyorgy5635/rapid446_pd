@@ -35,45 +35,61 @@ def well_list(well, channels):
     return [well]
 
 
-def replay(log, reservoir_names):
-    """Per-labware well totals and tip use, from one run's command log."""
-    labware = defaultdict(lambda: {"wells": defaultdict(lambda: {"in": 0.0, "out": 0.0, "touched": 0}),
-                                   "is_tips": False, "pickups": 0, "tips": 0, "tip_wells": []})
-    active, mixing = {}, False
+def timeline(log, reservoir_names):
+    """One entry per command, with the wells it touches and the volume each one gains or loses.
+
+    The page replays these to get the state at any step, and the per-labware totals are summed from
+    the same list, so the animation and the totals can never disagree. A mix() moves liquid in place,
+    so it is listed but moves nothing.
+    """
+    out, active, mixing = [], {}, False
     for cmd in log:
         kind = cmd["kind"]
         if kind == "configure":
             style = (cmd["style"] or "").upper()
             active[cmd["mount"]] = 1 if "SINGLE" in style else 8 if "COLUMN" in style else (cmd["channels"] or 1)
             continue
+        n = active.get(cmd["mount"], cmd["channels"] or 1)
+        entry = {"k": kind, "v": cmd["volume"], "w": cmd["well"], "s": cmd["slot"],
+                 "t": cmd["text"][:160], "lw": f"{cmd['labware']}|{cmd['slot']}" if cmd["labware"] else None}
         if kind == "mix":
             mixing = True
-            continue
-        key = f"{cmd['labware']}|{cmd['slot']}"
-        n = active.get(cmd["mount"], cmd["channels"] or 1)
-        if kind == "pick_up_tip":
+            entry["wells"] = well_list(cmd["well"], n)
+        elif kind == "pick_up_tip":
             mixing = False
-            box = labware[key]
-            box["is_tips"] = True
-            box["pickups"] += 1
-            box["tips"] += n
-            for w in well_list(cmd["well"], n):
-                if w not in box["tip_wells"]:
-                    box["tip_wells"].append(w)
-        elif kind in ("aspirate", "dispense"):
-            if mixing or cmd["labware"] is None or cmd["volume"] is None:
-                continue
-            lw = labware[key]
-            is_res = cmd["labware"] in reservoir_names or "reservoir" in (cmd["labware"] or "")
+            entry["tips"] = well_list(cmd["well"], n)
+        elif kind in ("aspirate", "dispense") and not mixing and cmd["labware"] and cmd["volume"] is not None:
+            is_res = cmd["labware"] in reservoir_names or "reservoir" in cmd["labware"]
             # every channel draws from the same reservoir well, but from its own well on a plate
-            wells = [cmd["well"]] if is_res else well_list(cmd["well"], n)
-            volume = cmd["volume"] * n if is_res else cmd["volume"]
-            for w in wells:
-                cell = lw["wells"][w]
-                cell["in" if kind == "dispense" else "out"] += volume
-                cell["touched"] += 1
-        else:
+            entry["wells"] = [cmd["well"]] if is_res else well_list(cmd["well"], n)
+            per = cmd["volume"] * n if is_res else cmd["volume"]
+            entry["dv"] = per if kind == "dispense" else -per
+        elif kind not in ("aspirate", "dispense"):
             mixing = False
+        out.append(entry)
+    return out
+
+
+def totals(timeline_):
+    """Per-labware well totals and tip use, summed from the timeline."""
+    labware = defaultdict(lambda: {"wells": defaultdict(lambda: {"in": 0.0, "out": 0.0, "touched": 0}),
+                                   "is_tips": False, "pickups": 0, "tips": 0, "tip_wells": []})
+    for e in timeline_:
+        if not e.get("lw"):
+            continue
+        lw = labware[e["lw"]]
+        if e.get("tips"):
+            lw["is_tips"] = True
+            lw["pickups"] += 1
+            lw["tips"] += len(e["tips"])
+            for w in e["tips"]:
+                if w not in lw["tip_wells"]:
+                    lw["tip_wells"].append(w)
+        if "dv" in e:
+            for w in e["wells"]:
+                cell = lw["wells"][w]
+                cell["in" if e["dv"] > 0 else "out"] += abs(e["dv"])
+                cell["touched"] += 1
     return labware
 
 
@@ -117,7 +133,8 @@ def main():
             continue
         log = json.loads(log_path.read_text())
         reservoir_names = {lw["key"] for lw in contents["labware"] if lw["format"].startswith("reservoir")}
-        state = replay(log, reservoir_names)
+        tl = timeline(log, reservoir_names)
+        state = totals(tl)
 
         deck = deck_of.get((str(run["round"]), run["protocol"]), {})
         node = "ot2_patrick" if run["robot"] == "OT-2" else "otflex_sandy"
@@ -129,7 +146,7 @@ def main():
             start = start_by_plate.get(plate_id) or start_by_key.get(f"{node}:{coord}")
             is_res = "reservoir" in load_name
             cards.append({
-                "slot": slot if slot == coord else f"{slot} ({coord})", "load_name": load_name,
+                "key": key, "slot": slot if slot == coord else f"{slot} ({coord})", "load_name": load_name,
                 "name": plate_names.get(plate_id) or (start or {}).get("label") or load_name,
                 "is_tips": lw["is_tips"], "tips": lw["tips"], "pickups": lw["pickups"],
                 "tip_wells": lw["tip_wells"],
@@ -140,8 +157,7 @@ def main():
                           for w, v in lw["wells"].items()},
             })
 
-        commands = [{"k": c["kind"], "v": c["volume"], "w": c["well"], "s": c["slot"],
-                     "t": c["text"][:160]} for c in log if c["kind"] != "configure"]
+        commands = tl
         page = {"version": a.version, "round": run["round"], "protocol": run["protocol"],
                 "robot": run["robot"], "cards": cards, "commands": commands,
                 "reagents": contents["reagents"],

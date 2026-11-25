@@ -137,6 +137,11 @@ shows the labware that run touches, a well map per plate (shaded by how much liq
 well, ringed where the protocol draws from it), which tips came out of which box, and the full
 command list with a filter per command type. Starting contents come from `config/contents.json`.
 
+Each page also replays the run: Play, step, scrub or click a command, with the well maps and tip
+boxes updating as the liquid moves and the current command highlighted in amber. Space, arrow keys,
+Home and End work as in the run map, and `#step-42` links to one command. The page opens on the
+finished state; pressing Play rewinds to the start.
+
 The run map links to them: a protocol step's "Protocol" line gets a **liquid handling →** link when
 the page exists, so a run that has not been simulated simply shows no link. Volumes are what the
 protocol asks for, netted from the simulated commands — the simulator does not track what is really

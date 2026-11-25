@@ -56,6 +56,27 @@ td.t { font-family: var(--f-mono); overflow-wrap: anywhere; }
 .scroll { max-height: clamp(260px, 56vh, 620px); overflow-y: auto; overscroll-behavior: contain;
   scrollbar-gutter: stable; margin: 0 -16px -14px; border-top: 1px solid var(--line); }
 .hint { color: var(--muted); font-size: 0.8rem; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 8px; --thumb: 16px; }
+.btn { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 7px;
+  padding: 6px 12px; cursor: pointer; font-weight: 500; font-size: 0.85rem; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); min-width: 84px; }
+label.inline { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); }
+select { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 4px 6px; }
+.clock { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--muted); margin-left: auto; }
+.clock b { color: var(--ink); font-weight: 500; }
+input[type=range] { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 16px;
+  margin: 0; background: transparent; cursor: pointer; }
+input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--slot); border: 1px solid var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--panel); box-sizing: border-box; margin-top: -5px; }
+input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--slot); border: 1px solid var(--line); }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
+  border: 2px solid var(--panel); box-sizing: border-box; }
+.nowline { margin-top: 8px; font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); min-height: 2.4em; overflow-wrap: anywhere; }
+.wellmap .active { stroke: var(--warn); stroke-width: 1.4; }
+tr.cur td { background: var(--accent-soft); }
+tr.done td { color: var(--muted); }
 .filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
 .chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; background: var(--panel);
   cursor: pointer; font-size: 0.76rem; color: var(--ink); }
@@ -78,6 +99,23 @@ td.t { font-family: var(--f-mono); overflow-wrap: anywhere; }
       ring marks a well it draws from. Colours on a starting reagent follow the run map. Volumes are what the
       protocol asks for, netted from the simulated commands: the simulator does not track what is really in a well.</p>
     <div class="grid" id="labware"></div>
+  </section>
+
+  <section class="card">
+    <h2>Playback</h2>
+    <div class="controls">
+      <button class="btn" id="btnStart" title="Back to the start (Home)">Start</button>
+      <button class="btn" id="btnPrev" title="Previous command (←)">◀</button>
+      <button class="btn primary" id="btnPlay" title="Play / pause (Space)">Play</button>
+      <button class="btn" id="btnNext" title="Next command (→)">▶</button>
+      <button class="btn" id="btnEnd" title="Jump to the end (End)">End</button>
+      <label class="inline" for="speed">Speed
+        <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select>
+      </label>
+      <div class="clock">Command <b id="stepNum">0</b> / <span id="stepTot"></span></div>
+    </div>
+    <input type="range" id="scrub" min="0" value="0" aria-label="Scrub through the commands">
+    <div class="nowline" id="nowline">At the start: only what was loaded by hand.</div>
   </section>
 
   <section class="card">
@@ -115,41 +153,32 @@ function shade(net, max) {
   return `color-mix(in srgb, var(--accent) ${Math.round(f * 100)}%, var(--slot))`;
 }
 
+// ---- well maps -------------------------------------------------------------
+// Drawn once; playback only changes the fill and outline of the wells that differ, so stepping
+// through 800 commands stays cheap.
+const cellOf = {};            // "labware|slot|well" -> SVG element
+const startOf = {};           // same key -> the reagent loaded by hand, if any
+
 $("labware").innerHTML = RUN.cards.map(lw => {
   const pad = 7, cw = 7.4, ch = lw.rows === 1 ? 20 : 7.4;
   const w = pad * 2 + lw.cols * cw, h = pad * 2 + lw.rows * ch + 4;
-  const maxNet = Math.max(0, ...Object.values(lw.wells).map(v => v.net));
   let svg = "";
   for (let c = 1; c <= lw.cols; c++) {
     svg += `<text class="lab" x="${pad + (c - 0.5) * cw}" y="${pad - 1.5}" text-anchor="middle">${c}</text>`;
     for (let r = 0; r < lw.rows; r++) {
-      const name = `${ROWS[r]}${c}`, v = lw.wells[name], start = lw.start[name];
-      const cx = pad + (c - 0.5) * cw, cy = pad + 2 + (r + 0.5) * ch;
-      let fill = null, tip = `${name} · untouched`;
-      if (lw.is_tips) {
-        const used = lw.tip_wells.includes(name);
-        fill = used ? "var(--c0)" : null;
-        tip = `${name} · ${used ? "tip used" : "tip unused"}`;
-      } else if (v) {
-        fill = shade(v.net, maxNet) || (start ? reagentColor(start.reagent) : null);
-        tip = `${name} · in ${v.in} µL, out ${v.out} µL, net ${v.net} µL`
-            + (start ? ` · starts with ${esc((RUN.reagents[start.reagent] || {}).label || start.reagent)}` : "");
-      } else if (start) {
-        fill = reagentColor(start.reagent);
-        tip = `${name} · ${esc((RUN.reagents[start.reagent] || {}).label || start.reagent)}, not used here`;
-      }
-      const cls = "w" + (v && v.out > 0 ? " used" : "");
-      const style = fill ? ` style="fill:${fill}"` : "";
+      const name = `${ROWS[r]}${c}`, cx = pad + (c - 0.5) * cw, cy = pad + 2 + (r + 0.5) * ch;
+      const id = `${lw.key}|${name}`;
+      if (lw.start[name]) startOf[id] = lw.start[name];
       svg += lw.rows === 1
-        ? `<rect class="${cls}" x="${cx - cw / 2 + 0.7}" y="${pad + 2}" width="${cw - 1.4}" height="${ch - 1.4}" rx="1.2"${style}><title>${tip}</title></rect>`
-        : `<circle class="${cls}" cx="${cx}" cy="${cy}" r="${cw / 2 - 0.9}"${style}><title>${tip}</title></circle>`;
+        ? `<rect class="w" data-id="${id}" x="${cx - cw / 2 + 0.7}" y="${pad + 2}" width="${cw - 1.4}" height="${ch - 1.4}" rx="1.2"><title></title></rect>`
+        : `<circle class="w" data-id="${id}" cx="${cx}" cy="${cy}" r="${cw / 2 - 0.9}"><title></title></circle>`;
     }
   }
-  const meta = lw.is_tips
-    ? `${lw.tips} tips in ${lw.pickups} pick-ups`
-    : `${Object.keys(lw.wells).length} wells touched`;
-  const key = lw.is_tips ? `<span><i style="background:var(--c0)"></i>used</span>`
-    : `<span><i style="background:var(--accent)"></i>ends with liquid</span><span><i style="border:1px solid var(--accent);background:transparent"></i>drawn from</span>`;
+  const meta = lw.is_tips ? `${lw.tips} tips in ${lw.pickups} pick-ups`
+                          : `${Object.keys(lw.wells).length} wells touched over the run`;
+  const key = lw.is_tips
+    ? `<span><i style="background:var(--c0)"></i>tip used</span>`
+    : `<span><i style="background:var(--accent)"></i>holds liquid</span><span><i style="border:1px solid var(--warn);background:transparent"></i>in this command</span>`;
   return `<div class="lw">
     <h3>${esc(lw.name)}</h3>
     <div class="meta">slot ${esc(lw.slot)} · ${esc(lw.load_name)} · ${meta}</div>
@@ -157,6 +186,118 @@ $("labware").innerHTML = RUN.cards.map(lw => {
     <div class="key">${key}</div>
   </div>`;
 }).join("");
+
+for (const el of document.querySelectorAll(".wellmap .w")) cellOf[el.dataset.id] = el;
+
+// Fullest well of each labware over the whole run, so the shading scale does not jump about.
+const peak = {};
+for (const lw of RUN.cards) {
+  peak[lw.key] = Math.max(1, ...Object.values(lw.wells).map(v => v.net));
+}
+
+// ---- playback --------------------------------------------------------------
+const N = RUN.commands.length;
+let t = N, playing = false, timer = null;
+
+function stateAt(step) {
+  const vol = {}, tips = {};
+  for (let i = 0; i < step; i++) {
+    const c = RUN.commands[i];
+    if (c.tips) for (const w of c.tips) tips[`${c.lw}|${w}`] = true;
+    if (c.dv != null) for (const w of c.wells) {
+      const id = `${c.lw}|${w}`;
+      vol[id] = (vol[id] || 0) + c.dv;
+    }
+  }
+  return { vol, tips };
+}
+
+const reagentLabel = (r) => (RUN.reagents[r] || {}).label || r;
+let painted = {};
+
+function paint(step) {
+  const { vol, tips } = stateAt(step);
+  const cur = step > 0 ? RUN.commands[step - 1] : null;
+  const active = new Set();
+  if (cur) {
+    for (const w of cur.wells || []) active.add(`${cur.lw}|${w}`);
+    for (const w of cur.tips || []) active.add(`${cur.lw}|${w}`);
+  }
+  const lwOf = {};
+  for (const lw of RUN.cards) lwOf[lw.key] = lw;
+
+  for (const [id, el] of Object.entries(cellOf)) {
+    const lwKey = id.slice(0, id.lastIndexOf("|")), well = id.slice(id.lastIndexOf("|") + 1);
+    const lw = lwOf[lwKey], v = vol[id] || 0, start = startOf[id];
+    let fill = "", title;
+    if (lw && lw.is_tips) {
+      fill = tips[id] ? "var(--c0)" : "";
+      title = `${well} · ${tips[id] ? "tip used" : "tip in place"}`;
+    } else if (v > 0.0001) {
+      const f = Math.max(0.18, Math.min(1, v / peak[lwKey]));
+      fill = `color-mix(in srgb, var(--accent) ${Math.round(f * 100)}%, var(--slot))`;
+      title = `${well} · ${v.toFixed(1)} µL added so far`;
+    } else if (start) {
+      fill = reagentColor(start.reagent);
+      title = `${well} · ${reagentLabel(start.reagent)}`
+        + (v < -0.0001 ? ` · ${(-v).toFixed(1)} µL taken so far` : "");
+    } else {
+      title = v < -0.0001 ? `${well} · ${(-v).toFixed(1)} µL taken, nothing declared here` : `${well} · empty`;
+    }
+    const want = fill + "|" + active.has(id);
+    if (painted[id] !== want) {
+      el.style.fill = fill;
+      el.classList.toggle("active", active.has(id));
+      painted[id] = want;
+    }
+    el.firstChild.textContent = title;
+  }
+
+  $("stepNum").textContent = step;
+  $("scrub").value = step;
+  $("nowline").textContent = cur
+    ? `${cur.k.replace(/_/g, " ")}${cur.v != null ? ` ${cur.v} µL` : ""} · ${cur.t}`
+    : "At the start: only what was loaded by hand.";
+  const rows = $("rows").children;
+  for (let i = 0; i < rows.length; i++) {
+    const idx = +rows[i].dataset.i;
+    rows[i].classList.toggle("cur", idx === step - 1);
+    rows[i].classList.toggle("done", idx < step - 1);
+  }
+  const curRow = $("rows").querySelector("tr.cur");
+  if (curRow && playing) curRow.scrollIntoView({ block: "nearest" });
+}
+
+function go(step) {
+  t = Math.max(0, Math.min(N, step));
+  paint(t);
+  history.replaceState(null, "", `#step-${t}`);
+}
+function setPlaying(on) {
+  playing = on;
+  $("btnPlay").textContent = on ? "Pause" : "Play";
+  clearInterval(timer);
+  if (!on) return;
+  if (t >= N) go(0);
+  timer = setInterval(() => (t >= N ? setPlaying(false) : go(t + 1)), 420 / +$("speed").value);
+}
+
+$("btnPlay").addEventListener("click", () => setPlaying(!playing));
+$("btnPrev").addEventListener("click", () => { setPlaying(false); go(t - 1); });
+$("btnNext").addEventListener("click", () => { setPlaying(false); go(t + 1); });
+$("btnStart").addEventListener("click", () => { setPlaying(false); go(0); });
+$("btnEnd").addEventListener("click", () => { setPlaying(false); go(N); });
+$("scrub").addEventListener("input", e => { setPlaying(false); go(+e.target.value); });
+$("speed").addEventListener("change", () => { if (playing) setPlaying(true); });
+addEventListener("keydown", e => {
+  if (e.target.matches("input, select, button")) return;
+  const k = e.key;
+  if (k === " ") { e.preventDefault(); setPlaying(!playing); }
+  else if (k === "ArrowLeft") { setPlaying(false); go(t - 1); }
+  else if (k === "ArrowRight") { setPlaying(false); go(t + 1); }
+  else if (k === "Home") { setPlaying(false); go(0); }
+  else if (k === "End") { setPlaying(false); go(N); }
+});
 
 const KINDS = [...new Set(RUN.commands.map(c => c.k))];
 let hidden = new Set();
@@ -173,11 +314,20 @@ $("filters").addEventListener("click", e => {
 function draw() {
   $("rows").innerHTML = RUN.commands.map((c, i) => [c, i])
     .filter(([c]) => !hidden.has(c.k))
-    .map(([c, i]) => `<tr><td class="n">${i + 1}</td><td><span class="k ${c.k}">${c.k.replace(/_/g, " ")}</span></td>`
+    .map(([c, i]) => `<tr data-i="${i}"><td class="n">${i + 1}</td><td><span class="k ${c.k}">${c.k.replace(/_/g, " ")}</span></td>`
       + `<td class="n">${c.v == null ? "" : c.v}</td><td class="n">${esc(c.w)}</td><td class="n">${esc(c.s)}</td>`
       + `<td class="t">${esc(c.t)}</td></tr>`).join("");
+  paint(t);
 }
+$("rows").addEventListener("click", e => {
+  const tr = e.target.closest("tr[data-i]");
+  if (tr) { setPlaying(false); go(+tr.dataset.i + 1); }
+});
+$("stepTot").textContent = N;
+$("scrub").max = N;
 draw();
+const fromHash = /^#step-(\d+)$/.exec(location.hash);
+go(fromHash ? +fromHash[1] : N);
 </script>
 </body>
 </html>

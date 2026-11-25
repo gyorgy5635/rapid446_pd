@@ -163,7 +163,12 @@ command list. The numbers come straight from the simulated run, so for example t
 page shows 24 wells drawn from the PCR plate, 32 wells filled in the dilution plate (24 samples plus
 the controls column), 40 tips from two boxes, and 106 commands.
 
-Still to come: phase 2 adds a scrubber and animation, phase 3 liquid identity and mixing.
+Phase 2 adds playback: each page replays its commands, with wells filling and tips being consumed
+as you step or scrub, so the round 1 dilution page goes from nothing at step 0, to 16 wells of water
+at step 20, to 32 filled wells and 40 tips at step 106. The per-command volumes the animation
+replays are the same numbers the totals are summed from, so the two cannot disagree.
+
+Still to come: phase 3, liquid identity and mixing.
 
 ## Checks the run map now does
 
