@@ -11,7 +11,7 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
   `Protein_Design/full_protocol_24`, branch PD_full_loop, commit e4bc261 (2026-11-11). Treat it as read-only and
   make variants with `./new_version.sh <from> <to> "title"`; change it only when the user asks. It is no longer
   identical to e4bc261: `config/source.json` lists the local changes (2026-11-25: declare the parked controls
-  plate on OT-2 D1). It has `deck.json` and `contents.json` now, so the deck check and the liquid pages work
+  plate on OT-2 D1, and port every PCR plate to the tough plate). It has `deck.json` and `contents.json` now, so the deck check and the liquid pages work
   there too; its contents still include the SYBR Green reagent and controls column.
 - `tools/`: extract_events.py (AST-only parse of full_run.py, never executes it), build_player.py,
   player_template.html, export_madsci_history.py. `tests/make_synthetic_history.py` makes FAKE data for testing only.
@@ -28,9 +28,9 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
 - Equal screen time per step is fine; real durations are shown as text.
 
 ## Confirmed by the user (2026-11-25)
-- Opentrons tough plate, catalog 991-00076, has run the _24 protocol for >8 rounds; existing offsets and PF400 grip
-  attributes work with it. `full_protocol_24_20261124` and `_3round` use it everywhere, including the lyophilized cell-free plates; FDGlu
-  stays Corning flat.
+- Opentrons tough plate, catalog 991-00076, has run the _24 protocol for >8 rounds; existing offsets and PF400
+  grip attributes work with it. All three versions now declare it everywhere, including the lyophilized
+  cell-free plates; the FDGlu and SYBR Green assay plates stay Corning flat and the reservoirs stay NEST.
 - `full_protocol_24`'s `protocol/` is the working copy used in previous runs: leave it alone unless the user asks
   for a change (`config/` tracks workcell changes, and `source.json` lists any local protocol changes).
 - `cold_block_ext` keeps that name for now; rack 2 nests are `rack2_row1_nest1` style.
