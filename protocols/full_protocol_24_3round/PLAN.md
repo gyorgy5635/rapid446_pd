@@ -1,6 +1,6 @@
 # 3-round PD run: plan and status
 
-Status: **draft, not run on any robot.** Started 2026-11-24 as a variant of `full_protocol_24_20261124`
+Status: **draft, not run on any robot.** Started 2026-11-24 as a variant of `full_protocol_24_20261124` (that version was deleted on 2026-11-26; it is in git history)
 (SYBR Green removed, controls routed rack → OT-2). Run map: `./build.sh full_protocol_24_3round`, then open
 `viz/pd_run_map.html`. Estimated 28.5 h for 3 rounds (durations are estimates).
 
@@ -265,7 +265,7 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
   resource's catalog number and description in `full_run.py` were wrong and are now fixed.
 - `cold_block_ext` stays as the location name for now.
 - Rack 2's nests are named like rack 1's: `rack2_row1_nest1`, which is what the workflows already use.
-- The single-run variant `full_protocol_24_20261124` is ported to the tough plate as well. The baseline
+- The single-run variant `full_protocol_24_20261124` was ported to the tough plate as well, before it was deleted. The baseline
   `full_protocol_24` keeps its `protocol/` untouched: it is a working copy used in previous runs.
 - The lyophilized cell-free plates are tough plates too, so every plate in this run is the same labware.
 - F4, G4 and H4 of the cell-free plate are the control positions: `remove_rmf` empties them and the 8-channel FDGlu

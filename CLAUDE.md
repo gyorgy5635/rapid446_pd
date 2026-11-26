@@ -40,11 +40,13 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
   `tools/export_madsci_history.py` run on the lab network, with the output saved to `protocols/<version>/viz/madsci_history.json`.
 - Upstream bug noted: in full_run.py, `A4_to_A2` points at `pcr_A2_to_A4.py` (only used in a commented-out block).
 - Upstream bug noted: `cell_free_pd_ot2_v2.py` did not declare the controls plate parked on OT-2 D1, so the robot
-  did not know it was there. Fixed in `full_protocol_24_20261124` and, at the user's request, in the baseline
-  too (no pipetting change).
-- Versions: `full_protocol_24_20261124` = single run, SYBR Green removed, controls rack → OT-2.
-  `full_protocol_24_3round` = 3-round experiment (user requirements 2026-11-24); its `PLAN.md` holds the decisions,
-  tip plan, assumptions and open items. Placeholder MADSci names there: `cold_block_ext`, `rack2_row1_nest1`.
+  did not know it was there. Fixed in the baseline and in the 3-round line (no pipetting change).
+- Versions: `full_protocol_24_3round` = the working 3-round line; `full_protocol_24_3round_20261126` = a frozen
+  snapshot of it (2026-11-26) to branch further variants from. Each carries its own `PLAN.md` with the
+  decisions, tip plan, assumptions and open items. Placeholder MADSci name: `cold_block_ext`.
+- `full_protocol_24_20261124` (single run, SYBR Green removed, controls rack → OT-2) was deleted on 2026-11-26
+  at the user's request; it is in git history up to commit 1ee53e4 if it is ever needed. The 3-round line
+  descends from it, so `source.json` and `PLAN.md` still name it as the parent.
 - 3-round decisions from the user: PCR master mix column 10/11/12 per round, GG mix column 9 shared; cell-free 24 µL
   water + 6 µL diluted PCR; rounds sequential with new combinations each round; Flex staging B4/C4 can hold tip boxes
   for on-deck swaps (PF400 tip-box swapping still has issues).
