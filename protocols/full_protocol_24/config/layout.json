@@ -110,6 +110,7 @@
       "x": 440,
       "y": 450,
       "fixtures": {
+        "2": "KEEP EMPTY\nPF400 path\nto slots 1, 3",
         "4": "Temp 4 °C",
         "6": "Temp 4 °C",
         "10": "Reagent block 1",

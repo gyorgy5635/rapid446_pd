@@ -462,9 +462,20 @@ function renderMap() {
 }
 function isTracked(key) { return EV.plates.some(p => p.start === key) || EV.steps.some(s => s.to === key); }
 function wrapText(t, str, x, lh) {
-  const words = str.split(" "); let line = "", lines = [];
-  for (const w of words) { if ((line + " " + w).trim().length > 12 && line) { lines.push(line); line = w; } else line = (line + " " + w).trim(); }
-  lines.push(line);
+  // A label that carries its own "\n" breaks is taken as written; one that does not wraps at
+  // about 12 characters.
+  let lines;
+  if (String(str).includes("\n")) {
+    lines = String(str).split("\n").map(l => l.trim());
+  } else {
+    const words = String(str).split(" ");
+    let line = "";
+    lines = [];
+    for (const w of words) {
+      if ((line + " " + w).trim().length > 12 && line) { lines.push(line); line = w; } else line = (line + " " + w).trim();
+    }
+    lines.push(line);
+  }
   lines.forEach((l, i) => { const ts = el("tspan", { x, dy: i ? lh : -(lines.length - 1) * lh / 2 }, t); ts.textContent = l; });
 }
 function placePlate(id, x, y) { plateEls[id].setAttribute("transform", `translate(${x},${y})`); plateEls[id]._xy = [x, y]; }
