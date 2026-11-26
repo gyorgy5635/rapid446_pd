@@ -56,7 +56,13 @@ config = {
     'pcr_plate_position': 'C1',
     'tip_rack_position_50_01': 'A2',
     'tip_rack_position_200_01': 'A1',
-    'reagent_plate_position': 'D2'
+    'reagent_plate_position': 'D2',
+
+    # The controls plate is parked in staging D4 while the fragments plate needs the B1 cold block.
+    # This protocol does not pipette from it - a staging slot cannot be pipetted from at all - but
+    # it has to be declared or the robot does not know it is there.
+    'controls_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
+    'controls_plate_position': 'D4',
 }
 
 
@@ -206,6 +212,9 @@ def run(protocol: protocol_api.ProtocolContext):
     pcr_plate.set_offset(x=0.7, y=0.30, z=0.2)
 
     reagent_plate = protocol.load_labware(config['reagent_plate_type'], config['reagent_plate_position'])
+
+    # declared, not used: the controls plate waits here until the fragments plate leaves B1
+    controls_plate = protocol.load_labware(config['controls_plate_type'], config['controls_plate_position'])
 
 
     tiprack_50_1 = protocol.load_labware(

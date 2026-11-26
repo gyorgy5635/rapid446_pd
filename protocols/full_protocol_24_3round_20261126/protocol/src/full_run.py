@@ -375,7 +375,8 @@ class PDApp(ExperimentScript,): # TODO
         seal_and_thermocycle_pcr = transfers_directory / "seal_and_thermocycle_pcr.yaml"
         fragments_flex_seal_to_cold_block = transfers_directory / "fragments_flex_seal_to_cold_block.yaml"
         pcr_thermo_to_ot2 = transfers_directory / "pcr_thermo_to_ot2.yaml"
-        controls_to_ot2 = transfers_directory / "controls_to_ot2.yaml"
+        controls_nest_to_flex = transfers_directory / "controls_nest_to_flex.yaml"
+        controls_flex_to_ot2 = transfers_directory / "controls_flex_to_ot2.yaml"
         ot2_tip_swap = transfers_directory / "ot2_tip_swap.yaml"
         diluted_ot2_to_flex = transfers_directory / "diluted_ot2_to_flex.yaml"
         cfps_flex_seal_to_flex = transfers_directory / "cfps_flex_seal_to_flex.yaml"
@@ -405,6 +406,8 @@ class PDApp(ExperimentScript,): # TODO
         A4_to_C1 = protocol_directory / "pcr_A4_to_C1.py"
         A4_to_D1 = protocol_directory / "pcr_A4_to_D1.py"  # also runs the 150 min, 37 °C shake
         B1_to_A4 = protocol_directory / "pcr_B1_to_A4.py"
+        B1_to_D4 = protocol_directory / "pcr_B1_to_D4.py"   # park the controls plate in staging
+        D4_to_B1 = protocol_directory / "pcr_D4_to_B1.py"
         B2_to_A4 = protocol_directory / "pcr_B2_to_A4.py"
         B3_to_A4 = protocol_directory / "pcr_B3_to_A4.py"
         C1_to_A4 = protocol_directory / "pcr_C1_to_A4.py"
@@ -422,14 +425,27 @@ class PDApp(ExperimentScript,): # TODO
             "ot2_20": helper_functions.TipLedger(
                 "OT-2 20 uL", racks=6,                      # C2 B1 B2 B3 A2 then D3 (swappable)
                 spare_slots=["rack2_row1_nest2"], swap_start=60),
+            # No staging spare for the 200 uL box: D4 now parks the controls plate. The run uses
+            # exactly one box (96 tips of 96), so a round with more combinations would stop here
+            # with the ledger's error and need a box swapped in by hand.
             "flex_200": helper_functions.TipLedger(
                 "Flex 200 uL", racks=1, tip_type="opentrons_flex_96_tiprack_200ul",
-                deck_slot="A1", spare_slots=["D4"]),
+                deck_slot="A1", spare_slots=[]),
             "flex_50": helper_functions.TipLedger(
                 "Flex 50 uL 8-channel", racks=1, tip_type="opentrons_flex_96_tiprack_50ul",
                 deck_slot="A2", spare_slots=["B4", "C4"]),
             "flex_50_single": helper_functions.TipLedger("Flex 50 uL single", racks=1, unit="tip"),  # A3
         }
+
+        def flex_move(script):
+            """Run one Flex gripper move."""
+            payload["current_flex_protocol"] = script
+            self.workcell_client.submit_workflow(
+                run_flex_wf.resolve(),
+                file_inputs={
+                    "flex_protocol": payload["current_flex_protocol"],
+                },
+            )
 
         def swap_ot2_tip_box():
             """PF400 swap: spent 20 uL box in OT-2 slot 3 out to rack 2, full spare back in."""
@@ -475,6 +491,15 @@ class PDApp(ExperimentScript,): # TODO
                 "flex_protocol": payload["current_flex_protocol"],
             },
         )
+
+        # The controls plate lives on the Flex cold block B1 for the whole run, so that it is not
+        # standing at room temperature between rounds. It leaves only for the dilution, and steps
+        # aside to staging D4 for the hour the fragments plate needs B1.
+        workflow = self.workcell_client.submit_workflow(
+            controls_nest_to_flex.resolve(),
+        )
+        flex_move(A4_to_B1)
+        self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
 
         for round_num in (1, 2, 3):
 
@@ -539,6 +564,9 @@ class PDApp(ExperimentScript,): # TODO
             workflow = self.workcell_client.submit_workflow(
                 thermocycler_to_ot2.resolve(),
             )
+
+            # controls plate steps aside: B1 -> staging D4, so the fragments plate can use the block
+            flex_move(B1_to_D4)
 
             # fragments plate: OT-2 C1 -> Flex A4 -> cold block B1 (PCR master mix source)
             workflow = self.workcell_client.submit_workflow(
@@ -645,6 +673,9 @@ class PDApp(ExperimentScript,): # TODO
                 fragments_flex_seal_to_cold_block.resolve(),
             )
 
+            # controls plate back onto the cold block for the rest of the round
+            flex_move(D4_to_B1)
+
             # used Golden Gate plate: OT-2 C3 -> its nest
             workflow = self.workcell_client.submit_workflow(
                 (rounds_directory / f"gg_plate_ot2_to_rack_r{round_num}.yaml").resolve(),
@@ -669,9 +700,14 @@ class PDApp(ExperimentScript,): # TODO
                 (rounds_directory / f"diluted_plate_to_ot2_r{round_num}.yaml").resolve(),
             )
 
-            # controls plate -> OT-2 D1
+            # controls plate: Flex cold block B1 -> A4 -> OT-2 D1, just for the dilution
+            flex_move(B1_to_A4)
+            new_plate, old_plate = self.push_new_assay_plate_resource(
+                location_name="otflex_sandy.deck_nest_A4",
+                labware_type="pcr"
+            )
             workflow = self.workcell_client.submit_workflow(
-                controls_to_ot2.resolve(),
+                controls_flex_to_ot2.resolve(),
             )
 
             # 98 uL water (5 x 19.6 uL, one tip column) + 2 uL PCR per well, mix at 20 uL; controls column
@@ -692,6 +728,25 @@ class PDApp(ExperimentScript,): # TODO
             workflow = self.workcell_client.submit_workflow(
                 (rounds_directory / f"pcr_plate_ot2_seal_to_rack_r{round_num}.yaml").resolve(),
             )
+
+            # Controls plate: OT-2 D1 -> Flex A4 -> cold block B1, as soon as the dilution is done.
+            # It is not needed again until the FDGlu assay, and B1 is free from here until then, so
+            # this is where it waits instead of sitting at room temperature on the OT-2 for hours.
+            # controls plate: OT-2 D1 -> Flex A4 -> cold block B1
+            workflow = self.workcell_client.submit_workflow(
+                controls_plate_to_flex.resolve(),
+            )
+
+            payload["current_flex_protocol"] = A4_to_B1
+            workflow = self.workcell_client.submit_workflow(
+                run_flex_wf.resolve(),
+                file_inputs={
+                    "flex_protocol": payload["current_flex_protocol"],
+                },
+            )
+
+            self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
+
 
             #################
             ##### CELL FREE
@@ -791,21 +846,6 @@ class PDApp(ExperimentScript,): # TODO
             ################
             #### FD GLU ASSAY
             ################
-
-            # controls plate: OT-2 D1 -> Flex A4 -> cold block B1
-            workflow = self.workcell_client.submit_workflow(
-                controls_plate_to_flex.resolve(),
-            )
-
-            payload["current_flex_protocol"] = A4_to_B1
-            workflow = self.workcell_client.submit_workflow(
-                run_flex_wf.resolve(),
-                file_inputs={
-                    "flex_protocol": payload["current_flex_protocol"],
-                },
-            )
-
-            self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
 
             # empty FDGlu plate -> Flex A4 -> B3
             workflow = self.workcell_client.submit_workflow(
@@ -934,27 +974,19 @@ class PDApp(ExperimentScript,): # TODO
                 (rounds_directory / f"cfps_flex_to_rack_r{round_num}.yaml").resolve(),
             )
 
-            # controls plate: Flex B1 -> A4 -> its nest
-            payload["current_flex_protocol"] = B1_to_A4
-            workflow = self.workcell_client.submit_workflow(
-                run_flex_wf.resolve(),
-                file_inputs={
-                    "flex_protocol": payload["current_flex_protocol"],
-                },
-            )
-
-            new_plate, old_plate = self.push_new_assay_plate_resource(
-                location_name="otflex_sandy.deck_nest_A4",
-                labware_type="pcr"
-            )
-
-            workflow = self.workcell_client.submit_workflow(
-                controls_flex_to_nest.resolve(),
-            )
-
         ###########
         ### FINISH
         ###########
+
+        # controls plate: off the cold block and back to its nest, once the last round is done
+        flex_move(B1_to_A4)
+        new_plate, old_plate = self.push_new_assay_plate_resource(
+            location_name="otflex_sandy.deck_nest_A4",
+            labware_type="pcr"
+        )
+        workflow = self.workcell_client.submit_workflow(
+            controls_flex_to_nest.resolve(),
+        )
 
         print("TIPS used in the current box / spare boxes left:",
               {name: (ledger.used, ledger.spares) for name, ledger in tips.items()})

@@ -4,10 +4,12 @@ A frozen copy of the 3-round protein design run, taken on 2026-11-26 so that fur
 built without disturbing it. `protocol/` is byte-identical to `full_protocol_24_3round` as it stood
 that day, and the run map matches it step for step.
 
-**Status: draft. No part of this has been run on the robots.** The protocol is frozen as of
-2026-11-26; the only later change is the thermocycler PCR duration in `config/durations.json`,
-corrected on 2026-11-26 from 1.5 h to 2.75 h, which is a measurement of the instrument rather than
-a design choice. It has been checked by simulation
+It was refreshed once on the same day, to take in the change that keeps the controls plate cold:
+the first version of this snapshot left that plate on a room-temperature nest, which is not a
+design worth preserving, because the plate holds PCR products and protein that keep better cold,
+and it is unsealed, so it would dry out.
+
+**Status: draft. No part of this has been run on the robots.** It has been checked by simulation
 and by the run map; see "What has been checked" below.
 
 Open `viz/pd_run_map.html` for the run, and `viz/liquid/` for the liquid handling of each protocol.
@@ -34,21 +36,33 @@ What distinguishes it from the single run it grew out of:
 - **Every plate is the Opentrons tough plate** (991-00076). Only the FDGlu assay plate is different:
   a Corning flat bottom, because it is read in the Hidex.
 
-## Labware that stays out at room temperature
+## How the controls plate is kept cold
 
-Three pieces of labware sit at room temperature for long stretches. None of this is accidental, but
-it is the part of the design most worth a second opinion from someone who knows the chemistry.
+The controls plate holds PCR products and protein, so it wants to be cold, and it is unsealed, so it
+would dry out if it stood about. It therefore **lives on the Flex cold block B1 for the whole run**
+rather than on a nest, and leaves only twice a round:
 
-- **The controls plate lives on rack 2, nest 1, at room temperature.** It has no cooled home: it
-  waits there between rounds, moves to OT-2 slot 1 (an ordinary slot, not a cold block) for the
-  dilution, and only reaches a cooled surface when it arrives on the Flex cold block B1 for the
-  FDGlu assay. By the run map's estimates it spends about **3.5 h uncooled per round**, covering the
-  dilution, the cell-free assembly and the 150 min incubation. The single-run protocol parked it on
-  the Flex cold block instead; that detour was dropped when the Flex stopped using it.
-- **The lyophilized cell-free plates** are stored and used at room temperature, as intended for
-  lyophilized reagents.
-- **The reagent reservoirs** on both robots are at room temperature for the whole run, including the
-  FDGlu substrate (9.6 mL drawn over the three rounds).
+| Where | Time over the 34.5 h run | |
+|---|---|---|
+| Flex cold block B1 | **25.9 h** | cold |
+| Staging D4 | 3.2 h | parked while the fragments plate needs B1 |
+| OT-2 slot 1 | 1.1 h | the three dilutions |
+| Its own nest | 0.4 h | the start and the end of the run |
+
+Two gripper moves per round do the toggling: B1 → D4 before the fragments plate arrives for the PCR
+master mix, and D4 → B1 once it has gone. The cost is nine extra gripper moves and the staging slot
+that used to hold a spare 200 µL tip box, so the Flex 200 µL budget now has no margin: the run draws
+exactly one box of 96 tips.
+
+**Still at room temperature**, both deliberately:
+
+- **The lyophilized cell-free plates**, as intended for lyophilized reagents.
+- **The reagent reservoirs** on both robots, including the FDGlu substrate (9.6 mL over three
+  rounds).
+
+Sealing the controls plate would close the remaining gap - it is open whenever it is not in use, as
+the run map's hover text shows - but that needs somewhere sealed and cold to keep it, which is the
+second external cold block that does not exist yet.
 
 The fragments plate is the opposite case: it is sealed and on the external cooling block whenever it
 is not in use, which is what the external block was added for.
