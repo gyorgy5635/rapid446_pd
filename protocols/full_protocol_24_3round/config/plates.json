@@ -8,7 +8,7 @@
   "role": "fragments"
  },
  "rack2_row1_nest1": {
-  "name": "Controls (Opentrons Tough PCR)",
+  "name": "Controls (tough plate, room temp)",
   "short": "CTRL",
   "kind": "pcr",
   "color": 4,
