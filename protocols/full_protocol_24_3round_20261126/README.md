@@ -4,7 +4,10 @@ A frozen copy of the 3-round protein design run, taken on 2026-11-26 so that fur
 built without disturbing it. `protocol/` is byte-identical to `full_protocol_24_3round` as it stood
 that day, and the run map matches it step for step.
 
-**Status: draft. No part of this has been run on the robots.** It has been checked by simulation
+**Status: draft. No part of this has been run on the robots.** The protocol is frozen as of
+2026-11-26; the only later change is the thermocycler PCR duration in `config/durations.json`,
+corrected on 2026-11-26 from 1.5 h to 2.75 h, which is a measurement of the instrument rather than
+a design choice. It has been checked by simulation
 and by the run map; see "What has been checked" below.
 
 Open `viz/pd_run_map.html` for the run, and `viz/liquid/` for the liquid handling of each protocol.
@@ -13,7 +16,7 @@ Open `viz/pd_run_map.html` for the run, and `viz/liquid/` for the liquid handlin
 ## What this variant is
 
 Three rounds of Golden Gate → PCR → 1:50 dilution → cell-free → FDGlu, one after another, about
-30.8 h by the current estimates. Each round fetches its own combination list from the design server
+34.5 h by the current estimates (the thermocycler PCR program is 2.5-3 h; 2.75 h is used here). Each round fetches its own combination list from the design server
 after uploading the previous round's Hidex read.
 
 What distinguishes it from the single run it grew out of:

@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24_3round",
   "script_url": null,
-  "generated": "2026-11-26T13:26:27",
+  "generated": "2026-11-26T14:10:47",
   "workflow_calls": 184,
   "steps": 386,
   "pf400_moves": 237,
@@ -13,7 +13,7 @@
   "resource_bookkeeping_calls_ignored": 48,
   "conditional_steps": 42,
   "swaps_from_simulation": true,
-  "estimated_total_s": 110715
+  "estimated_total_s": 124215
  },
  "plates": [
   {
@@ -4874,7 +4874,7 @@
    "kind": "action",
    "mover": "biometra_beuford_96",
    "detail": "Run thermocycler protocol (program=3)",
-   "duration_s": 5400,
+   "duration_s": 9900,
    "duration_source": "estimate",
    "node": "biometra_beuford_96",
    "action": "run_protocol"
@@ -7018,7 +7018,7 @@
    "kind": "action",
    "mover": "biometra_beuford_96",
    "detail": "Run thermocycler protocol (program=3)",
-   "duration_s": 5400,
+   "duration_s": 9900,
    "duration_source": "estimate",
    "node": "biometra_beuford_96",
    "action": "run_protocol"
@@ -9165,7 +9165,7 @@
    "kind": "action",
    "mover": "biometra_beuford_96",
    "detail": "Run thermocycler protocol (program=3)",
-   "duration_s": 5400,
+   "duration_s": 9900,
    "duration_source": "estimate",
    "node": "biometra_beuford_96",
    "action": "run_protocol"
