@@ -90,11 +90,15 @@ slot-3 box cover 576 tips, and the run needs 624. On the Flex the 8-channel 50 �
 gripper (rounds 2 and 3). The 200 µL box comes out exactly full at 96 tips, so the D4 spare is there for the case
 where a round has more combinations.
 
-Swaps are decided at run time by the tip counter, which the run map cannot evaluate, so it lists every swap that
-*could* happen, marked "only if needed". Those steps carry no labware: they are listed and timed but nothing is
-moved for them and the tracked deck ignores them, because a swap drawn where it never fires would leave tip boxes
-stacked on the exchange for the rest of the run. 48 of the 386 steps are conditional; the simulated run says one
-OT-2 swap and two Flex swaps actually fire, in round 3 and rounds 2-3 respectively. `full_run.py` counts tips (`TipLedger` in `helper_functions.py`) and passes the first unused tip into each
+Swaps are decided at run time by the tip counter, which the run map cannot evaluate on its own. The simulation
+does evaluate it, and writes every check and its result to `viz/simulated/report.json`, so the run map draws the
+three swaps that really fire as ordinary steps that move labware - the 50 µL box in rounds 2 and 3, the OT-2 box
+in round 3 before the PCR step - and greys out the other 42 steps, which carry no labware and leave the deck
+untouched. Without a simulation every swap is greyed, since drawing one where it never fires would leave tip
+boxes stacked on the exchange for the rest of the run.
+
+The two sides line up by numbering the checks in the order the script makes them within a round, counting only
+the blocks that submit a workflow. `full_run.py` counts tips (`TipLedger` in `helper_functions.py`) and passes the first unused tip into each
 protocol (`$ot2_tip_start`, `$flex200_tip_start`, `$flex50_tip_start`, `$flex50_single_start`). If a 200 µL step would
 run past the A1 box, the Flex gripper swaps in the B4 spare (`flex_tips_200_swap.py`, A1 → C4, B4 → A1; no PF400).
 If any other box would run out, the run stops with an error instead of crashing a pipette.

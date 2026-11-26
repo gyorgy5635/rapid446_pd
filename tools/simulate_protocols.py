@@ -80,7 +80,7 @@ def plan_from_events(app: Path, payload_base, events):
         rnd = int(phase[1:].split()[0]) if phase[:1] == "R" and phase[1:2].isdigit() else 1
         steps.append((rnd, step["protocol"], hf.collect_ot2_replacement_variables(dict(payload_base))))
     n, cols, sources = combination_counts(payload_base)
-    return steps, hf, {"combinations": n, "columns": cols, "fragment_transfers": sources}
+    return steps, hf, {"combinations": n, "columns": cols, "fragment_transfers": sources, "swap_sites": []}
 
 
 def needs_tip_plan(app: Path):
@@ -113,33 +113,45 @@ def plan(app: Path, payload_base):
         steps.append((rnd, "flex_tips_swap.py",
                       hf.collect_ot2_replacement_variables(dict(base, swap_vars=swap_vars))))
 
+    # Every tip-swap check full_run.py makes, in the same order, recorded so the run map can show
+    # which swaps really fire and grey out the ones that never do. The index is the check's
+    # position within its round, which is how the two sides line up.
+    sites, site_no = [], {}
+
+    def site(rnd, name, needed):
+        i = site_no[rnd] = site_no.get(rnd, -1) + 1
+        fired = bool(tips[name].needs_swap(needed))
+        sites.append({"round": rnd, "index": i, "ledger": name, "fired": fired})
+        return fired
+
     for rnd in (1, 2, 3):
         base = dict(payload_base, round_vars={"round_num": rnd, "pcr_mm_start_well": 8 * (8 + rnd)})
         gg_cols = n_cols + (n_sources + 7) // 8
-        if tips["ot2_20"].needs_swap(gg_cols):           # PF400 workflow, not a protocol: nothing to simulate
+        if site(rnd, "ot2_20", gg_cols):        # PF400 workflow, not a protocol: nothing to simulate
             tips["ot2_20"].swap()
         step(rnd, "pd_golden_gate_ot2_v2.py", base, ot2_tip_start=tips["ot2_20"].take(gg_cols))
-        if tips["flex_200"].needs_swap(n_cols):
+        if site(rnd, "flex_200", n_cols):
             swap(rnd, base, tips["flex_200"])
         step(rnd, "pd_pcr_v2_flex.py", base, flex200_tip_start=tips["flex_200"].take(n_cols))
-        if tips["ot2_20"].needs_swap(2 * n_cols):
+        if site(rnd, "ot2_20", 2 * n_cols):
             tips["ot2_20"].swap()
         step(rnd, "pd_pcr_v2_ot2.py", base, ot2_tip_start=tips["ot2_20"].take(2 * n_cols))
-        if tips["ot2_20"].needs_swap(n_cols + 2):
+        if site(rnd, "ot2_20", n_cols + 2):
             tips["ot2_20"].swap()
         step(rnd, "pd_dilute_1to50_ot2.py", base, ot2_tip_start=tips["ot2_20"].take(n_cols + 2))
-        if tips["flex_50"].needs_swap(n_cols + 2):
+        if site(rnd, "flex_50", n_cols + 2):
             swap(rnd, base, tips["flex_50"])
         step(rnd, "cell_free_lyo_flex.py", base, flex50_tip_start=tips["flex_50"].take(n_cols + 2))
-        if tips["flex_200"].needs_swap(1):
+        if site(rnd, "flex_200", 1):
             swap(rnd, base, tips["flex_200"])
-        if tips["flex_50"].needs_swap(n_cols + 1):
+        if site(rnd, "flex_50", n_cols + 1):
             swap(rnd, base, tips["flex_50"])
         step(rnd, "pd_fdglu_flex_v2.py", base,
              flex200_tip_start=tips["flex_200"].take(1),
              flex50_tip_start=tips["flex_50"].take(n_cols + 1),
              flex50_single_start=tips["flex_50_single"].take(6))
-    return steps, hf, {"combinations": n_combos, "columns": n_cols, "fragment_transfers": n_sources}
+    return steps, hf, {"combinations": n_combos, "columns": n_cols, "fragment_transfers": n_sources,
+                       "swap_sites": sites}
 
 
 def tally(log):
@@ -257,7 +269,9 @@ def main():
               f"{'' if ok else chr(10) + '     ' + row['error']}", flush=True)
 
     summary = summarise(results)
+    sites = counts.pop("swap_sites", [])
     report = {"version": a.version, "combinations_file": str(a.combinations), "counts": counts,
+              "swap_sites": sites,
               "summary": summary, "runs": results}
     (out / "report.json").write_text(json.dumps(report, indent=1))
 

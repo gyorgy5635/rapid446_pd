@@ -150,6 +150,7 @@ aside { display: grid; gap: 12px; min-width: 0; }
 .steps button.row { display: grid; grid-template-columns: 2.4em 3.6em minmax(0, 1fr); gap: 6px; width: 100%; text-align: left; border: 0; background: none; padding: 5px 16px; cursor: pointer; font-size: 0.8rem; align-items: baseline; }
 .steps button.row:hover { background: var(--slot); }
 .steps button.row.done { color: var(--muted); }
+.steps button.row.cond { opacity: 0.5; font-style: italic; }   /* a swap the run will not make */
 .steps button.row.cur { background: var(--accent-soft); color: var(--ink); }
 .steps .n { font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .steps .k { font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.04em; font-weight: 500; }
@@ -710,7 +711,7 @@ function buildStatic() {
     html += `<div class="ph">${ph.name}<span>${ph.last - ph.first + 1} steps · ~${fmtDur(sec(ph.first, ph.last))}</span></div>`;
     for (let i = ph.first; i <= ph.last; i++) {
       const st = EV.steps[i], [cls, lab] = KIND(st);
-      html += `<button class="row" data-t="${i + 1}"><span class="n">${i + 1}</span><span class="k ${cls}">${lab}</span><span class="t">${esc(title(st))}</span></button>`;
+      html += `<button class="row${st.conditional ? " cond" : ""}" data-t="${i + 1}"><span class="n">${i + 1}</span><span class="k ${cls}">${lab}</span><span class="t">${esc(title(st))}</span></button>`;
     }
   });
   $("steps").innerHTML = html;
@@ -723,10 +724,11 @@ function buildStatic() {
     <p class="hint">${TIMING
       ? `Durations: ${TIMING.measured_steps} of ${N} steps are medians of measured MADSci runs (${TIMING.runs.filter(r => r.used).map(r => `${esc(r.experiment_id)}, ${r.matched_calls}/${EV.calls.length} workflows matched`).join("; ")}). The rest are estimates from <code>config/durations.json</code>.`
       : `Durations are estimates from <code>config/durations.json</code> unless marked "from code". Export MADSci history to replace them with measured times.`} ${m.resource_bookkeeping_calls_ignored} MADSci resource push/pop calls were treated as bookkeeping, not movement.</p>
-    ${m.conditional_steps ? `<p class="hint">${m.conditional_steps} of the ${N} steps are marked
-      <em>only if needed</em>: a tip-box swap the script runs when its tip counter says a box is spent. Which ones
-      fire is only known at run time, so they are listed and timed but nothing is moved for them, and the deck
-      state ignores them. The simulated run says one OT-2 swap and two Flex swaps actually happen.</p>` : ""}`;
+    ${m.conditional_steps ? `<p class="hint">${m.conditional_steps} of the ${N} steps are greyed and marked
+      <em>only if needed</em>: tip-box swaps the script makes only when its tip counter says a box is spent.
+      ${m.swaps_from_simulation
+        ? "The simulated run decided which ones fire; those are drawn as ordinary steps and do move labware. The greyed ones never fire with this combination list, so nothing is moved for them and the deck state ignores them."
+        : "Which ones fire is only known at run time, so nothing is moved for any of them. Run tools/simulate_protocols.py to have the real ones drawn properly."}</p>` : ""}`;
 }
 function gripText(st) {
   const g = gripOf(st), prev = EV.steps[st.i - 1];

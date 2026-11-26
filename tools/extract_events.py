@@ -88,6 +88,12 @@ class Extractor:
         self.plate_types = defaultdict(dict)  # plate id -> {labware type: [protocols]} (deck check)
         self.localfns = {}    # helper functions defined inside run_experiment, expanded at their call site
         self.fndepth = 0
+        # Which run-time tip-swap checks actually fire, from the simulated run. Sites are numbered
+        # in the order the script checks them within a round, which is how the two sides line up.
+        sim = config.parent / "viz" / "simulated" / "report.json"
+        self.swap_sites = json.loads(sim.read_text()).get("swap_sites") if sim.exists() else None
+        self.fired = {(x["round"], x["index"]) for x in (self.swap_sites or []) if x["fired"]}
+        self.cond_seen = defaultdict(int)
 
     # ---------- helpers ----------
     def canon(self, loc):
@@ -193,10 +199,21 @@ class Extractor:
                     self.walk(stmt.body)
                 elif verdict is False:
                     self.walk(stmt.orelse)
-                else:  # decided at run time (e.g. tip box swap): show the steps, marked as conditional
-                    self.conditional += 1
-                    self.walk(stmt.body)
-                    self.conditional -= 1
+                else:
+                    # Decided at run time (a tip-box swap). The simulated run says which checks
+                    # fire: those are drawn as real steps, the rest are shown greyed and move
+                    # nothing. Without a simulation every one is treated as "only if needed".
+                    rnd = self.loopvars.get("round_num", 1)
+                    idx = None
+                    if self.emits_workflow(stmt.body):
+                        idx = self.cond_seen[rnd]
+                        self.cond_seen[rnd] += 1
+                    if self.swap_sites is not None and (rnd, idx) in self.fired:
+                        self.walk(stmt.body)
+                    else:
+                        self.conditional += 1
+                        self.walk(stmt.body)
+                        self.conditional -= 1
                 self.prev_end = getattr(stmt, "end_lineno", stmt.lineno)
                 continue
             if isinstance(stmt, (ast.For, ast.While, ast.With, ast.Try)):
@@ -205,6 +222,25 @@ class Extractor:
                 self.walk(stmt.body)
                 continue
             self.statement(stmt)
+
+    def emits_workflow(self, body, depth=0):
+        """Does this block submit a workflow, directly or through a helper defined in the script?
+
+        Only such blocks are numbered as tip-swap sites, so that a guard like `if n_cols > 3: raise`
+        does not shift the numbering away from the simulated run's.
+        """
+        if depth > 4:
+            return False
+        for node in body:
+            for sub in ast.walk(node):
+                if not isinstance(sub, ast.Call):
+                    continue
+                name = call_name(sub)
+                if name.endswith("submit_workflow"):
+                    return True
+                if name in self.localfns and self.emits_workflow(self.localfns[name].body, depth + 1):
+                    return True
+        return False
 
     def loop_values(self, stmt):
         """Values of `for x in (1, 2, 3)` / `for x in range(...)` with constants, else None."""
@@ -694,6 +730,7 @@ class Extractor:
                 "flex_gripper_moves": sum(1 for s in moves if s["mover"] == "flex_gripper"),
                 "resource_bookkeeping_calls_ignored": self.bookkeeping,
                 "conditional_steps": sum(1 for s in self.steps if s.get("conditional")),
+                "swaps_from_simulation": bool(self.swap_sites),
                 "estimated_total_s": sum(s["duration_s"] for s in self.steps),
             },
             "plates": self.plates,

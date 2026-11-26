@@ -132,7 +132,9 @@ python3 -I tools/simulate_protocols.py --version full_protocol_24_3round \
     --flex-python /tmp/otenv/bin/python --ot2-python /tmp/ot2env/bin/python
 ```
 
-Rendered protocols and `report.json` land in `protocols/<version>/viz/simulated/` (not committed).
+Rendered protocols and `report.json` land in `protocols/<version>/viz/simulated/` (not committed). The report
+also records every run-time tip-swap check and whether it fired, which the run map uses to draw the swaps that
+really happen and grey out the rest.
 `incoming/combinations_oracle_1008.json` is a real design-server payload, used as the default input.
 
 A version whose protocols take no tip-start variables (the single-run ones) is simulated straight
