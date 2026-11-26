@@ -1,5 +1,5 @@
 {
-  "_comment": "Duration ESTIMATES in seconds. full_run.py has no timing information, so these are placeholders; replace them with measured values or MADSci workflow history. A protocol.delay() found inside a protocol file is added automatically and marked as coming from code.",
+  "_comment": "Duration ESTIMATES in seconds. full_run.py has no timing information, so these are placeholders; replace them with measured values or MADSci workflow history. The PCR program (program 3) is 2.5-3 h on the bench; 9900 s is the midpoint. A protocol.delay() found inside a protocol file is added automatically and marked as coming from code.",
   "transfer": 45,
   "flex_gripper_move": 60,
   "manual_pause": 300,
@@ -11,7 +11,7 @@
     "hidex_geraldine.open": 10,
     "hidex_geraldine.close": 10,
     "biometra_beuford_96.run_protocol program=4": 3600,
-    "biometra_beuford_96.run_protocol program=3": 5400,
+    "biometra_beuford_96.run_protocol program=3": 9900,
     "hidex_geraldine.run_assay assay_name=PCR_Final_Results": 300,
     "hidex_geraldine.run_assay assay_name=PD_Kinetic_REAL": 3600
   },

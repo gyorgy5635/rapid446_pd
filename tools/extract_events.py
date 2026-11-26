@@ -160,6 +160,7 @@ class Extractor:
             "color": cfg.get("color", 0),
             "start": self.canon(loc),
             "line": line,
+            **({"sealed": True} if cfg.get("sealed") else {}),
             **({"role": cfg["role"]} if cfg.get("role") else {}),
         })
         self.state[self.canon(loc)] = pid

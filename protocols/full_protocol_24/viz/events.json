@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications @ PD_full_loop @ e4bc261",
   "derived_from": null,
   "script_url": "https://github.com/AD-SDL/rapid446_applications/blob/e4bc261ada888ceb50e51382e10a597b55978cac/Protein_Design/full_protocol_24/src/full_run.py",
-  "generated": "2026-11-26T12:17:03",
+  "generated": "2026-11-26T13:26:25",
   "workflow_calls": 73,
   "steps": 135,
   "pf400_moves": 75,
@@ -13,7 +13,7 @@
   "resource_bookkeeping_calls_ignored": 17,
   "conditional_steps": 0,
   "swaps_from_simulation": false,
-  "estimated_total_s": 39270
+  "estimated_total_s": 43770
  },
  "plates": [
   {
@@ -2198,7 +2198,7 @@
    "kind": "action",
    "mover": "biometra_beuford_96",
    "detail": "Run thermocycler protocol (program=3)",
-   "duration_s": 5400,
+   "duration_s": 9900,
    "duration_source": "estimate",
    "node": "biometra_beuford_96",
    "action": "run_protocol"

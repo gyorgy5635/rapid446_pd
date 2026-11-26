@@ -5,7 +5,8 @@
   "short": "FRAG",
   "kind": "pcr",
   "color": 1,
-  "role": "fragments"
+  "role": "fragments",
+  "sealed": true
  },
  "rack2_row1_nest1": {
   "name": "Controls (tough plate, kept cold on Flex B1)",

@@ -367,12 +367,25 @@ const N = EV.steps.length;
 const plateById = Object.fromEntries(EV.plates.map(p => [p.id, p]));
 const states = [];  // states[t] = {plateId: loc} after t completed steps
 const elapsed = [0]; // seconds after t steps
+const sealStates = [];   // sealStates[t] = {plateId: true if sealed} after t completed steps
 {
   let s = Object.fromEntries(EV.plates.map(p => [p.id, p.start]));
+  // A plate is sealed or opened by the sealer and the peeler acting on whatever is on their
+  // carriage at that moment; the starting state comes from config/plates.json.
+  const carriage = {};
+  for (const inst of layout.instruments) for (const n of inst.nodes || []) if (inst.location) carriage[n] = inst.location;
+  let sealed = Object.fromEntries(EV.plates.filter(p => p.sealed).map(p => [p.id, true]));
   states.push({ ...s });
+  sealStates.push({ ...sealed });
   for (const st of EV.steps) {
     if (st.kind === "move" && st.plate) s[st.plate] = st.to;   // a conditional move carries no plate
+    if (st.kind === "action" && (st.action === "seal" || st.action === "peel")) {
+      const at = carriage[st.node];
+      const pid = at && Object.keys(s).find(k => canon(s[k]) === canon(at));
+      if (pid) sealed[pid] = st.action === "seal";
+    }
     states.push({ ...s });
+    sealStates.push({ ...sealed });
     elapsed.push(elapsed[elapsed.length - 1] + (st.wait_before_s || 0) + st.duration_s);
   }
 }
@@ -543,8 +556,13 @@ let playing = false, animToken = 0;
 const speed = () => parseFloat($("speed").value);
 
 function applyState(tt) {
-  const s = states[tt];
+  const s = states[tt], sealed = sealStates[tt] || {};
   for (const id in s) { const p = posOf(s[id]); placePlate(id, p.x, p.y); plateEls[id].classList.remove("moving"); plateEls[id].querySelector(".grip").setAttribute("visibility", "hidden"); showJaws(id); }
+  for (const p of EV.plates) {
+    if (p.kind === "tips") continue;   // a tip box is never sealed
+    plateEls[p.id].querySelector("title").textContent =
+      `${p.name} — ${sealed[p.id] ? "sealed" : "open"}, on ${slotName(s[p.id])}`;
+  }
   if (railInst()) { carriageX = carriageAt(tt); setArm(null); }
 }
 function clearHighlights() {

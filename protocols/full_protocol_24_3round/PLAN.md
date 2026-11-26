@@ -29,7 +29,7 @@ Status: **draft, not run on any robot.** Started 2026-11-24 as a variant of `ful
 | Stage | Steps |
 |---|---|
 | Golden Gate | fragments: cold block → peel → OT-2 C1 · GG plate Rn → OT-2 C3 · OT-2 GG (mix col 9 + fragments) · seal GG → thermocycler · 1 h |
-| PCR | GG plate: thermocycler → peel → OT-2 C3 · fragments OT-2 → Flex B1 · PCR plate Rn → Flex C1 · Flex PCR master mix (col 9+n) · PCR plate → OT-2 C1 · OT-2 water + GG → PCR · seal PCR → thermocycler (lid closed, not started) · fragments Flex → seal → cold block · GG plate → its nest · **PCR program 3 h** |
+| PCR (the thermocycler program is 2.5-3 h; 2.75 h is used in the estimates) | GG plate: thermocycler → peel → OT-2 C3 · fragments OT-2 → Flex B1 · PCR plate Rn → Flex C1 · Flex PCR master mix (col 9+n) · PCR plate → OT-2 C1 · OT-2 water + GG → PCR · seal PCR → thermocycler (lid closed, not started) · fragments Flex → seal → cold block · GG plate → its nest · **PCR program 3 h** |
 | Dilute | PCR plate: thermocycler → peel → OT-2 C1 · dilution plate Rn → OT-2 C3 · controls → OT-2 D1 · OT-2 1:50 dilution · PCR plate → reseal → its nest · controls → Flex cold block B1 |
 | Cell-free | diluted plate OT-2 → Flex C1 · cell-free plate Rn → Flex B2 · Flex rehydrate + 6 µL template · diluted plate → its nest · cell-free plate → seal → Flex heater-shaker D1, 150 min 37 °C |
 | FDGlu | FDGlu plate Rn → Flex B3 · cell-free plate D1 → peel → B2 · Flex FDGlu setup · FDGlu plate → Hidex, read, upload |
