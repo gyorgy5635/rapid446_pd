@@ -164,6 +164,20 @@ the page exists, so a run that has not been simulated simply shows no link. Volu
 protocol asks for, netted from the simulated commands — the simulator does not track what is really
 in a well.
 
+## Checking a built page
+Parsing a page only proves it is syntactically valid. `tools/check_player.py` runs the built
+JavaScript against a stub DOM, so a runtime error during start-up - which in a browser leaves a
+half-drawn page and no message - fails here instead. It also fails when a panel that should have
+content comes up empty.
+
+```
+/tmp/otenv/bin/pip install py-mini-racer
+/tmp/otenv/bin/python tools/check_player.py --liquid
+```
+
+Run it after changing `tools/player_template.html`, `tools/liquid_template.html` or the shape of
+`events.json`.
+
 ## Known limits
 - Durations are placeholders until a MADSci history export is added, except the 150 min CFPS
   incubation (from `pcr_A4_to_D1.py`).

@@ -370,7 +370,7 @@ const elapsed = [0]; // seconds after t steps
   let s = Object.fromEntries(EV.plates.map(p => [p.id, p.start]));
   states.push({ ...s });
   for (const st of EV.steps) {
-    if (st.kind === "move") s[st.plate] = st.to;
+    if (st.kind === "move" && st.plate) s[st.plate] = st.to;   // a conditional move carries no plate
     states.push({ ...s });
     elapsed.push(elapsed[elapsed.length - 1] + (st.wait_before_s || 0) + st.duration_s);
   }
@@ -391,7 +391,8 @@ function title(st) {
     const toInst = layout.instruments.find(i => i.id === posOf(st.to).inst);
     const slot = toInst && /^(ot2|flex)$/.test(toInst.kind) ? " " + canon(st.to).slice(toInst.prefix.length) : "";
     const hand = canon(st.to) === FLEX_HANDOFF ? " (handoff)" : "";
-    return `${st.mover === "flex_gripper" ? "Flex gripper moves" : "PF400 moves"} ${p.name.replace(/ \(.*\)$/, "")} → ${toInst ? toInst.label : st.to}${slot}${hand}`;
+    const what = p ? p.name.replace(/ \(.*\)$/, "") : "labware";
+    return `${st.mover === "flex_gripper" ? "Flex gripper moves" : "PF400 moves"} ${what} → ${toInst ? toInst.label : st.to}${slot}${hand}`;
   }
   if (st.kind === "pause") return "Manual step: " + st.detail.replace(/^PAUSED:\s*/i, "");
   const inst = layout.instruments.find(i => i.id === nodeToInst[st.node]);
@@ -594,7 +595,11 @@ async function animateStep(tt) {
   const T = STEP_MS / speed();
   if (st.kind !== "move") { highlight(st); await tween(T, () => {}, token); return; }
   const a = posOf(st.from), b = posOf(st.to), pe = plateEls[st.plate], r = railInst();
-  highlight(st); pe.classList.add("moving");
+  highlight(st);
+  // A conditional move (a tip-box swap that only happens when the counter says so) has no tracked
+  // plate: show it in the list and on the clock, but there is nothing to animate.
+  if (!pe) { await tween(T, () => {}, token); return; }
+  pe.classList.add("moving");
   const pf = st.mover === "pf400" && r, grip = gripOf(st);
   if (pf) {
     setArm(null);
@@ -721,7 +726,7 @@ function buildStatic() {
 }
 function gripText(st) {
   const g = gripOf(st), prev = EV.steps[st.i - 1];
-  if (st.from === "exchange" && prev && prev.plate === st.plate && prev.to === "exchange") {
+  if (st.from === "exchange" && prev && st.plate && prev.plate === st.plate && prev.to === "exchange") {
     const pg = gripOf(prev);
     return pg === g ? `${g} side (re-gripped at exchange)` : `re-gripped at exchange: ${pg} side → ${g} side`;
   }
@@ -849,7 +854,7 @@ function buildSetups() {
     const used = {};
     for (let i = ph.first; i <= ph.last; i++) {
       const st = EV.steps[i];
-      if (st.kind === "move" && isDeck(st.to)) (used[st.plate] = used[st.plate] || []).push(canon(st.to));
+      if (st.kind === "move" && st.plate && isDeck(st.to)) (used[st.plate] = used[st.plate] || []).push(canon(st.to));
     }
     for (const [pid, locs] of Object.entries(used)) {
       const real = locs.filter(l => l !== FLEX_HANDOFF), slot = (real.length ? real : locs)[0];
