@@ -35,6 +35,11 @@ config = {
 
     # Deck positions
     'temp_module_01_position': 'B1',
+    # The controls plate waits on the B1 cold block from the dilution until the FDGlu assay. This
+    # protocol does not pipette from it, but it has to be declared or the robot does not know it
+    # is there.
+    'controls_plate_type': 'opentrons_96_wellplate_200ul_pcr_full_skirt',
+    'pcr_adapter_type': 'opentrons_96_pcr_adapter',
     'temp_module_02_position': 'C1',   # diluted PCR plate (cold)
     'cfps_plate_position': 'B2',       # lyophilized plate, room temperature
     'reagent_plate_position': 'D2',
@@ -67,6 +72,9 @@ def run(protocol: protocol_api.ProtocolContext):
     reaction_columns = sample_columns(config) + 1   # samples + controls column (diluted plate has controls there too)
 
     temp_mod_1 = protocol.load_module(module_name="temperature module gen2", location=config['temp_module_01_position'])
+    # declared, not used: the controls plate is kept cold here between the dilution and the assay
+    temp_adapter_1 = temp_mod_1.load_adapter(config['pcr_adapter_type'])
+    controls_plate = temp_adapter_1.load_labware(config['controls_plate_type'])
     temp_mod_2 = protocol.load_module(module_name="temperature module gen2", location=config['temp_module_02_position'])
     temp_adapter_2 = temp_mod_2.load_adapter("opentrons_96_well_aluminum_block")
     chute = protocol.load_waste_chute()

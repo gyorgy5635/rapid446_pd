@@ -30,9 +30,9 @@ Status: **draft, not run on any robot.** Started 2026-11-24 as a variant of `ful
 |---|---|
 | Golden Gate | fragments: cold block → peel → OT-2 C1 · GG plate Rn → OT-2 C3 · OT-2 GG (mix col 9 + fragments) · seal GG → thermocycler · 1 h |
 | PCR | GG plate: thermocycler → peel → OT-2 C3 · fragments OT-2 → Flex B1 · PCR plate Rn → Flex C1 · Flex PCR master mix (col 9+n) · PCR plate → OT-2 C1 · OT-2 water + GG → PCR · seal PCR → thermocycler (lid closed, not started) · fragments Flex → seal → cold block · GG plate → its nest · **PCR program 3 h** |
-| Dilute | PCR plate: thermocycler → peel → OT-2 C1 · dilution plate Rn → OT-2 C3 · controls → OT-2 D1 · OT-2 1:50 dilution · PCR plate → reseal → its nest |
+| Dilute | PCR plate: thermocycler → peel → OT-2 C1 · dilution plate Rn → OT-2 C3 · controls → OT-2 D1 · OT-2 1:50 dilution · PCR plate → reseal → its nest · controls → Flex cold block B1 |
 | Cell-free | diluted plate OT-2 → Flex C1 · cell-free plate Rn → Flex B2 · Flex rehydrate + 6 µL template · diluted plate → its nest · cell-free plate → seal → Flex heater-shaker D1, 150 min 37 °C |
-| FDGlu | controls OT-2 → Flex B1 · FDGlu plate Rn → Flex B3 · cell-free plate D1 → peel → B2 · Flex FDGlu setup · FDGlu plate → Hidex, read, upload |
+| FDGlu | FDGlu plate Rn → Flex B3 · cell-free plate D1 → peel → B2 · Flex FDGlu setup · FDGlu plate → Hidex, read, upload |
 | Cleanup | FDGlu plate Hidex → its nest · cell-free plate → its nest · controls → its nest |
 
 Temperature modules are switched on once at the start and off after round 3.
@@ -279,6 +279,10 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 2. Cell-free assembly happens on Flex B2 at room temperature; the diluted PCR waits on the cold block C1.
 3. PCR plate is resealed before going back to its nest; GG, dilution, cell-free and FDGlu plates go back unsealed.
 4. Controls plate: same wells every round (column 1 for the dilution, F3-H3 for FDGlu), so it needs 3x volume.
+   It goes to the Flex cold block B1 as soon as the dilution is done and waits there until the assay, so it is
+   uncooled for about 0.4 h per round rather than 3.5 h. B1 is free in that window: it holds the fragments plate
+   for about an hour during the PCR master mix, and nothing else until the assay. It is still unsealed and at
+   room temperature between rounds, which sealed cold storage would fix.
 5. Dilution plate controls column: 20 µL undiluted controls, as in the single run.
 6. Round 2 and 3 combinations come from `collect_combinations(oracle_id=<id returned by the previous upload>)`;
    round 1 uses 1008 as before. The REST module is not in this repo, so this is unverified.

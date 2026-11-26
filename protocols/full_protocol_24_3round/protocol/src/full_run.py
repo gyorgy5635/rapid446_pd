@@ -693,6 +693,25 @@ class PDApp(ExperimentScript,): # TODO
                 (rounds_directory / f"pcr_plate_ot2_seal_to_rack_r{round_num}.yaml").resolve(),
             )
 
+            # Controls plate: OT-2 D1 -> Flex A4 -> cold block B1, as soon as the dilution is done.
+            # It is not needed again until the FDGlu assay, and B1 is free from here until then, so
+            # this is where it waits instead of sitting at room temperature on the OT-2 for hours.
+            # controls plate: OT-2 D1 -> Flex A4 -> cold block B1
+            workflow = self.workcell_client.submit_workflow(
+                controls_plate_to_flex.resolve(),
+            )
+
+            payload["current_flex_protocol"] = A4_to_B1
+            workflow = self.workcell_client.submit_workflow(
+                run_flex_wf.resolve(),
+                file_inputs={
+                    "flex_protocol": payload["current_flex_protocol"],
+                },
+            )
+
+            self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
+
+
             #################
             ##### CELL FREE
             #################
@@ -791,21 +810,6 @@ class PDApp(ExperimentScript,): # TODO
             ################
             #### FD GLU ASSAY
             ################
-
-            # controls plate: OT-2 D1 -> Flex A4 -> cold block B1
-            workflow = self.workcell_client.submit_workflow(
-                controls_plate_to_flex.resolve(),
-            )
-
-            payload["current_flex_protocol"] = A4_to_B1
-            workflow = self.workcell_client.submit_workflow(
-                run_flex_wf.resolve(),
-                file_inputs={
-                    "flex_protocol": payload["current_flex_protocol"],
-                },
-            )
-
-            self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
 
             # empty FDGlu plate -> Flex A4 -> B3
             workflow = self.workcell_client.submit_workflow(

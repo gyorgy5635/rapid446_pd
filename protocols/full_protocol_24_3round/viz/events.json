@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24_20261124",
   "script_url": null,
-  "generated": "2026-11-26T12:23:58",
+  "generated": "2026-11-26T12:57:30",
   "workflow_calls": 184,
   "steps": 386,
   "pf400_moves": 237,
@@ -224,16 +224,16 @@
   {
    "name": "R1 · Dilute",
    "first": 61,
-   "last": 80
+   "last": 83
   },
   {
    "name": "R1 · Cell Free",
-   "first": 81,
-   "last": 98
+   "first": 84,
+   "last": 101
   },
   {
    "name": "R1 · FDGlu Assay",
-   "first": 99,
+   "first": 102,
    "last": 120
   },
   {
@@ -254,16 +254,16 @@
   {
    "name": "R2 · Dilute",
    "first": 188,
-   "last": 207
+   "last": 210
   },
   {
    "name": "R2 · Cell Free",
-   "first": 208,
-   "last": 225
+   "first": 211,
+   "last": 228
   },
   {
    "name": "R2 · FDGlu Assay",
-   "first": 226,
+   "first": 229,
    "last": 247
   },
   {
@@ -284,16 +284,16 @@
   {
    "name": "R3 · Dilute",
    "first": 315,
-   "last": 334
+   "last": 337
   },
   {
    "name": "R3 · Cell Free",
-   "first": 335,
-   "last": 352
+   "first": 338,
+   "last": 355
   },
   {
    "name": "R3 · FDGlu Assay",
-   "first": 353,
+   "first": 356,
    "last": 374
   },
   {
@@ -971,9 +971,43 @@
   },
   {
    "id": 31,
+   "workflow": "controls_plate_to_flex.yaml",
+   "wf_name": "rmf mixes to flex",
+   "line": 700,
+   "sig": [
+    [
+     "pf400_piper",
+     "transfer"
+    ],
+    [
+     "pf400_piper",
+     "transfer"
+    ]
+   ],
+   "phase": "R1 · Dilute",
+   "caption": "controls plate: OT-2 D1 -> Flex A4 -> cold block B1",
+   "info": "Workflow for transfering rmf plate from ot2 to flex"
+  },
+  {
+   "id": 32,
+   "workflow": "run_flex.yaml",
+   "wf_name": "Run OT-Flex",
+   "line": 705,
+   "sig": [
+    [
+     "otflex_sandy",
+     "run_protocol"
+    ]
+   ],
+   "phase": "R1 · Dilute",
+   "caption": "",
+   "info": "Workflow for running one OT-Flex protocol from payload"
+  },
+  {
+   "id": 33,
    "workflow": "diluted_ot2_to_flex.yaml",
    "wf_name": "diluted pcr ot2 to flex",
-   "line": 701,
+   "line": 720,
    "sig": [
     [
      "pf400_piper",
@@ -989,10 +1023,10 @@
    "info": "3-round run: diluted PCR plate from OT-2 nest 6 to Flex A4 for cell-free assembly"
   },
   {
-   "id": 32,
+   "id": 34,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 706,
+   "line": 725,
    "sig": [
     [
      "otflex_sandy",
@@ -1004,10 +1038,10 @@
    "info": "Workflow for running one OT-Flex protocol from payload"
   },
   {
-   "id": 33,
+   "id": 35,
    "workflow": "cfps_plate_to_flex_r1.yaml",
    "wf_name": "cfps plate to flex r1",
-   "line": 716,
+   "line": 735,
    "sig": [
     [
      "pf400_piper",
@@ -1023,40 +1057,10 @@
    "info": "Round 1: lyophilized CFPS plate (room temperature) to Flex A4"
   },
   {
-   "id": 34,
-   "workflow": "run_flex.yaml",
-   "wf_name": "Run OT-Flex",
-   "line": 721,
-   "sig": [
-    [
-     "otflex_sandy",
-     "run_protocol"
-    ]
-   ],
-   "phase": "R1 · Cell Free",
-   "caption": "",
-   "info": "Workflow for running one OT-Flex protocol from payload"
-  },
-  {
-   "id": 35,
-   "workflow": "run_flex.yaml",
-   "wf_name": "Run OT-Flex",
-   "line": 449,
-   "sig": [
-    [
-     "otflex_sandy",
-     "run_protocol"
-    ]
-   ],
-   "phase": "R1 · Cell Free",
-   "caption": "",
-   "info": "Workflow for running one OT-Flex protocol from payload"
-  },
-  {
    "id": 36,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 738,
+   "line": 740,
    "sig": [
     [
      "otflex_sandy",
@@ -1071,7 +1075,7 @@
    "id": 37,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 747,
+   "line": 449,
    "sig": [
     [
      "otflex_sandy",
@@ -1084,9 +1088,39 @@
   },
   {
    "id": 38,
+   "workflow": "run_flex.yaml",
+   "wf_name": "Run OT-Flex",
+   "line": 757,
+   "sig": [
+    [
+     "otflex_sandy",
+     "run_protocol"
+    ]
+   ],
+   "phase": "R1 · Cell Free",
+   "caption": "",
+   "info": "Workflow for running one OT-Flex protocol from payload"
+  },
+  {
+   "id": 39,
+   "workflow": "run_flex.yaml",
+   "wf_name": "Run OT-Flex",
+   "line": 766,
+   "sig": [
+    [
+     "otflex_sandy",
+     "run_protocol"
+    ]
+   ],
+   "phase": "R1 · Cell Free",
+   "caption": "",
+   "info": "Workflow for running one OT-Flex protocol from payload"
+  },
+  {
+   "id": 40,
    "workflow": "diluted_flex_to_rack_r1.yaml",
    "wf_name": "diluted plate flex to rack r1",
-   "line": 759,
+   "line": 778,
    "sig": [
     [
      "pf400_piper",
@@ -1102,10 +1136,10 @@
    "info": "Round 1: diluted PCR plate from Flex A4 back to its nest"
   },
   {
-   "id": 39,
+   "id": 41,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 765,
+   "line": 784,
    "sig": [
     [
      "otflex_sandy",
@@ -1117,10 +1151,10 @@
    "info": "Workflow for running one OT-Flex protocol from payload"
   },
   {
-   "id": 40,
+   "id": 42,
    "workflow": "cfps_flex_seal_to_flex.yaml",
    "wf_name": "cfps flex to sealer to flex",
-   "line": 777,
+   "line": 796,
    "sig": [
     [
      "pf400_piper",
@@ -1148,10 +1182,10 @@
    "info": "3-round run: assembled CFPS plate from Flex A4, seal, back to Flex A4"
   },
   {
-   "id": 41,
+   "id": 43,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 782,
+   "line": 801,
    "sig": [
     [
      "otflex_sandy",
@@ -1163,44 +1197,10 @@
    "info": "Workflow for running one OT-Flex protocol from payload"
   },
   {
-   "id": 42,
-   "workflow": "controls_plate_to_flex.yaml",
-   "wf_name": "rmf mixes to flex",
-   "line": 796,
-   "sig": [
-    [
-     "pf400_piper",
-     "transfer"
-    ],
-    [
-     "pf400_piper",
-     "transfer"
-    ]
-   ],
-   "phase": "R1 · FDGlu Assay",
-   "caption": "controls plate: OT-2 D1 -> Flex A4 -> cold block B1",
-   "info": "Workflow for transfering rmf plate from ot2 to flex"
-  },
-  {
-   "id": 43,
-   "workflow": "run_flex.yaml",
-   "wf_name": "Run OT-Flex",
-   "line": 801,
-   "sig": [
-    [
-     "otflex_sandy",
-     "run_protocol"
-    ]
-   ],
-   "phase": "R1 · FDGlu Assay",
-   "caption": "",
-   "info": "Workflow for running one OT-Flex protocol from payload"
-  },
-  {
    "id": 44,
    "workflow": "fdglu_plate_to_flex_r1.yaml",
    "wf_name": "fdglu plate to flex r1",
-   "line": 811,
+   "line": 815,
    "sig": [
     [
      "pf400_piper",
@@ -1219,7 +1219,7 @@
    "id": 45,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 816,
+   "line": 820,
    "sig": [
     [
      "otflex_sandy",
@@ -1234,7 +1234,7 @@
    "id": 46,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 827,
+   "line": 831,
    "sig": [
     [
      "otflex_sandy",
@@ -1249,7 +1249,7 @@
    "id": 47,
    "workflow": "cfps_plate_to_peeler_to_flex.yaml",
    "wf_name": "pcr from flex to exchange",
-   "line": 839,
+   "line": 843,
    "sig": [
     [
      "pf400_piper",
@@ -1264,7 +1264,7 @@
    "id": 48,
    "workflow": "cfps_plate_to_peeler_to_flex_2.yaml",
    "wf_name": "pcr from exchange to ot2",
-   "line": 843,
+   "line": 847,
    "sig": [
     [
      "pf400_piper",
@@ -1291,7 +1291,7 @@
    "id": 49,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 848,
+   "line": 852,
    "sig": [
     [
      "otflex_sandy",
@@ -1336,7 +1336,7 @@
    "id": 52,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 871,
+   "line": 875,
    "sig": [
     [
      "otflex_sandy",
@@ -1351,7 +1351,7 @@
    "id": 53,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 880,
+   "line": 884,
    "sig": [
     [
      "otflex_sandy",
@@ -1366,7 +1366,7 @@
    "id": 54,
    "workflow": "cfps_plate_to_peeler_to_flex.yaml",
    "wf_name": "pcr from flex to exchange",
-   "line": 892,
+   "line": 896,
    "sig": [
     [
      "pf400_piper",
@@ -1381,7 +1381,7 @@
    "id": 55,
    "workflow": "fdglu_to_hidex.yaml",
    "wf_name": "fdglu to hidex",
-   "line": 896,
+   "line": 900,
    "sig": [
     [
      "hidex_geraldine",
@@ -1404,7 +1404,7 @@
    "id": 56,
    "workflow": "run_hidex.yaml",
    "wf_name": "Run Hidex",
-   "line": 900,
+   "line": 904,
    "sig": [
     [
      "hidex_geraldine",
@@ -1419,7 +1419,7 @@
    "id": 57,
    "workflow": "fdglu_hidex_to_rack_r1.yaml",
    "wf_name": "fdglu hidex to rack r1",
-   "line": 915,
+   "line": 919,
    "sig": [
     [
      "hidex_geraldine",
@@ -1442,7 +1442,7 @@
    "id": 58,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 921,
+   "line": 925,
    "sig": [
     [
      "otflex_sandy",
@@ -1457,7 +1457,7 @@
    "id": 59,
    "workflow": "cfps_flex_to_rack_r1.yaml",
    "wf_name": "cfps plate flex to rack r1",
-   "line": 933,
+   "line": 937,
    "sig": [
     [
      "pf400_piper",
@@ -1476,7 +1476,7 @@
    "id": 60,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 939,
+   "line": 943,
    "sig": [
     [
      "otflex_sandy",
@@ -1491,7 +1491,7 @@
    "id": 61,
    "workflow": "controls_flex_to_nest.yaml",
    "wf_name": "controls flex to nest",
-   "line": 951,
+   "line": 955,
    "sig": [
     [
      "pf400_piper",
@@ -2139,9 +2139,43 @@
   },
   {
    "id": 91,
+   "workflow": "controls_plate_to_flex.yaml",
+   "wf_name": "rmf mixes to flex",
+   "line": 700,
+   "sig": [
+    [
+     "pf400_piper",
+     "transfer"
+    ],
+    [
+     "pf400_piper",
+     "transfer"
+    ]
+   ],
+   "phase": "R2 · Dilute",
+   "caption": "controls plate: OT-2 D1 -> Flex A4 -> cold block B1",
+   "info": "Workflow for transfering rmf plate from ot2 to flex"
+  },
+  {
+   "id": 92,
+   "workflow": "run_flex.yaml",
+   "wf_name": "Run OT-Flex",
+   "line": 705,
+   "sig": [
+    [
+     "otflex_sandy",
+     "run_protocol"
+    ]
+   ],
+   "phase": "R2 · Dilute",
+   "caption": "",
+   "info": "Workflow for running one OT-Flex protocol from payload"
+  },
+  {
+   "id": 93,
    "workflow": "diluted_ot2_to_flex.yaml",
    "wf_name": "diluted pcr ot2 to flex",
-   "line": 701,
+   "line": 720,
    "sig": [
     [
      "pf400_piper",
@@ -2157,10 +2191,10 @@
    "info": "3-round run: diluted PCR plate from OT-2 nest 6 to Flex A4 for cell-free assembly"
   },
   {
-   "id": 92,
+   "id": 94,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 706,
+   "line": 725,
    "sig": [
     [
      "otflex_sandy",
@@ -2172,10 +2206,10 @@
    "info": "Workflow for running one OT-Flex protocol from payload"
   },
   {
-   "id": 93,
+   "id": 95,
    "workflow": "cfps_plate_to_flex_r2.yaml",
    "wf_name": "cfps plate to flex r2",
-   "line": 716,
+   "line": 735,
    "sig": [
     [
      "pf400_piper",
@@ -2191,40 +2225,10 @@
    "info": "Round 2: lyophilized CFPS plate (room temperature) to Flex A4"
   },
   {
-   "id": 94,
-   "workflow": "run_flex.yaml",
-   "wf_name": "Run OT-Flex",
-   "line": 721,
-   "sig": [
-    [
-     "otflex_sandy",
-     "run_protocol"
-    ]
-   ],
-   "phase": "R2 · Cell Free",
-   "caption": "",
-   "info": "Workflow for running one OT-Flex protocol from payload"
-  },
-  {
-   "id": 95,
-   "workflow": "run_flex.yaml",
-   "wf_name": "Run OT-Flex",
-   "line": 449,
-   "sig": [
-    [
-     "otflex_sandy",
-     "run_protocol"
-    ]
-   ],
-   "phase": "R2 · Cell Free",
-   "caption": "",
-   "info": "Workflow for running one OT-Flex protocol from payload"
-  },
-  {
    "id": 96,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 738,
+   "line": 740,
    "sig": [
     [
      "otflex_sandy",
@@ -2239,7 +2243,7 @@
    "id": 97,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 747,
+   "line": 449,
    "sig": [
     [
      "otflex_sandy",
@@ -2252,9 +2256,39 @@
   },
   {
    "id": 98,
+   "workflow": "run_flex.yaml",
+   "wf_name": "Run OT-Flex",
+   "line": 757,
+   "sig": [
+    [
+     "otflex_sandy",
+     "run_protocol"
+    ]
+   ],
+   "phase": "R2 · Cell Free",
+   "caption": "",
+   "info": "Workflow for running one OT-Flex protocol from payload"
+  },
+  {
+   "id": 99,
+   "workflow": "run_flex.yaml",
+   "wf_name": "Run OT-Flex",
+   "line": 766,
+   "sig": [
+    [
+     "otflex_sandy",
+     "run_protocol"
+    ]
+   ],
+   "phase": "R2 · Cell Free",
+   "caption": "",
+   "info": "Workflow for running one OT-Flex protocol from payload"
+  },
+  {
+   "id": 100,
    "workflow": "diluted_flex_to_rack_r2.yaml",
    "wf_name": "diluted plate flex to rack r2",
-   "line": 759,
+   "line": 778,
    "sig": [
     [
      "pf400_piper",
@@ -2270,10 +2304,10 @@
    "info": "Round 2: diluted PCR plate from Flex A4 back to its nest"
   },
   {
-   "id": 99,
+   "id": 101,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 765,
+   "line": 784,
    "sig": [
     [
      "otflex_sandy",
@@ -2285,10 +2319,10 @@
    "info": "Workflow for running one OT-Flex protocol from payload"
   },
   {
-   "id": 100,
+   "id": 102,
    "workflow": "cfps_flex_seal_to_flex.yaml",
    "wf_name": "cfps flex to sealer to flex",
-   "line": 777,
+   "line": 796,
    "sig": [
     [
      "pf400_piper",
@@ -2316,10 +2350,10 @@
    "info": "3-round run: assembled CFPS plate from Flex A4, seal, back to Flex A4"
   },
   {
-   "id": 101,
+   "id": 103,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 782,
+   "line": 801,
    "sig": [
     [
      "otflex_sandy",
@@ -2331,44 +2365,10 @@
    "info": "Workflow for running one OT-Flex protocol from payload"
   },
   {
-   "id": 102,
-   "workflow": "controls_plate_to_flex.yaml",
-   "wf_name": "rmf mixes to flex",
-   "line": 796,
-   "sig": [
-    [
-     "pf400_piper",
-     "transfer"
-    ],
-    [
-     "pf400_piper",
-     "transfer"
-    ]
-   ],
-   "phase": "R2 · FDGlu Assay",
-   "caption": "controls plate: OT-2 D1 -> Flex A4 -> cold block B1",
-   "info": "Workflow for transfering rmf plate from ot2 to flex"
-  },
-  {
-   "id": 103,
-   "workflow": "run_flex.yaml",
-   "wf_name": "Run OT-Flex",
-   "line": 801,
-   "sig": [
-    [
-     "otflex_sandy",
-     "run_protocol"
-    ]
-   ],
-   "phase": "R2 · FDGlu Assay",
-   "caption": "",
-   "info": "Workflow for running one OT-Flex protocol from payload"
-  },
-  {
    "id": 104,
    "workflow": "fdglu_plate_to_flex_r2.yaml",
    "wf_name": "fdglu plate to flex r2",
-   "line": 811,
+   "line": 815,
    "sig": [
     [
      "pf400_piper",
@@ -2387,7 +2387,7 @@
    "id": 105,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 816,
+   "line": 820,
    "sig": [
     [
      "otflex_sandy",
@@ -2402,7 +2402,7 @@
    "id": 106,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 827,
+   "line": 831,
    "sig": [
     [
      "otflex_sandy",
@@ -2417,7 +2417,7 @@
    "id": 107,
    "workflow": "cfps_plate_to_peeler_to_flex.yaml",
    "wf_name": "pcr from flex to exchange",
-   "line": 839,
+   "line": 843,
    "sig": [
     [
      "pf400_piper",
@@ -2432,7 +2432,7 @@
    "id": 108,
    "workflow": "cfps_plate_to_peeler_to_flex_2.yaml",
    "wf_name": "pcr from exchange to ot2",
-   "line": 843,
+   "line": 847,
    "sig": [
     [
      "pf400_piper",
@@ -2459,7 +2459,7 @@
    "id": 109,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 848,
+   "line": 852,
    "sig": [
     [
      "otflex_sandy",
@@ -2504,7 +2504,7 @@
    "id": 112,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 871,
+   "line": 875,
    "sig": [
     [
      "otflex_sandy",
@@ -2519,7 +2519,7 @@
    "id": 113,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 880,
+   "line": 884,
    "sig": [
     [
      "otflex_sandy",
@@ -2534,7 +2534,7 @@
    "id": 114,
    "workflow": "cfps_plate_to_peeler_to_flex.yaml",
    "wf_name": "pcr from flex to exchange",
-   "line": 892,
+   "line": 896,
    "sig": [
     [
      "pf400_piper",
@@ -2549,7 +2549,7 @@
    "id": 115,
    "workflow": "fdglu_to_hidex.yaml",
    "wf_name": "fdglu to hidex",
-   "line": 896,
+   "line": 900,
    "sig": [
     [
      "hidex_geraldine",
@@ -2572,7 +2572,7 @@
    "id": 116,
    "workflow": "run_hidex.yaml",
    "wf_name": "Run Hidex",
-   "line": 900,
+   "line": 904,
    "sig": [
     [
      "hidex_geraldine",
@@ -2587,7 +2587,7 @@
    "id": 117,
    "workflow": "fdglu_hidex_to_rack_r2.yaml",
    "wf_name": "fdglu hidex to rack r2",
-   "line": 915,
+   "line": 919,
    "sig": [
     [
      "hidex_geraldine",
@@ -2610,7 +2610,7 @@
    "id": 118,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 921,
+   "line": 925,
    "sig": [
     [
      "otflex_sandy",
@@ -2625,7 +2625,7 @@
    "id": 119,
    "workflow": "cfps_flex_to_rack_r2.yaml",
    "wf_name": "cfps plate flex to rack r2",
-   "line": 933,
+   "line": 937,
    "sig": [
     [
      "pf400_piper",
@@ -2644,7 +2644,7 @@
    "id": 120,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 939,
+   "line": 943,
    "sig": [
     [
      "otflex_sandy",
@@ -2659,7 +2659,7 @@
    "id": 121,
    "workflow": "controls_flex_to_nest.yaml",
    "wf_name": "controls flex to nest",
-   "line": 951,
+   "line": 955,
    "sig": [
     [
      "pf400_piper",
@@ -3307,9 +3307,43 @@
   },
   {
    "id": 151,
+   "workflow": "controls_plate_to_flex.yaml",
+   "wf_name": "rmf mixes to flex",
+   "line": 700,
+   "sig": [
+    [
+     "pf400_piper",
+     "transfer"
+    ],
+    [
+     "pf400_piper",
+     "transfer"
+    ]
+   ],
+   "phase": "R3 · Dilute",
+   "caption": "controls plate: OT-2 D1 -> Flex A4 -> cold block B1",
+   "info": "Workflow for transfering rmf plate from ot2 to flex"
+  },
+  {
+   "id": 152,
+   "workflow": "run_flex.yaml",
+   "wf_name": "Run OT-Flex",
+   "line": 705,
+   "sig": [
+    [
+     "otflex_sandy",
+     "run_protocol"
+    ]
+   ],
+   "phase": "R3 · Dilute",
+   "caption": "",
+   "info": "Workflow for running one OT-Flex protocol from payload"
+  },
+  {
+   "id": 153,
    "workflow": "diluted_ot2_to_flex.yaml",
    "wf_name": "diluted pcr ot2 to flex",
-   "line": 701,
+   "line": 720,
    "sig": [
     [
      "pf400_piper",
@@ -3325,10 +3359,10 @@
    "info": "3-round run: diluted PCR plate from OT-2 nest 6 to Flex A4 for cell-free assembly"
   },
   {
-   "id": 152,
+   "id": 154,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 706,
+   "line": 725,
    "sig": [
     [
      "otflex_sandy",
@@ -3340,10 +3374,10 @@
    "info": "Workflow for running one OT-Flex protocol from payload"
   },
   {
-   "id": 153,
+   "id": 155,
    "workflow": "cfps_plate_to_flex_r3.yaml",
    "wf_name": "cfps plate to flex r3",
-   "line": 716,
+   "line": 735,
    "sig": [
     [
      "pf400_piper",
@@ -3359,40 +3393,10 @@
    "info": "Round 3: lyophilized CFPS plate (room temperature) to Flex A4"
   },
   {
-   "id": 154,
-   "workflow": "run_flex.yaml",
-   "wf_name": "Run OT-Flex",
-   "line": 721,
-   "sig": [
-    [
-     "otflex_sandy",
-     "run_protocol"
-    ]
-   ],
-   "phase": "R3 · Cell Free",
-   "caption": "",
-   "info": "Workflow for running one OT-Flex protocol from payload"
-  },
-  {
-   "id": 155,
-   "workflow": "run_flex.yaml",
-   "wf_name": "Run OT-Flex",
-   "line": 449,
-   "sig": [
-    [
-     "otflex_sandy",
-     "run_protocol"
-    ]
-   ],
-   "phase": "R3 · Cell Free",
-   "caption": "",
-   "info": "Workflow for running one OT-Flex protocol from payload"
-  },
-  {
    "id": 156,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 738,
+   "line": 740,
    "sig": [
     [
      "otflex_sandy",
@@ -3407,7 +3411,7 @@
    "id": 157,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 747,
+   "line": 449,
    "sig": [
     [
      "otflex_sandy",
@@ -3420,9 +3424,39 @@
   },
   {
    "id": 158,
+   "workflow": "run_flex.yaml",
+   "wf_name": "Run OT-Flex",
+   "line": 757,
+   "sig": [
+    [
+     "otflex_sandy",
+     "run_protocol"
+    ]
+   ],
+   "phase": "R3 · Cell Free",
+   "caption": "",
+   "info": "Workflow for running one OT-Flex protocol from payload"
+  },
+  {
+   "id": 159,
+   "workflow": "run_flex.yaml",
+   "wf_name": "Run OT-Flex",
+   "line": 766,
+   "sig": [
+    [
+     "otflex_sandy",
+     "run_protocol"
+    ]
+   ],
+   "phase": "R3 · Cell Free",
+   "caption": "",
+   "info": "Workflow for running one OT-Flex protocol from payload"
+  },
+  {
+   "id": 160,
    "workflow": "diluted_flex_to_rack_r3.yaml",
    "wf_name": "diluted plate flex to rack r3",
-   "line": 759,
+   "line": 778,
    "sig": [
     [
      "pf400_piper",
@@ -3438,10 +3472,10 @@
    "info": "Round 3: diluted PCR plate from Flex A4 back to its nest"
   },
   {
-   "id": 159,
+   "id": 161,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 765,
+   "line": 784,
    "sig": [
     [
      "otflex_sandy",
@@ -3453,10 +3487,10 @@
    "info": "Workflow for running one OT-Flex protocol from payload"
   },
   {
-   "id": 160,
+   "id": 162,
    "workflow": "cfps_flex_seal_to_flex.yaml",
    "wf_name": "cfps flex to sealer to flex",
-   "line": 777,
+   "line": 796,
    "sig": [
     [
      "pf400_piper",
@@ -3484,10 +3518,10 @@
    "info": "3-round run: assembled CFPS plate from Flex A4, seal, back to Flex A4"
   },
   {
-   "id": 161,
+   "id": 163,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 782,
+   "line": 801,
    "sig": [
     [
      "otflex_sandy",
@@ -3499,44 +3533,10 @@
    "info": "Workflow for running one OT-Flex protocol from payload"
   },
   {
-   "id": 162,
-   "workflow": "controls_plate_to_flex.yaml",
-   "wf_name": "rmf mixes to flex",
-   "line": 796,
-   "sig": [
-    [
-     "pf400_piper",
-     "transfer"
-    ],
-    [
-     "pf400_piper",
-     "transfer"
-    ]
-   ],
-   "phase": "R3 · FDGlu Assay",
-   "caption": "controls plate: OT-2 D1 -> Flex A4 -> cold block B1",
-   "info": "Workflow for transfering rmf plate from ot2 to flex"
-  },
-  {
-   "id": 163,
-   "workflow": "run_flex.yaml",
-   "wf_name": "Run OT-Flex",
-   "line": 801,
-   "sig": [
-    [
-     "otflex_sandy",
-     "run_protocol"
-    ]
-   ],
-   "phase": "R3 · FDGlu Assay",
-   "caption": "",
-   "info": "Workflow for running one OT-Flex protocol from payload"
-  },
-  {
    "id": 164,
    "workflow": "fdglu_plate_to_flex_r3.yaml",
    "wf_name": "fdglu plate to flex r3",
-   "line": 811,
+   "line": 815,
    "sig": [
     [
      "pf400_piper",
@@ -3555,7 +3555,7 @@
    "id": 165,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 816,
+   "line": 820,
    "sig": [
     [
      "otflex_sandy",
@@ -3570,7 +3570,7 @@
    "id": 166,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 827,
+   "line": 831,
    "sig": [
     [
      "otflex_sandy",
@@ -3585,7 +3585,7 @@
    "id": 167,
    "workflow": "cfps_plate_to_peeler_to_flex.yaml",
    "wf_name": "pcr from flex to exchange",
-   "line": 839,
+   "line": 843,
    "sig": [
     [
      "pf400_piper",
@@ -3600,7 +3600,7 @@
    "id": 168,
    "workflow": "cfps_plate_to_peeler_to_flex_2.yaml",
    "wf_name": "pcr from exchange to ot2",
-   "line": 843,
+   "line": 847,
    "sig": [
     [
      "pf400_piper",
@@ -3627,7 +3627,7 @@
    "id": 169,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 848,
+   "line": 852,
    "sig": [
     [
      "otflex_sandy",
@@ -3672,7 +3672,7 @@
    "id": 172,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 871,
+   "line": 875,
    "sig": [
     [
      "otflex_sandy",
@@ -3687,7 +3687,7 @@
    "id": 173,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 880,
+   "line": 884,
    "sig": [
     [
      "otflex_sandy",
@@ -3702,7 +3702,7 @@
    "id": 174,
    "workflow": "cfps_plate_to_peeler_to_flex.yaml",
    "wf_name": "pcr from flex to exchange",
-   "line": 892,
+   "line": 896,
    "sig": [
     [
      "pf400_piper",
@@ -3717,7 +3717,7 @@
    "id": 175,
    "workflow": "fdglu_to_hidex.yaml",
    "wf_name": "fdglu to hidex",
-   "line": 896,
+   "line": 900,
    "sig": [
     [
      "hidex_geraldine",
@@ -3740,7 +3740,7 @@
    "id": 176,
    "workflow": "run_hidex.yaml",
    "wf_name": "Run Hidex",
-   "line": 900,
+   "line": 904,
    "sig": [
     [
      "hidex_geraldine",
@@ -3755,7 +3755,7 @@
    "id": 177,
    "workflow": "fdglu_hidex_to_rack_r3.yaml",
    "wf_name": "fdglu hidex to rack r3",
-   "line": 915,
+   "line": 919,
    "sig": [
     [
      "hidex_geraldine",
@@ -3778,7 +3778,7 @@
    "id": 178,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 921,
+   "line": 925,
    "sig": [
     [
      "otflex_sandy",
@@ -3793,7 +3793,7 @@
    "id": 179,
    "workflow": "cfps_flex_to_rack_r3.yaml",
    "wf_name": "cfps plate flex to rack r3",
-   "line": 933,
+   "line": 937,
    "sig": [
     [
      "pf400_piper",
@@ -3812,7 +3812,7 @@
    "id": 180,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 939,
+   "line": 943,
    "sig": [
     [
      "otflex_sandy",
@@ -3827,7 +3827,7 @@
    "id": 181,
    "workflow": "controls_flex_to_nest.yaml",
    "wf_name": "controls flex to nest",
-   "line": 951,
+   "line": 955,
    "sig": [
     [
      "pf400_piper",
@@ -3846,7 +3846,7 @@
    "id": 182,
    "workflow": "run_ot2_wf.yaml",
    "wf_name": "Run OT-2 Protocol WF",
-   "line": 963,
+   "line": 967,
    "sig": [
     [
      "ot2_patrick",
@@ -3861,7 +3861,7 @@
    "id": 183,
    "workflow": "run_flex.yaml",
    "wf_name": "Run OT-Flex",
-   "line": 971,
+   "line": 975,
    "sig": [
     [
      "otflex_sandy",
@@ -5214,9 +5214,61 @@
   },
   {
    "i": 81,
-   "phase": "R1 · Cell Free",
+   "phase": "R1 · Dilute",
    "call": 31,
-   "line": 701,
+   "line": 700,
+   "kind": "move",
+   "mover": "pf400",
+   "detail": "Controls (tough plate, room temp): ot2_patrick.deck_nest_1 → exchange_wide",
+   "duration_s": 45,
+   "duration_source": "estimate",
+   "src": "ot2_patrick.deck_nest_1",
+   "dst": "exchange_wide",
+   "from": "ot2_patrick.deck_nest_1",
+   "to": "exchange",
+   "plate": "p4",
+   "hold": 0
+  },
+  {
+   "i": 82,
+   "phase": "R1 · Dilute",
+   "call": 31,
+   "line": 700,
+   "kind": "move",
+   "mover": "pf400",
+   "detail": "Controls (tough plate, room temp): exchange_narrow → otflex_sandy.deck_nest_A4",
+   "duration_s": 45,
+   "duration_source": "estimate",
+   "src": "exchange_narrow",
+   "dst": "otflex_sandy.deck_nest_A4",
+   "from": "exchange",
+   "to": "otflex_sandy.deck_nest_A4",
+   "plate": "p4",
+   "hold": 0
+  },
+  {
+   "i": 83,
+   "phase": "R1 · Dilute",
+   "call": 32,
+   "line": 705,
+   "kind": "move",
+   "mover": "flex_gripper",
+   "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B1",
+   "duration_s": 60,
+   "duration_source": "estimate",
+   "src": "otflex_sandy.deck_nest_A4",
+   "dst": "otflex_sandy.deck_nest_B1",
+   "from": "otflex_sandy.deck_nest_A4",
+   "to": "otflex_sandy.deck_nest_B1",
+   "plate": "p4",
+   "protocol": "pcr_A4_to_B1.py",
+   "hold": 0
+  },
+  {
+   "i": 84,
+   "phase": "R1 · Cell Free",
+   "call": 33,
+   "line": 720,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R1: ot2_patrick.deck_nest_6_temp_block → exchange_wide",
@@ -5230,10 +5282,10 @@
    "hold": 0
   },
   {
-   "i": 82,
+   "i": 85,
    "phase": "R1 · Cell Free",
-   "call": 31,
-   "line": 701,
+   "call": 33,
+   "line": 720,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R1: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -5247,10 +5299,10 @@
    "hold": 0
   },
   {
-   "i": 83,
+   "i": 86,
    "phase": "R1 · Cell Free",
-   "call": 32,
-   "line": 706,
+   "call": 34,
+   "line": 725,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Diluted PCR 1:50 R1: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_C1",
@@ -5265,10 +5317,10 @@
    "hold": 0
   },
   {
-   "i": 84,
+   "i": 87,
    "phase": "R1 · Cell Free",
-   "call": 33,
-   "line": 716,
+   "call": 35,
+   "line": 735,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: rack1_row4_nest1 → exchange_narrow",
@@ -5282,10 +5334,10 @@
    "hold": 0
   },
   {
-   "i": 85,
+   "i": 88,
    "phase": "R1 · Cell Free",
-   "call": 33,
-   "line": 716,
+   "call": 35,
+   "line": 735,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -5299,10 +5351,10 @@
    "hold": 0
   },
   {
-   "i": 86,
+   "i": 89,
    "phase": "R1 · Cell Free",
-   "call": 34,
-   "line": 721,
+   "call": 36,
+   "line": 740,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R1: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B2",
@@ -5317,9 +5369,9 @@
    "hold": 0
   },
   {
-   "i": 87,
+   "i": 90,
    "phase": "R1 · Cell Free",
-   "call": 35,
+   "call": 37,
    "line": 449,
    "kind": "protocol",
    "mover": "otflex_sandy",
@@ -5330,20 +5382,22 @@
    "action": "run_protocol",
    "protocol": "flex_tips_swap.py",
    "plates": [
+    "p4",
     "p7",
     "p8"
    ],
    "deck_plates": {
+    "B1": "p4",
     "C1": "p7",
     "B2": "p8"
    },
    "conditional": true
   },
   {
-   "i": 88,
+   "i": 91,
    "phase": "R1 · Cell Free",
-   "call": 36,
-   "line": 738,
+   "call": 38,
+   "line": 757,
    "kind": "protocol",
    "mover": "otflex_sandy",
    "detail": "Rehydrate lyophilized cell-free: 24 µL water, 6 µL diluted PCR, mix 5 × 20 µL slowly",
@@ -5353,19 +5407,21 @@
    "action": "run_protocol",
    "protocol": "cell_free_lyo_flex.py",
    "plates": [
+    "p4",
     "p7",
     "p8"
    ],
    "deck_plates": {
+    "B1": "p4",
     "C1": "p7",
     "B2": "p8"
    }
   },
   {
-   "i": 89,
+   "i": 92,
    "phase": "R1 · Cell Free",
-   "call": 37,
-   "line": 747,
+   "call": 39,
+   "line": 766,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Diluted PCR 1:50 R1: otflex_sandy.deck_nest_C1 → otflex_sandy.deck_nest_A4",
@@ -5380,10 +5436,10 @@
    "hold": 0
   },
   {
-   "i": 90,
+   "i": 93,
    "phase": "R1 · Cell Free",
-   "call": 38,
-   "line": 759,
+   "call": 40,
+   "line": 778,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R1: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -5397,10 +5453,10 @@
    "hold": 0
   },
   {
-   "i": 91,
+   "i": 94,
    "phase": "R1 · Cell Free",
-   "call": 38,
-   "line": 759,
+   "call": 40,
+   "line": 778,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R1: exchange_narrow → rack1_row3_nest1",
@@ -5414,10 +5470,10 @@
    "hold": 0
   },
   {
-   "i": 92,
+   "i": 95,
    "phase": "R1 · Cell Free",
-   "call": 39,
-   "line": 765,
+   "call": 41,
+   "line": 784,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R1: otflex_sandy.deck_nest_B2 → otflex_sandy.deck_nest_A4",
@@ -5432,10 +5488,10 @@
    "hold": 0
   },
   {
-   "i": 93,
+   "i": 96,
    "phase": "R1 · Cell Free",
-   "call": 40,
-   "line": 777,
+   "call": 42,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -5449,10 +5505,10 @@
    "hold": 0
   },
   {
-   "i": 94,
+   "i": 97,
    "phase": "R1 · Cell Free",
-   "call": 40,
-   "line": 777,
+   "call": 42,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: exchange_narrow → sealer_sassy.sealer_carriage",
@@ -5466,10 +5522,10 @@
    "hold": 0
   },
   {
-   "i": 95,
+   "i": 98,
    "phase": "R1 · Cell Free",
-   "call": 40,
-   "line": 777,
+   "call": 42,
+   "line": 796,
    "kind": "action",
    "mover": "sealer_sassy",
    "detail": "seal",
@@ -5479,10 +5535,10 @@
    "action": "seal"
   },
   {
-   "i": 96,
+   "i": 99,
    "phase": "R1 · Cell Free",
-   "call": 40,
-   "line": 777,
+   "call": 42,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: sealer_sassy.sealer_carriage → exchange_narrow",
@@ -5496,10 +5552,10 @@
    "hold": 0
   },
   {
-   "i": 97,
+   "i": 100,
    "phase": "R1 · Cell Free",
-   "call": 40,
-   "line": 777,
+   "call": 42,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -5513,10 +5569,10 @@
    "hold": 0
   },
   {
-   "i": 98,
+   "i": 101,
    "phase": "R1 · Cell Free",
-   "call": 41,
-   "line": 782,
+   "call": 43,
+   "line": 801,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R1: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_D1",
@@ -5532,62 +5588,10 @@
    "hold_note": "protocol.delay() of 150 min inside pcr_A4_to_D1.py"
   },
   {
-   "i": 99,
-   "phase": "R1 · FDGlu Assay",
-   "call": 42,
-   "line": 796,
-   "kind": "move",
-   "mover": "pf400",
-   "detail": "Controls (tough plate, room temp): ot2_patrick.deck_nest_1 → exchange_wide",
-   "duration_s": 45,
-   "duration_source": "estimate",
-   "src": "ot2_patrick.deck_nest_1",
-   "dst": "exchange_wide",
-   "from": "ot2_patrick.deck_nest_1",
-   "to": "exchange",
-   "plate": "p4",
-   "hold": 0
-  },
-  {
-   "i": 100,
-   "phase": "R1 · FDGlu Assay",
-   "call": 42,
-   "line": 796,
-   "kind": "move",
-   "mover": "pf400",
-   "detail": "Controls (tough plate, room temp): exchange_narrow → otflex_sandy.deck_nest_A4",
-   "duration_s": 45,
-   "duration_source": "estimate",
-   "src": "exchange_narrow",
-   "dst": "otflex_sandy.deck_nest_A4",
-   "from": "exchange",
-   "to": "otflex_sandy.deck_nest_A4",
-   "plate": "p4",
-   "hold": 0
-  },
-  {
-   "i": 101,
-   "phase": "R1 · FDGlu Assay",
-   "call": 43,
-   "line": 801,
-   "kind": "move",
-   "mover": "flex_gripper",
-   "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B1",
-   "duration_s": 60,
-   "duration_source": "estimate",
-   "src": "otflex_sandy.deck_nest_A4",
-   "dst": "otflex_sandy.deck_nest_B1",
-   "from": "otflex_sandy.deck_nest_A4",
-   "to": "otflex_sandy.deck_nest_B1",
-   "plate": "p4",
-   "protocol": "pcr_A4_to_B1.py",
-   "hold": 0
-  },
-  {
    "i": 102,
    "phase": "R1 · FDGlu Assay",
    "call": 44,
-   "line": 811,
+   "line": 815,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R1: rack1_row5_nest1 → exchange_narrow",
@@ -5604,7 +5608,7 @@
    "i": 103,
    "phase": "R1 · FDGlu Assay",
    "call": 44,
-   "line": 811,
+   "line": 815,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R1: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -5621,7 +5625,7 @@
    "i": 104,
    "phase": "R1 · FDGlu Assay",
    "call": 45,
-   "line": 816,
+   "line": 820,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "FDGlu Assay (Corning Assay) R1: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B3",
@@ -5639,7 +5643,7 @@
    "i": 105,
    "phase": "R1 · FDGlu Assay",
    "call": 46,
-   "line": 827,
+   "line": 831,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R1: otflex_sandy.deck_nest_D1 → otflex_sandy.deck_nest_A4",
@@ -5657,7 +5661,7 @@
    "i": 106,
    "phase": "R1 · FDGlu Assay",
    "call": 47,
-   "line": 839,
+   "line": 843,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -5674,7 +5678,7 @@
    "i": 107,
    "phase": "R1 · FDGlu Assay",
    "call": 48,
-   "line": 843,
+   "line": 847,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: exchange_narrow → peeler_penelope.peeler_carriage",
@@ -5691,7 +5695,7 @@
    "i": 108,
    "phase": "R1 · FDGlu Assay",
    "call": 48,
-   "line": 843,
+   "line": 847,
    "kind": "action",
    "mover": "peeler_penelope",
    "detail": "peel",
@@ -5704,7 +5708,7 @@
    "i": 109,
    "phase": "R1 · FDGlu Assay",
    "call": 48,
-   "line": 843,
+   "line": 847,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: peeler_penelope.peeler_carriage → exchange_narrow",
@@ -5721,7 +5725,7 @@
    "i": 110,
    "phase": "R1 · FDGlu Assay",
    "call": 48,
-   "line": 843,
+   "line": 847,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -5738,7 +5742,7 @@
    "i": 111,
    "phase": "R1 · FDGlu Assay",
    "call": 49,
-   "line": 848,
+   "line": 852,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R1: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B2",
@@ -5806,7 +5810,7 @@
    "i": 114,
    "phase": "R1 · FDGlu Assay",
    "call": 52,
-   "line": 871,
+   "line": 875,
    "kind": "protocol",
    "mover": "otflex_sandy",
    "detail": "FDGlu assay plate setup",
@@ -5830,7 +5834,7 @@
    "i": 115,
    "phase": "R1 · FDGlu Assay",
    "call": 53,
-   "line": 880,
+   "line": 884,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "FDGlu Assay (Corning Assay) R1: otflex_sandy.deck_nest_B3 → otflex_sandy.deck_nest_A4",
@@ -5848,7 +5852,7 @@
    "i": 116,
    "phase": "R1 · FDGlu Assay",
    "call": 54,
-   "line": 892,
+   "line": 896,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R1: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -5865,7 +5869,7 @@
    "i": 117,
    "phase": "R1 · FDGlu Assay",
    "call": 55,
-   "line": 896,
+   "line": 900,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "open hidex",
@@ -5878,7 +5882,7 @@
    "i": 118,
    "phase": "R1 · FDGlu Assay",
    "call": 55,
-   "line": 896,
+   "line": 900,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R1: exchange_narrow → hidex_geraldine.hidex_carriage",
@@ -5895,7 +5899,7 @@
    "i": 119,
    "phase": "R1 · FDGlu Assay",
    "call": 55,
-   "line": 896,
+   "line": 900,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "close hidex",
@@ -5908,7 +5912,7 @@
    "i": 120,
    "phase": "R1 · FDGlu Assay",
    "call": 56,
-   "line": 900,
+   "line": 904,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "Run hidex protocol (assay_name=PD_Kinetic_REAL)",
@@ -5921,7 +5925,7 @@
    "i": 121,
    "phase": "R1 · Round Cleanup",
    "call": 57,
-   "line": 915,
+   "line": 919,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "open hidex",
@@ -5934,7 +5938,7 @@
    "i": 122,
    "phase": "R1 · Round Cleanup",
    "call": 57,
-   "line": 915,
+   "line": 919,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R1: hidex_geraldine.hidex_carriage → rack1_row5_nest1",
@@ -5951,7 +5955,7 @@
    "i": 123,
    "phase": "R1 · Round Cleanup",
    "call": 57,
-   "line": 915,
+   "line": 919,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "close hidex",
@@ -5964,7 +5968,7 @@
    "i": 124,
    "phase": "R1 · Round Cleanup",
    "call": 58,
-   "line": 921,
+   "line": 925,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R1: otflex_sandy.deck_nest_B2 → otflex_sandy.deck_nest_A4",
@@ -5982,7 +5986,7 @@
    "i": 125,
    "phase": "R1 · Round Cleanup",
    "call": 59,
-   "line": 933,
+   "line": 937,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -5999,7 +6003,7 @@
    "i": 126,
    "phase": "R1 · Round Cleanup",
    "call": 59,
-   "line": 933,
+   "line": 937,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R1: exchange_narrow → rack1_row4_nest1",
@@ -6016,7 +6020,7 @@
    "i": 127,
    "phase": "R1 · Round Cleanup",
    "call": 60,
-   "line": 939,
+   "line": 943,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_B1 → otflex_sandy.deck_nest_A4",
@@ -6034,7 +6038,7 @@
    "i": 128,
    "phase": "R1 · Round Cleanup",
    "call": 61,
-   "line": 951,
+   "line": 955,
    "kind": "move",
    "mover": "pf400",
    "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -6051,7 +6055,7 @@
    "i": 129,
    "phase": "R1 · Round Cleanup",
    "call": 61,
-   "line": 951,
+   "line": 955,
    "kind": "move",
    "mover": "pf400",
    "detail": "Controls (tough plate, room temp): exchange_narrow → rack2_row1_nest1",
@@ -7358,9 +7362,61 @@
   },
   {
    "i": 208,
-   "phase": "R2 · Cell Free",
+   "phase": "R2 · Dilute",
    "call": 91,
-   "line": 701,
+   "line": 700,
+   "kind": "move",
+   "mover": "pf400",
+   "detail": "Controls (tough plate, room temp): ot2_patrick.deck_nest_1 → exchange_wide",
+   "duration_s": 45,
+   "duration_source": "estimate",
+   "src": "ot2_patrick.deck_nest_1",
+   "dst": "exchange_wide",
+   "from": "ot2_patrick.deck_nest_1",
+   "to": "exchange",
+   "plate": "p4",
+   "hold": 0
+  },
+  {
+   "i": 209,
+   "phase": "R2 · Dilute",
+   "call": 91,
+   "line": 700,
+   "kind": "move",
+   "mover": "pf400",
+   "detail": "Controls (tough plate, room temp): exchange_narrow → otflex_sandy.deck_nest_A4",
+   "duration_s": 45,
+   "duration_source": "estimate",
+   "src": "exchange_narrow",
+   "dst": "otflex_sandy.deck_nest_A4",
+   "from": "exchange",
+   "to": "otflex_sandy.deck_nest_A4",
+   "plate": "p4",
+   "hold": 0
+  },
+  {
+   "i": 210,
+   "phase": "R2 · Dilute",
+   "call": 92,
+   "line": 705,
+   "kind": "move",
+   "mover": "flex_gripper",
+   "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B1",
+   "duration_s": 60,
+   "duration_source": "estimate",
+   "src": "otflex_sandy.deck_nest_A4",
+   "dst": "otflex_sandy.deck_nest_B1",
+   "from": "otflex_sandy.deck_nest_A4",
+   "to": "otflex_sandy.deck_nest_B1",
+   "plate": "p4",
+   "protocol": "pcr_A4_to_B1.py",
+   "hold": 0
+  },
+  {
+   "i": 211,
+   "phase": "R2 · Cell Free",
+   "call": 93,
+   "line": 720,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R2: ot2_patrick.deck_nest_6_temp_block → exchange_wide",
@@ -7374,10 +7430,10 @@
    "hold": 0
   },
   {
-   "i": 209,
+   "i": 212,
    "phase": "R2 · Cell Free",
-   "call": 91,
-   "line": 701,
+   "call": 93,
+   "line": 720,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R2: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -7391,10 +7447,10 @@
    "hold": 0
   },
   {
-   "i": 210,
+   "i": 213,
    "phase": "R2 · Cell Free",
-   "call": 92,
-   "line": 706,
+   "call": 94,
+   "line": 725,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Diluted PCR 1:50 R2: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_C1",
@@ -7409,10 +7465,10 @@
    "hold": 0
   },
   {
-   "i": 211,
+   "i": 214,
    "phase": "R2 · Cell Free",
-   "call": 93,
-   "line": 716,
+   "call": 95,
+   "line": 735,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: rack1_row4_nest2 → exchange_narrow",
@@ -7426,10 +7482,10 @@
    "hold": 0
   },
   {
-   "i": 212,
+   "i": 215,
    "phase": "R2 · Cell Free",
-   "call": 93,
-   "line": 716,
+   "call": 95,
+   "line": 735,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -7443,10 +7499,10 @@
    "hold": 0
   },
   {
-   "i": 213,
+   "i": 216,
    "phase": "R2 · Cell Free",
-   "call": 94,
-   "line": 721,
+   "call": 96,
+   "line": 740,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R2: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B2",
@@ -7461,9 +7517,9 @@
    "hold": 0
   },
   {
-   "i": 214,
+   "i": 217,
    "phase": "R2 · Cell Free",
-   "call": 95,
+   "call": 97,
    "line": 449,
    "kind": "protocol",
    "mover": "otflex_sandy",
@@ -7475,18 +7531,20 @@
    "protocol": "flex_tips_swap.py",
    "plates": [
     "p12",
-    "p13"
+    "p13",
+    "p4"
    ],
    "deck_plates": {
+    "B1": "p4",
     "C1": "p12",
     "B2": "p13"
    }
   },
   {
-   "i": 215,
+   "i": 218,
    "phase": "R2 · Cell Free",
-   "call": 96,
-   "line": 738,
+   "call": 98,
+   "line": 757,
    "kind": "protocol",
    "mover": "otflex_sandy",
    "detail": "Rehydrate lyophilized cell-free: 24 µL water, 6 µL diluted PCR, mix 5 × 20 µL slowly",
@@ -7497,18 +7555,20 @@
    "protocol": "cell_free_lyo_flex.py",
    "plates": [
     "p12",
-    "p13"
+    "p13",
+    "p4"
    ],
    "deck_plates": {
+    "B1": "p4",
     "C1": "p12",
     "B2": "p13"
    }
   },
   {
-   "i": 216,
+   "i": 219,
    "phase": "R2 · Cell Free",
-   "call": 97,
-   "line": 747,
+   "call": 99,
+   "line": 766,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Diluted PCR 1:50 R2: otflex_sandy.deck_nest_C1 → otflex_sandy.deck_nest_A4",
@@ -7523,10 +7583,10 @@
    "hold": 0
   },
   {
-   "i": 217,
+   "i": 220,
    "phase": "R2 · Cell Free",
-   "call": 98,
-   "line": 759,
+   "call": 100,
+   "line": 778,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R2: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -7540,10 +7600,10 @@
    "hold": 0
   },
   {
-   "i": 218,
+   "i": 221,
    "phase": "R2 · Cell Free",
-   "call": 98,
-   "line": 759,
+   "call": 100,
+   "line": 778,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R2: exchange_narrow → rack1_row3_nest2",
@@ -7557,10 +7617,10 @@
    "hold": 0
   },
   {
-   "i": 219,
+   "i": 222,
    "phase": "R2 · Cell Free",
-   "call": 99,
-   "line": 765,
+   "call": 101,
+   "line": 784,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R2: otflex_sandy.deck_nest_B2 → otflex_sandy.deck_nest_A4",
@@ -7575,10 +7635,10 @@
    "hold": 0
   },
   {
-   "i": 220,
+   "i": 223,
    "phase": "R2 · Cell Free",
-   "call": 100,
-   "line": 777,
+   "call": 102,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -7592,10 +7652,10 @@
    "hold": 0
   },
   {
-   "i": 221,
+   "i": 224,
    "phase": "R2 · Cell Free",
-   "call": 100,
-   "line": 777,
+   "call": 102,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: exchange_narrow → sealer_sassy.sealer_carriage",
@@ -7609,10 +7669,10 @@
    "hold": 0
   },
   {
-   "i": 222,
+   "i": 225,
    "phase": "R2 · Cell Free",
-   "call": 100,
-   "line": 777,
+   "call": 102,
+   "line": 796,
    "kind": "action",
    "mover": "sealer_sassy",
    "detail": "seal",
@@ -7622,10 +7682,10 @@
    "action": "seal"
   },
   {
-   "i": 223,
+   "i": 226,
    "phase": "R2 · Cell Free",
-   "call": 100,
-   "line": 777,
+   "call": 102,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: sealer_sassy.sealer_carriage → exchange_narrow",
@@ -7639,10 +7699,10 @@
    "hold": 0
   },
   {
-   "i": 224,
+   "i": 227,
    "phase": "R2 · Cell Free",
-   "call": 100,
-   "line": 777,
+   "call": 102,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -7656,10 +7716,10 @@
    "hold": 0
   },
   {
-   "i": 225,
+   "i": 228,
    "phase": "R2 · Cell Free",
-   "call": 101,
-   "line": 782,
+   "call": 103,
+   "line": 801,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R2: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_D1",
@@ -7675,62 +7735,10 @@
    "hold_note": "protocol.delay() of 150 min inside pcr_A4_to_D1.py"
   },
   {
-   "i": 226,
-   "phase": "R2 · FDGlu Assay",
-   "call": 102,
-   "line": 796,
-   "kind": "move",
-   "mover": "pf400",
-   "detail": "Controls (tough plate, room temp): ot2_patrick.deck_nest_1 → exchange_wide",
-   "duration_s": 45,
-   "duration_source": "estimate",
-   "src": "ot2_patrick.deck_nest_1",
-   "dst": "exchange_wide",
-   "from": "ot2_patrick.deck_nest_1",
-   "to": "exchange",
-   "plate": "p4",
-   "hold": 0
-  },
-  {
-   "i": 227,
-   "phase": "R2 · FDGlu Assay",
-   "call": 102,
-   "line": 796,
-   "kind": "move",
-   "mover": "pf400",
-   "detail": "Controls (tough plate, room temp): exchange_narrow → otflex_sandy.deck_nest_A4",
-   "duration_s": 45,
-   "duration_source": "estimate",
-   "src": "exchange_narrow",
-   "dst": "otflex_sandy.deck_nest_A4",
-   "from": "exchange",
-   "to": "otflex_sandy.deck_nest_A4",
-   "plate": "p4",
-   "hold": 0
-  },
-  {
-   "i": 228,
-   "phase": "R2 · FDGlu Assay",
-   "call": 103,
-   "line": 801,
-   "kind": "move",
-   "mover": "flex_gripper",
-   "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B1",
-   "duration_s": 60,
-   "duration_source": "estimate",
-   "src": "otflex_sandy.deck_nest_A4",
-   "dst": "otflex_sandy.deck_nest_B1",
-   "from": "otflex_sandy.deck_nest_A4",
-   "to": "otflex_sandy.deck_nest_B1",
-   "plate": "p4",
-   "protocol": "pcr_A4_to_B1.py",
-   "hold": 0
-  },
-  {
    "i": 229,
    "phase": "R2 · FDGlu Assay",
    "call": 104,
-   "line": 811,
+   "line": 815,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R2: rack1_row5_nest2 → exchange_narrow",
@@ -7747,7 +7755,7 @@
    "i": 230,
    "phase": "R2 · FDGlu Assay",
    "call": 104,
-   "line": 811,
+   "line": 815,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R2: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -7764,7 +7772,7 @@
    "i": 231,
    "phase": "R2 · FDGlu Assay",
    "call": 105,
-   "line": 816,
+   "line": 820,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "FDGlu Assay (Corning Assay) R2: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B3",
@@ -7782,7 +7790,7 @@
    "i": 232,
    "phase": "R2 · FDGlu Assay",
    "call": 106,
-   "line": 827,
+   "line": 831,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R2: otflex_sandy.deck_nest_D1 → otflex_sandy.deck_nest_A4",
@@ -7800,7 +7808,7 @@
    "i": 233,
    "phase": "R2 · FDGlu Assay",
    "call": 107,
-   "line": 839,
+   "line": 843,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -7817,7 +7825,7 @@
    "i": 234,
    "phase": "R2 · FDGlu Assay",
    "call": 108,
-   "line": 843,
+   "line": 847,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: exchange_narrow → peeler_penelope.peeler_carriage",
@@ -7834,7 +7842,7 @@
    "i": 235,
    "phase": "R2 · FDGlu Assay",
    "call": 108,
-   "line": 843,
+   "line": 847,
    "kind": "action",
    "mover": "peeler_penelope",
    "detail": "peel",
@@ -7847,7 +7855,7 @@
    "i": 236,
    "phase": "R2 · FDGlu Assay",
    "call": 108,
-   "line": 843,
+   "line": 847,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: peeler_penelope.peeler_carriage → exchange_narrow",
@@ -7864,7 +7872,7 @@
    "i": 237,
    "phase": "R2 · FDGlu Assay",
    "call": 108,
-   "line": 843,
+   "line": 847,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -7881,7 +7889,7 @@
    "i": 238,
    "phase": "R2 · FDGlu Assay",
    "call": 109,
-   "line": 848,
+   "line": 852,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R2: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B2",
@@ -7949,7 +7957,7 @@
    "i": 241,
    "phase": "R2 · FDGlu Assay",
    "call": 112,
-   "line": 871,
+   "line": 875,
    "kind": "protocol",
    "mover": "otflex_sandy",
    "detail": "FDGlu assay plate setup",
@@ -7973,7 +7981,7 @@
    "i": 242,
    "phase": "R2 · FDGlu Assay",
    "call": 113,
-   "line": 880,
+   "line": 884,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "FDGlu Assay (Corning Assay) R2: otflex_sandy.deck_nest_B3 → otflex_sandy.deck_nest_A4",
@@ -7991,7 +7999,7 @@
    "i": 243,
    "phase": "R2 · FDGlu Assay",
    "call": 114,
-   "line": 892,
+   "line": 896,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R2: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -8008,7 +8016,7 @@
    "i": 244,
    "phase": "R2 · FDGlu Assay",
    "call": 115,
-   "line": 896,
+   "line": 900,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "open hidex",
@@ -8021,7 +8029,7 @@
    "i": 245,
    "phase": "R2 · FDGlu Assay",
    "call": 115,
-   "line": 896,
+   "line": 900,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R2: exchange_narrow → hidex_geraldine.hidex_carriage",
@@ -8038,7 +8046,7 @@
    "i": 246,
    "phase": "R2 · FDGlu Assay",
    "call": 115,
-   "line": 896,
+   "line": 900,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "close hidex",
@@ -8051,7 +8059,7 @@
    "i": 247,
    "phase": "R2 · FDGlu Assay",
    "call": 116,
-   "line": 900,
+   "line": 904,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "Run hidex protocol (assay_name=PD_Kinetic_REAL)",
@@ -8064,7 +8072,7 @@
    "i": 248,
    "phase": "R2 · Round Cleanup",
    "call": 117,
-   "line": 915,
+   "line": 919,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "open hidex",
@@ -8077,7 +8085,7 @@
    "i": 249,
    "phase": "R2 · Round Cleanup",
    "call": 117,
-   "line": 915,
+   "line": 919,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R2: hidex_geraldine.hidex_carriage → rack1_row5_nest2",
@@ -8094,7 +8102,7 @@
    "i": 250,
    "phase": "R2 · Round Cleanup",
    "call": 117,
-   "line": 915,
+   "line": 919,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "close hidex",
@@ -8107,7 +8115,7 @@
    "i": 251,
    "phase": "R2 · Round Cleanup",
    "call": 118,
-   "line": 921,
+   "line": 925,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R2: otflex_sandy.deck_nest_B2 → otflex_sandy.deck_nest_A4",
@@ -8125,7 +8133,7 @@
    "i": 252,
    "phase": "R2 · Round Cleanup",
    "call": 119,
-   "line": 933,
+   "line": 937,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -8142,7 +8150,7 @@
    "i": 253,
    "phase": "R2 · Round Cleanup",
    "call": 119,
-   "line": 933,
+   "line": 937,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R2: exchange_narrow → rack1_row4_nest2",
@@ -8159,7 +8167,7 @@
    "i": 254,
    "phase": "R2 · Round Cleanup",
    "call": 120,
-   "line": 939,
+   "line": 943,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_B1 → otflex_sandy.deck_nest_A4",
@@ -8177,7 +8185,7 @@
    "i": 255,
    "phase": "R2 · Round Cleanup",
    "call": 121,
-   "line": 951,
+   "line": 955,
    "kind": "move",
    "mover": "pf400",
    "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -8194,7 +8202,7 @@
    "i": 256,
    "phase": "R2 · Round Cleanup",
    "call": 121,
-   "line": 951,
+   "line": 955,
    "kind": "move",
    "mover": "pf400",
    "detail": "Controls (tough plate, room temp): exchange_narrow → rack2_row1_nest1",
@@ -9505,9 +9513,61 @@
   },
   {
    "i": 335,
-   "phase": "R3 · Cell Free",
+   "phase": "R3 · Dilute",
    "call": 151,
-   "line": 701,
+   "line": 700,
+   "kind": "move",
+   "mover": "pf400",
+   "detail": "Controls (tough plate, room temp): ot2_patrick.deck_nest_1 → exchange_wide",
+   "duration_s": 45,
+   "duration_source": "estimate",
+   "src": "ot2_patrick.deck_nest_1",
+   "dst": "exchange_wide",
+   "from": "ot2_patrick.deck_nest_1",
+   "to": "exchange",
+   "plate": "p4",
+   "hold": 0
+  },
+  {
+   "i": 336,
+   "phase": "R3 · Dilute",
+   "call": 151,
+   "line": 700,
+   "kind": "move",
+   "mover": "pf400",
+   "detail": "Controls (tough plate, room temp): exchange_narrow → otflex_sandy.deck_nest_A4",
+   "duration_s": 45,
+   "duration_source": "estimate",
+   "src": "exchange_narrow",
+   "dst": "otflex_sandy.deck_nest_A4",
+   "from": "exchange",
+   "to": "otflex_sandy.deck_nest_A4",
+   "plate": "p4",
+   "hold": 0
+  },
+  {
+   "i": 337,
+   "phase": "R3 · Dilute",
+   "call": 152,
+   "line": 705,
+   "kind": "move",
+   "mover": "flex_gripper",
+   "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B1",
+   "duration_s": 60,
+   "duration_source": "estimate",
+   "src": "otflex_sandy.deck_nest_A4",
+   "dst": "otflex_sandy.deck_nest_B1",
+   "from": "otflex_sandy.deck_nest_A4",
+   "to": "otflex_sandy.deck_nest_B1",
+   "plate": "p4",
+   "protocol": "pcr_A4_to_B1.py",
+   "hold": 0
+  },
+  {
+   "i": 338,
+   "phase": "R3 · Cell Free",
+   "call": 153,
+   "line": 720,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R3: ot2_patrick.deck_nest_6_temp_block → exchange_wide",
@@ -9521,10 +9581,10 @@
    "hold": 0
   },
   {
-   "i": 336,
+   "i": 339,
    "phase": "R3 · Cell Free",
-   "call": 151,
-   "line": 701,
+   "call": 153,
+   "line": 720,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R3: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -9538,10 +9598,10 @@
    "hold": 0
   },
   {
-   "i": 337,
+   "i": 340,
    "phase": "R3 · Cell Free",
-   "call": 152,
-   "line": 706,
+   "call": 154,
+   "line": 725,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Diluted PCR 1:50 R3: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_C1",
@@ -9556,10 +9616,10 @@
    "hold": 0
   },
   {
-   "i": 338,
+   "i": 341,
    "phase": "R3 · Cell Free",
-   "call": 153,
-   "line": 716,
+   "call": 155,
+   "line": 735,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: rack1_row4_nest3 → exchange_narrow",
@@ -9573,10 +9633,10 @@
    "hold": 0
   },
   {
-   "i": 339,
+   "i": 342,
    "phase": "R3 · Cell Free",
-   "call": 153,
-   "line": 716,
+   "call": 155,
+   "line": 735,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -9590,10 +9650,10 @@
    "hold": 0
   },
   {
-   "i": 340,
+   "i": 343,
    "phase": "R3 · Cell Free",
-   "call": 154,
-   "line": 721,
+   "call": 156,
+   "line": 740,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R3: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B2",
@@ -9608,9 +9668,9 @@
    "hold": 0
   },
   {
-   "i": 341,
+   "i": 344,
    "phase": "R3 · Cell Free",
-   "call": 155,
+   "call": 157,
    "line": 449,
    "kind": "protocol",
    "mover": "otflex_sandy",
@@ -9622,18 +9682,20 @@
    "protocol": "flex_tips_swap.py",
    "plates": [
     "p17",
-    "p18"
+    "p18",
+    "p4"
    ],
    "deck_plates": {
+    "B1": "p4",
     "C1": "p17",
     "B2": "p18"
    }
   },
   {
-   "i": 342,
+   "i": 345,
    "phase": "R3 · Cell Free",
-   "call": 156,
-   "line": 738,
+   "call": 158,
+   "line": 757,
    "kind": "protocol",
    "mover": "otflex_sandy",
    "detail": "Rehydrate lyophilized cell-free: 24 µL water, 6 µL diluted PCR, mix 5 × 20 µL slowly",
@@ -9644,18 +9706,20 @@
    "protocol": "cell_free_lyo_flex.py",
    "plates": [
     "p17",
-    "p18"
+    "p18",
+    "p4"
    ],
    "deck_plates": {
+    "B1": "p4",
     "C1": "p17",
     "B2": "p18"
    }
   },
   {
-   "i": 343,
+   "i": 346,
    "phase": "R3 · Cell Free",
-   "call": 157,
-   "line": 747,
+   "call": 159,
+   "line": 766,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Diluted PCR 1:50 R3: otflex_sandy.deck_nest_C1 → otflex_sandy.deck_nest_A4",
@@ -9670,10 +9734,10 @@
    "hold": 0
   },
   {
-   "i": 344,
+   "i": 347,
    "phase": "R3 · Cell Free",
-   "call": 158,
-   "line": 759,
+   "call": 160,
+   "line": 778,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R3: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -9687,10 +9751,10 @@
    "hold": 0
   },
   {
-   "i": 345,
+   "i": 348,
    "phase": "R3 · Cell Free",
-   "call": 158,
-   "line": 759,
+   "call": 160,
+   "line": 778,
    "kind": "move",
    "mover": "pf400",
    "detail": "Diluted PCR 1:50 R3: exchange_narrow → rack1_row3_nest3",
@@ -9704,10 +9768,10 @@
    "hold": 0
   },
   {
-   "i": 346,
+   "i": 349,
    "phase": "R3 · Cell Free",
-   "call": 159,
-   "line": 765,
+   "call": 161,
+   "line": 784,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R3: otflex_sandy.deck_nest_B2 → otflex_sandy.deck_nest_A4",
@@ -9722,10 +9786,10 @@
    "hold": 0
   },
   {
-   "i": 347,
+   "i": 350,
    "phase": "R3 · Cell Free",
-   "call": 160,
-   "line": 777,
+   "call": 162,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -9739,10 +9803,10 @@
    "hold": 0
   },
   {
-   "i": 348,
+   "i": 351,
    "phase": "R3 · Cell Free",
-   "call": 160,
-   "line": 777,
+   "call": 162,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: exchange_narrow → sealer_sassy.sealer_carriage",
@@ -9756,10 +9820,10 @@
    "hold": 0
   },
   {
-   "i": 349,
+   "i": 352,
    "phase": "R3 · Cell Free",
-   "call": 160,
-   "line": 777,
+   "call": 162,
+   "line": 796,
    "kind": "action",
    "mover": "sealer_sassy",
    "detail": "seal",
@@ -9769,10 +9833,10 @@
    "action": "seal"
   },
   {
-   "i": 350,
+   "i": 353,
    "phase": "R3 · Cell Free",
-   "call": 160,
-   "line": 777,
+   "call": 162,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: sealer_sassy.sealer_carriage → exchange_narrow",
@@ -9786,10 +9850,10 @@
    "hold": 0
   },
   {
-   "i": 351,
+   "i": 354,
    "phase": "R3 · Cell Free",
-   "call": 160,
-   "line": 777,
+   "call": 162,
+   "line": 796,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -9803,10 +9867,10 @@
    "hold": 0
   },
   {
-   "i": 352,
+   "i": 355,
    "phase": "R3 · Cell Free",
-   "call": 161,
-   "line": 782,
+   "call": 163,
+   "line": 801,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R3: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_D1",
@@ -9822,62 +9886,10 @@
    "hold_note": "protocol.delay() of 150 min inside pcr_A4_to_D1.py"
   },
   {
-   "i": 353,
-   "phase": "R3 · FDGlu Assay",
-   "call": 162,
-   "line": 796,
-   "kind": "move",
-   "mover": "pf400",
-   "detail": "Controls (tough plate, room temp): ot2_patrick.deck_nest_1 → exchange_wide",
-   "duration_s": 45,
-   "duration_source": "estimate",
-   "src": "ot2_patrick.deck_nest_1",
-   "dst": "exchange_wide",
-   "from": "ot2_patrick.deck_nest_1",
-   "to": "exchange",
-   "plate": "p4",
-   "hold": 0
-  },
-  {
-   "i": 354,
-   "phase": "R3 · FDGlu Assay",
-   "call": 162,
-   "line": 796,
-   "kind": "move",
-   "mover": "pf400",
-   "detail": "Controls (tough plate, room temp): exchange_narrow → otflex_sandy.deck_nest_A4",
-   "duration_s": 45,
-   "duration_source": "estimate",
-   "src": "exchange_narrow",
-   "dst": "otflex_sandy.deck_nest_A4",
-   "from": "exchange",
-   "to": "otflex_sandy.deck_nest_A4",
-   "plate": "p4",
-   "hold": 0
-  },
-  {
-   "i": 355,
-   "phase": "R3 · FDGlu Assay",
-   "call": 163,
-   "line": 801,
-   "kind": "move",
-   "mover": "flex_gripper",
-   "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B1",
-   "duration_s": 60,
-   "duration_source": "estimate",
-   "src": "otflex_sandy.deck_nest_A4",
-   "dst": "otflex_sandy.deck_nest_B1",
-   "from": "otflex_sandy.deck_nest_A4",
-   "to": "otflex_sandy.deck_nest_B1",
-   "plate": "p4",
-   "protocol": "pcr_A4_to_B1.py",
-   "hold": 0
-  },
-  {
    "i": 356,
    "phase": "R3 · FDGlu Assay",
    "call": 164,
-   "line": 811,
+   "line": 815,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R3: rack1_row5_nest3 → exchange_narrow",
@@ -9894,7 +9906,7 @@
    "i": 357,
    "phase": "R3 · FDGlu Assay",
    "call": 164,
-   "line": 811,
+   "line": 815,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R3: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -9911,7 +9923,7 @@
    "i": 358,
    "phase": "R3 · FDGlu Assay",
    "call": 165,
-   "line": 816,
+   "line": 820,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "FDGlu Assay (Corning Assay) R3: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B3",
@@ -9929,7 +9941,7 @@
    "i": 359,
    "phase": "R3 · FDGlu Assay",
    "call": 166,
-   "line": 827,
+   "line": 831,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R3: otflex_sandy.deck_nest_D1 → otflex_sandy.deck_nest_A4",
@@ -9947,7 +9959,7 @@
    "i": 360,
    "phase": "R3 · FDGlu Assay",
    "call": 167,
-   "line": 839,
+   "line": 843,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -9964,7 +9976,7 @@
    "i": 361,
    "phase": "R3 · FDGlu Assay",
    "call": 168,
-   "line": 843,
+   "line": 847,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: exchange_narrow → peeler_penelope.peeler_carriage",
@@ -9981,7 +9993,7 @@
    "i": 362,
    "phase": "R3 · FDGlu Assay",
    "call": 168,
-   "line": 843,
+   "line": 847,
    "kind": "action",
    "mover": "peeler_penelope",
    "detail": "peel",
@@ -9994,7 +10006,7 @@
    "i": 363,
    "phase": "R3 · FDGlu Assay",
    "call": 168,
-   "line": 843,
+   "line": 847,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: peeler_penelope.peeler_carriage → exchange_narrow",
@@ -10011,7 +10023,7 @@
    "i": 364,
    "phase": "R3 · FDGlu Assay",
    "call": 168,
-   "line": 843,
+   "line": 847,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: exchange_narrow → otflex_sandy.deck_nest_A4",
@@ -10028,7 +10040,7 @@
    "i": 365,
    "phase": "R3 · FDGlu Assay",
    "call": 169,
-   "line": 848,
+   "line": 852,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R3: otflex_sandy.deck_nest_A4 → otflex_sandy.deck_nest_B2",
@@ -10096,7 +10108,7 @@
    "i": 368,
    "phase": "R3 · FDGlu Assay",
    "call": 172,
-   "line": 871,
+   "line": 875,
    "kind": "protocol",
    "mover": "otflex_sandy",
    "detail": "FDGlu assay plate setup",
@@ -10120,7 +10132,7 @@
    "i": 369,
    "phase": "R3 · FDGlu Assay",
    "call": 173,
-   "line": 880,
+   "line": 884,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "FDGlu Assay (Corning Assay) R3: otflex_sandy.deck_nest_B3 → otflex_sandy.deck_nest_A4",
@@ -10138,7 +10150,7 @@
    "i": 370,
    "phase": "R3 · FDGlu Assay",
    "call": 174,
-   "line": 892,
+   "line": 896,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R3: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -10155,7 +10167,7 @@
    "i": 371,
    "phase": "R3 · FDGlu Assay",
    "call": 175,
-   "line": 896,
+   "line": 900,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "open hidex",
@@ -10168,7 +10180,7 @@
    "i": 372,
    "phase": "R3 · FDGlu Assay",
    "call": 175,
-   "line": 896,
+   "line": 900,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R3: exchange_narrow → hidex_geraldine.hidex_carriage",
@@ -10185,7 +10197,7 @@
    "i": 373,
    "phase": "R3 · FDGlu Assay",
    "call": 175,
-   "line": 896,
+   "line": 900,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "close hidex",
@@ -10198,7 +10210,7 @@
    "i": 374,
    "phase": "R3 · FDGlu Assay",
    "call": 176,
-   "line": 900,
+   "line": 904,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "Run hidex protocol (assay_name=PD_Kinetic_REAL)",
@@ -10211,7 +10223,7 @@
    "i": 375,
    "phase": "R3 · Round Cleanup",
    "call": 177,
-   "line": 915,
+   "line": 919,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "open hidex",
@@ -10224,7 +10236,7 @@
    "i": 376,
    "phase": "R3 · Round Cleanup",
    "call": 177,
-   "line": 915,
+   "line": 919,
    "kind": "move",
    "mover": "pf400",
    "detail": "FDGlu Assay (Corning Assay) R3: hidex_geraldine.hidex_carriage → rack1_row5_nest3",
@@ -10241,7 +10253,7 @@
    "i": 377,
    "phase": "R3 · Round Cleanup",
    "call": 177,
-   "line": 915,
+   "line": 919,
    "kind": "action",
    "mover": "hidex_geraldine",
    "detail": "close hidex",
@@ -10254,7 +10266,7 @@
    "i": 378,
    "phase": "R3 · Round Cleanup",
    "call": 178,
-   "line": 921,
+   "line": 925,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Cell-free, lyophilized R3: otflex_sandy.deck_nest_B2 → otflex_sandy.deck_nest_A4",
@@ -10272,7 +10284,7 @@
    "i": 379,
    "phase": "R3 · Round Cleanup",
    "call": 179,
-   "line": 933,
+   "line": 937,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -10289,7 +10301,7 @@
    "i": 380,
    "phase": "R3 · Round Cleanup",
    "call": 179,
-   "line": 933,
+   "line": 937,
    "kind": "move",
    "mover": "pf400",
    "detail": "Cell-free, lyophilized R3: exchange_narrow → rack1_row4_nest3",
@@ -10306,7 +10318,7 @@
    "i": 381,
    "phase": "R3 · Round Cleanup",
    "call": 180,
-   "line": 939,
+   "line": 943,
    "kind": "move",
    "mover": "flex_gripper",
    "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_B1 → otflex_sandy.deck_nest_A4",
@@ -10324,7 +10336,7 @@
    "i": 382,
    "phase": "R3 · Round Cleanup",
    "call": 181,
-   "line": 951,
+   "line": 955,
    "kind": "move",
    "mover": "pf400",
    "detail": "Controls (tough plate, room temp): otflex_sandy.deck_nest_A4 → exchange_narrow",
@@ -10341,7 +10353,7 @@
    "i": 383,
    "phase": "R3 · Round Cleanup",
    "call": 181,
-   "line": 951,
+   "line": 955,
    "kind": "move",
    "mover": "pf400",
    "detail": "Controls (tough plate, room temp): exchange_narrow → rack2_row1_nest1",
@@ -10358,7 +10370,7 @@
    "i": 384,
    "phase": "Finish",
    "call": 182,
-   "line": 963,
+   "line": 967,
    "kind": "protocol",
    "mover": "ot2_patrick",
    "detail": "Turn off OT-2 temperature modules",
@@ -10378,7 +10390,7 @@
    "i": 385,
    "phase": "Finish",
    "call": 183,
-   "line": 971,
+   "line": 975,
    "kind": "protocol",
    "mover": "otflex_sandy",
    "detail": "Turn off Flex temperature modules",
