@@ -1,0 +1,35 @@
+name: fragments flex to sealer to cold block
+metadata:
+  author: Abe Stroka
+  info: '3-round run: fragments plate from Flex A4, seal, store on the external cooling
+    block'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: otflex_sandy.deck_nest_A4
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: sealer_sassy.sealer_carriage
+- name: seal
+  node: sealer_sassy
+  action: seal
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: sealer_sassy.sealer_carriage
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: cold_block_ext
+  comment: fragments plate back on the external cooling block

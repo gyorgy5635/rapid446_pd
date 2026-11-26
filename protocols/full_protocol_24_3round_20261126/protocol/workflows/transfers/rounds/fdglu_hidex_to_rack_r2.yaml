@@ -1,0 +1,18 @@
+name: fdglu hidex to rack r2
+metadata:
+  author: Abe Stroka
+  info: 'Round 2: FDGlu plate from the Hidex back to its nest after the read'
+  version: '0.1'
+steps:
+- name: open hidex
+  node: hidex_geraldine
+  action: open
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: hidex_geraldine.hidex_carriage
+    target: rack1_row5_nest2
+- name: close hidex
+  node: hidex_geraldine
+  action: close

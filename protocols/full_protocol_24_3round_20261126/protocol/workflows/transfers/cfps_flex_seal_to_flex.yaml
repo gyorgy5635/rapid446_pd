@@ -1,0 +1,33 @@
+name: cfps flex to sealer to flex
+metadata:
+  author: Abe Stroka
+  info: '3-round run: assembled CFPS plate from Flex A4, seal, back to Flex A4'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: otflex_sandy.deck_nest_A4
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: sealer_sassy.sealer_carriage
+- name: seal
+  node: sealer_sassy
+  action: seal
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: sealer_sassy.sealer_carriage
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: otflex_sandy.deck_nest_A4

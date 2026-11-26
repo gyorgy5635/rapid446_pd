@@ -1,0 +1,18 @@
+name: cfps plate to flex r2
+metadata:
+  author: Abe Stroka
+  info: 'Round 2: lyophilized CFPS plate (room temperature) to Flex A4'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: rack1_row4_nest2
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: otflex_sandy.deck_nest_A4

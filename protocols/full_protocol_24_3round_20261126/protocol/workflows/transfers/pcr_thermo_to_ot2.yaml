@@ -1,0 +1,39 @@
+name: pcr thermocycler to ot2
+metadata:
+  author: Abe Stroka
+  info: '3-round run: PCR plate from thermocycler, peel, to OT-2 cold block nest 4
+    for the 1:50 dilution'
+  version: '0.1'
+steps:
+- name: open thermocycler lid
+  node: biometra_beuford_96
+  action: open_lid
+  args:
+    plate_type: 96
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: biometra_beuford.biometra_nest
+    target: exchange_wide
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: peeler_penelope.peeler_carriage
+- name: peel
+  node: peeler_penelope
+  action: peel
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: peeler_penelope.peeler_carriage
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_wide
+    target: ot2_patrick.deck_nest_4_temp_block

@@ -1,0 +1,41 @@
+name: ot2 tip box swap
+
+metadata:
+  author: Abe Stroka
+  info: >-
+    3-round run: PF400 swaps the spent 20 uL tip box in OT-2 slot 3 for the spare on rack 2.
+    Slot 2 stays empty so the PF400 can still reach slot 1; slot 3 is the only tip slot it can serve.
+  version: '0.1'
+
+steps:
+  - name: transfer
+    node: pf400_piper
+    action: transfer
+    locations:
+      source: ot2_patrick.deck_nest_3
+      target: exchange_wide
+    comment: lift the spent tip box off the OT-2
+
+  - name: transfer
+    node: pf400_piper
+    action: transfer
+    locations:
+      source: exchange_narrow
+      target: rack2_row2_nest1
+    comment: park the spent box on rack 2
+
+  - name: transfer
+    node: pf400_piper
+    action: transfer
+    locations:
+      source: rack2_row1_nest2
+      target: exchange_narrow
+    comment: pick up the full spare
+
+  - name: transfer
+    node: pf400_piper
+    action: transfer
+    locations:
+      source: exchange_wide
+      target: ot2_patrick.deck_nest_3
+    comment: place the full box in OT-2 slot 3

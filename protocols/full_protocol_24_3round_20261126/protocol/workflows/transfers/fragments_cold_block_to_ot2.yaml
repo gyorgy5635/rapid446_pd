@@ -1,0 +1,35 @@
+name: fragments cold block to ot2
+metadata:
+  author: Abe Stroka
+  info: '3-round run: sealed fragments plate from the external cooling block, peel,
+    to OT-2 cold block nest 4'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: cold_block_ext
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: peeler_penelope.peeler_carriage
+- name: peel
+  node: peeler_penelope
+  action: peel
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: peeler_penelope.peeler_carriage
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_wide
+    target: ot2_patrick.deck_nest_4_temp_block
+  comment: fragments plate on OT-2 cold block C1

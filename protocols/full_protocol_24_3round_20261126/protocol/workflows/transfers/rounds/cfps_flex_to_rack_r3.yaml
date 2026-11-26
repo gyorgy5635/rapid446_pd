@@ -1,0 +1,18 @@
+name: cfps plate flex to rack r3
+metadata:
+  author: Abe Stroka
+  info: 'Round 3: used CFPS plate from Flex A4 back to its nest'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: otflex_sandy.deck_nest_A4
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: rack1_row4_nest3

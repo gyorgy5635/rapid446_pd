@@ -1,0 +1,33 @@
+name: pcr plate ot2 seal to rack r1
+metadata:
+  author: Abe Stroka
+  info: 'Round 1: PCR plate from OT-2 nest 4, re-seal, back to its nest'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: ot2_patrick.deck_nest_4_temp_block
+    target: exchange_wide
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: sealer_sassy.sealer_carriage
+- name: seal
+  node: sealer_sassy
+  action: seal
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: sealer_sassy.sealer_carriage
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: rack1_row2_nest1

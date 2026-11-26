@@ -1,0 +1,18 @@
+name: gg plate to ot2 r2
+metadata:
+  author: Abe Stroka
+  info: 'Round 2: empty Golden Gate plate to OT-2 cold block nest 6'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: rack1_row1_nest2
+    target: exchange_narrow
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_wide
+    target: ot2_patrick.deck_nest_6_temp_block
