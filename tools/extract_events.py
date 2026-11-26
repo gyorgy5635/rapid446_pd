@@ -319,11 +319,25 @@ class Extractor:
         if name in self.localfns and self.fndepth < 5:
             fn = self.localfns[name]
             keep = self.prev_end
+            # Bind the call's arguments to the parameter names, so a helper like
+            # flex_move(A4_to_B1) resolves the protocol it was handed instead of whatever was
+            # assigned last. Only paths are bound; anything else shadows nothing.
+            bound = {}
+            for param, arg in zip([a.arg for a in fn.args.args], value.args):
+                resolved = self.resolve(arg)
+                if resolved:
+                    bound[param] = (param in self.paths, self.paths.get(param))
+                    self.paths[param] = resolved
             self.fndepth += 1
             self.prev_end = fn.lineno
             self.walk(fn.body)
             self.fndepth -= 1
             self.prev_end = keep
+            for param, (existed, old) in bound.items():
+                if existed:
+                    self.paths[param] = old
+                else:
+                    self.paths.pop(param, None)
             return
         if name.endswith("submit_workflow"):
             self.submit(value, stmt.lineno)

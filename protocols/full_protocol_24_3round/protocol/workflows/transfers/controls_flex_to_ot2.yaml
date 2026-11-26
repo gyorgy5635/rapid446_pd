@@ -1,0 +1,21 @@
+name: controls flex to ot2
+metadata:
+  author: Abe Stroka
+  info: '3-round run: controls plate from Flex A4 to OT-2 nest 1 for the dilution.
+    It goes straight back to the Flex cold block afterwards.'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: otflex_sandy.deck_nest_A4
+    target: exchange_narrow
+  comment: place plate on exchange
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_wide
+    target: ot2_patrick.deck_nest_1
+  comment: place controls plate on ot2 nest 1

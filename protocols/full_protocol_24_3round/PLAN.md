@@ -66,9 +66,12 @@ is the one that gets swapped: when it runs out, `ot2_tip_swap.yaml` parks the sp
 brings the full spare from `rack2_row1_nest2`. This is a physical constraint the Opentrons simulator cannot see —
 it simulated the old deck, with tips in slot 2, quite happily.
 
-**Flex**: A1 200 µL tips, A2 50 µL tips (8-channel), A3 50 µL tips (single-tip only), B1 cold block, C1 cold block,
-B2 cell-free plate, B3 FDGlu plate, D1 heater-shaker, D2 reservoir, D3 waste chute, A4 PF400 handoff,
-staging **B4 + C4 spare 50 µL boxes, D4 spare 200 µL box**.
+**Flex**: A1 200 µL tips, A2 50 µL tips (8-channel), A3 50 µL tips (single-tip only), B1 cold block (controls
+plate, most of the run), C1 cold block, B2 cell-free plate, B3 FDGlu plate, D1 heater-shaker, D2 reservoir,
+D3 waste chute, A4 PF400 handoff, staging **B4 + C4 spare 50 µL boxes, D4 where the controls plate parks**.
+
+D4 used to hold a spare 200 µL box. The run draws exactly one box (96 of 96 tips), so there is now no margin:
+a round needing one more column stops with the tip counter's error and wants a box swapped in by hand.
 
 Only A1-A3 hold tip boxes: the simulator rejects a box in C2 or C3, because with a single-tip (partial nozzle)
 configuration the pipette would collide with it on the way to B2/B3 (`PartialTipMovementNotAllowedError`). Spares
@@ -279,10 +282,10 @@ Current result: **no warnings**: no movement conflicts, no deck conflicts, no la
 2. Cell-free assembly happens on Flex B2 at room temperature; the diluted PCR waits on the cold block C1.
 3. PCR plate is resealed before going back to its nest; GG, dilution, cell-free and FDGlu plates go back unsealed.
 4. Controls plate: same wells every round (column 1 for the dilution, F3-H3 for FDGlu), so it needs 3x volume.
-   It goes to the Flex cold block B1 as soon as the dilution is done and waits there until the assay, so it is
-   uncooled for about 0.4 h per round rather than 3.5 h. B1 is free in that window: it holds the fragments plate
-   for about an hour during the PCR master mix, and nothing else until the assay. It is still unsealed and at
-   room temperature between rounds, which sealed cold storage would fix.
+   **It lives on the Flex cold block B1 for the whole run**, not on a nest: 25.9 h of the 30.9 h cold, against
+   15.2 h before. It leaves only twice per round - to staging D4 for the hour the fragments plate needs B1
+   (3.2 h in total), and to OT-2 slot 1 for the dilution (1.1 h) - and returns to its nest only at the end.
+   That costs 9 extra gripper moves over the run and the staging slot that held the spare 200 uL tip box.
 5. Dilution plate controls column: 20 µL undiluted controls, as in the single run.
 6. Round 2 and 3 combinations come from `collect_combinations(oracle_id=<id returned by the previous upload>)`;
    round 1 uses 1008 as before. The REST module is not in this repo, so this is unverified.

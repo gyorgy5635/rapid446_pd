@@ -1,0 +1,21 @@
+name: controls nest to flex
+metadata:
+  author: Abe Stroka
+  info: '3-round run: controls plate from its nest to Flex A4, once at the start.
+    It then lives on the Flex cold block for the rest of the run.'
+  version: '0.1'
+steps:
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: rack2_row1_nest1
+    target: exchange_narrow
+  comment: place plate on exchange
+- name: transfer
+  node: pf400_piper
+  action: transfer
+  locations:
+    source: exchange_narrow
+    target: otflex_sandy.deck_nest_A4
+  comment: moves plate from exchange to flex A4

@@ -139,7 +139,8 @@
         "C2": "50 µL tips (8-ch)",
         "C3": "50 µL tips (8-ch)",
         "B4": "Spare 200 µL tips",
-        "C4": "Empty-box landing"
+        "C4": "Empty-box landing",
+        "D4": "Controls plate parks here during PCR"
       }
     },
     {
@@ -154,7 +155,7 @@
     {
       "id": "rack2",
       "label": "Plate nests 2",
-      "sub": "rack2 · 5 rows × 3 · controls at room temp",
+      "sub": "rack2 · 5 rows × 3 · controls start/end here",
       "kind": "rack",
       "prefix": "rack2_",
       "x": 760,
