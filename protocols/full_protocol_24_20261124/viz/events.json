@@ -5,12 +5,13 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24",
   "script_url": null,
-  "generated": "2026-11-25T20:59:44",
+  "generated": "2026-11-25T21:15:56",
   "workflow_calls": 63,
   "steps": 119,
   "pf400_moves": 68,
   "flex_gripper_moves": 16,
   "resource_bookkeeping_calls_ignored": 13,
+  "conditional_steps": 0,
   "estimated_total_s": 38375
  },
  "plates": [

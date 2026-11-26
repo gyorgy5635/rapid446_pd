@@ -722,7 +722,11 @@ function buildStatic() {
     ${w.length ? `<ul class="warnlist">${w.map(x => `<li>${srcLink(x.line, `line ${x.line}`)}: ${esc(x.message)}</li>`).join("")}</ul>` : ""}
     <p class="hint">${TIMING
       ? `Durations: ${TIMING.measured_steps} of ${N} steps are medians of measured MADSci runs (${TIMING.runs.filter(r => r.used).map(r => `${esc(r.experiment_id)}, ${r.matched_calls}/${EV.calls.length} workflows matched`).join("; ")}). The rest are estimates from <code>config/durations.json</code>.`
-      : `Durations are estimates from <code>config/durations.json</code> unless marked "from code". Export MADSci history to replace them with measured times.`} ${m.resource_bookkeeping_calls_ignored} MADSci resource push/pop calls were treated as bookkeeping, not movement.</p>`;
+      : `Durations are estimates from <code>config/durations.json</code> unless marked "from code". Export MADSci history to replace them with measured times.`} ${m.resource_bookkeeping_calls_ignored} MADSci resource push/pop calls were treated as bookkeeping, not movement.</p>
+    ${m.conditional_steps ? `<p class="hint">${m.conditional_steps} of the ${N} steps are marked
+      <em>only if needed</em>: a tip-box swap the script runs when its tip counter says a box is spent. Which ones
+      fire is only known at run time, so they are listed and timed but nothing is moved for them, and the deck
+      state ignores them. The simulated run says one OT-2 swap and two Flex swaps actually happen.</p>` : ""}`;
 }
 function gripText(st) {
   const g = gripOf(st), prev = EV.steps[st.i - 1];

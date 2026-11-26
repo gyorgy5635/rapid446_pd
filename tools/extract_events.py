@@ -627,11 +627,14 @@ class Extractor:
             # drawn so the route is visible, but the tracker does not apply it and does not judge it:
             # the extractor cannot know which of the possible firings actually happen, and applying
             # them all would corrupt the deck state and bury the real warnings in noise.
-            plate = self.state.get(csrc)
+            # The labware is named for the reader, but no plate is attached to the step: the
+            # player must not move anything, or a swap that never fires leaves boxes stacked on
+            # the exchange for the rest of the run.
+            held = self.state.get(csrc)
             base = self.dur["transfer"] if mover == "pf400" else self.dur["flex_gripper_move"]
             self.add_step(line, call_id, kind="move", mover=mover, src=src, dst=dst,
-                          from_=csrc, to=cdst, plate=plate, protocol=protocol,
-                          detail=f"{self.name(plate) if plate else 'labware'}: {src} → {dst}",
+                          from_=csrc, to=cdst, protocol=protocol,
+                          detail=f"{self.name(held) if held else 'labware'}: {src} → {dst}",
                           duration=base + extra, dsrc=extra_src or "estimate")
             return
         plate = self.state.pop(csrc, None)
@@ -690,6 +693,7 @@ class Extractor:
                 "pf400_moves": sum(1 for s in moves if s["mover"] == "pf400"),
                 "flex_gripper_moves": sum(1 for s in moves if s["mover"] == "flex_gripper"),
                 "resource_bookkeeping_calls_ignored": self.bookkeeping,
+                "conditional_steps": sum(1 for s in self.steps if s.get("conditional")),
                 "estimated_total_s": sum(s["duration_s"] for s in self.steps),
             },
             "plates": self.plates,

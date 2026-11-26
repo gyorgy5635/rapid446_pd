@@ -5,12 +5,13 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24_20261124",
   "script_url": null,
-  "generated": "2026-11-25T20:59:44",
+  "generated": "2026-11-25T21:15:56",
   "workflow_calls": 184,
   "steps": 386,
   "pf400_moves": 237,
   "flex_gripper_moves": 48,
   "resource_bookkeeping_calls_ignored": 48,
+  "conditional_steps": 48,
   "estimated_total_s": 110715
  },
  "plates": [
@@ -4047,7 +4048,6 @@
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
    "conditional": true
   },
   {
@@ -4080,7 +4080,6 @@
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
    "conditional": true
   },
   {
@@ -4552,7 +4551,6 @@
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
    "conditional": true
   },
   {
@@ -4585,7 +4583,6 @@
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
    "conditional": true
   },
   {
@@ -5057,7 +5054,6 @@
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
    "conditional": true
   },
   {
@@ -5090,7 +5086,6 @@
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
    "conditional": true
   },
   {
@@ -6197,7 +6192,6 @@
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
    "conditional": true
   },
   {
@@ -6230,7 +6224,6 @@
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
    "conditional": true
   },
   {
@@ -6702,7 +6695,6 @@
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
    "conditional": true
   },
   {
@@ -6735,7 +6727,6 @@
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
    "conditional": true
   },
   {
@@ -7207,7 +7198,6 @@
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
    "conditional": true
   },
   {
@@ -7240,7 +7230,6 @@
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
    "conditional": true
   },
   {
@@ -8347,7 +8336,6 @@
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
    "conditional": true
   },
   {
@@ -8380,7 +8368,6 @@
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
    "conditional": true
   },
   {
@@ -8852,7 +8839,6 @@
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
    "conditional": true
   },
   {
@@ -8885,7 +8871,6 @@
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
    "conditional": true
   },
   {
@@ -9357,7 +9342,6 @@
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
    "conditional": true
   },
   {
@@ -9390,7 +9374,6 @@
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
    "conditional": true
   },
   {
