@@ -51,9 +51,10 @@ alternative protocol versions side by side. Started 2026-11-24 from `incoming/re
 - Simulation: `tools/simulate_protocols.py` + two venvs (Flex needs recent opentrons, OT-2 needs <=9.x; 8.8.2 works).
   It found the two bugs static checks missed: Flex tip boxes in C2/C3 collide with single-tip moves to B2/B3, and
   labware-type disagreements. `incoming/combinations_oracle_1008.json` is the user's real design-server payload.
-- OT-2 deck rule (user, 2026-11-25): the PF400 cannot place into slot 1 while slot 2 holds anything, so slot 2 stays
-  empty; slot 5 is fine. Only slot 3 is a tip slot the PF400 can reach, so it is last in the rack order and is
-  swapped from rack 2 mid-run. The Opentrons simulator cannot see this class of problem.
+- OT-2 deck rule (user, 2026-11-25/26): slots are ~6 mm apart and the PF400 gripper needs the space, so anything
+  in slot 2 blocks the arm from reaching slots 1 AND 3; slot 2 stays empty. Slot 5 is fine (user confirmed).
+  Slot 3 is therefore the only tip slot the PF400 can serve: it is last in the rack order and is swapped from
+  rack 2 mid-run. The Opentrons simulator cannot see this class of problem.
 - Flex tip layout is constrained: only A1/A2/A3 may hold tip boxes; spares wait in staging B4/C4/D4 and the gripper
   swaps them in (`flex_tips_swap.py`), dropping the empty box down the waste chute.
 - Each Opentrons run starts fresh tip tracking: in multi-round versions `full_run.py` counts tips (TipLedger) and

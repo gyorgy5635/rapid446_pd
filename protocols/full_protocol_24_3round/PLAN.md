@@ -59,8 +59,9 @@ rack 2 holds the controls plate in row 1 nest 1 and has 14 free nests for spares
 **OT-2** (numbered slots in brackets): C1 (4) and C3 (6) cold blocks, D1 (1) controls plate during the dilution
 only, A1 (10) reservoir, A3 (12) trash. 20 µL tips on C2, B1, B2, B3, A2 (5 fixed racks) and D3 (3).
 
-**D2 (2) must stay empty.** The PF400 cannot place into slot 1 while slot 2 is occupied, and the controls plate
-goes into slot 1 every round. Of the tip slots only D3 is reachable by the arm, so it is last in the rack order and
+**D2 (2) must stay empty.** The slots are about 6 mm apart, which leaves the PF400's gripper no room, so anything
+in slot 2 blocks the arm from reaching **both slot 1 and slot 3** - and this run uses slot 1 for the controls
+plate every round and slot 3 for the swappable tip box. Of the tip slots only D3 is reachable by the arm, so it is last in the rack order and
 is the one that gets swapped: when it runs out, `ot2_tip_swap.yaml` parks the spent box on `rack2_row2_nest1` and
 brings the full spare from `rack2_row1_nest2`. This is a physical constraint the Opentrons simulator cannot see —
 it simulated the old deck, with tips in slot 2, quite happily.
@@ -214,7 +215,7 @@ A position check is done on the robot in the Opentrons app, not from this repo. 
 imply, so it can be worked through in one sitting. "Protocols" is how many of this version's protocols load that
 slot, i.e. how much depends on getting it right.
 
-**OT-2** (slot 2 stays empty so the PF400 can reach slot 1):
+**OT-2** (slot 2 stays empty so the PF400 can reach slots 1 and 3):
 
 | Slot | Labware | Protocols | Why |
 |---|---|---|---|
