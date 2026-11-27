@@ -205,11 +205,21 @@ def main():
     # What each plate holds, carried from one run to the next: the dilution run has to see the PCR
     # products the PCR run put there. Keyed by tracked plate id, or by node:slot for a reservoir.
     world, seeded = {}, set()
+    # Tips already taken from each box when a run starts, so a page shows the box as it really is.
+    # Keyed by robot and deck slot; a fired swap puts a fresh box there and clears the record.
+    tip_world = defaultdict(list)
+    swap_before = defaultdict(list)
+    for site in report.get("swap_sites") or []:
+        if site.get("fired"):
+            swap_before[site.get("before_step")].append(site.get("deck_slot"))
 
     def identity(plate_id, node, coord):
         return plate_id or f"{node}:{coord}"
 
-    for run in sorted(report["runs"], key=lambda r: (r["round"], report["runs"].index(r))):
+    for run_index, run in enumerate(report["runs"]):
+        for slot in swap_before.get(run_index, []):
+            node_for = "ot2_patrick" if run["robot"] == "OT-2" else "otflex_sandy"
+            tip_world[f"{node_for}|{slot}"] = []        # fresh box in that slot
         if not run.get("ok"):
             continue
         stem = f"r{run['round']}_{Path(run['protocol']).stem}"
@@ -274,6 +284,7 @@ def main():
                 "comp0": {w: {r: round(v, 2) for r, v in c.items()}
                           for w, c in (before.get(key) or {}).items() if c},
                 "key": key, "slot": slot if slot == coord else f"{slot} ({coord})", "load_name": load_name,
+                "tips_before": list(tip_world[f"{node}|{slot}"]) if lw["is_tips"] else [],
                 "name": plate_names.get(plate_id) or (start or {}).get("label") or load_name,
                 "is_tips": lw["is_tips"], "tips": lw["tips"], "pickups": lw["pickups"],
                 "tip_wells": lw["tip_wells"],
@@ -289,6 +300,12 @@ def main():
             # means the run map shows no link for that step, which is the honest result.
             skipped += 1
             continue
+        for key, lw in state.items():
+            if lw["is_tips"]:
+                slot = key.split("|")[1]
+                seen = tip_world[f"{node}|{slot}"]
+                seen.extend(w for w in lw["tip_wells"] if w not in seen)
+
         commands = tl
         page = {"version": a.version, "round": run["round"], "protocol": run["protocol"],
                 "robot": run["robot"], "cards": cards, "commands": commands,

@@ -161,6 +161,7 @@ function shade(net, max) {
 // through 800 commands stays cheap.
 const cellOf = {};            // "labware|slot|well" -> SVG element
 const startOf = {};           // same key -> the reagent loaded by hand, if any
+const takenEarlier = {};      // same key -> this tip was used by an earlier run in the same box
 
 $("labware").innerHTML = RUN.cards.map(lw => {
   const pad = 7, cw = 7.4, ch = lw.rows === 1 ? 20 : 7.4;
@@ -172,15 +173,20 @@ $("labware").innerHTML = RUN.cards.map(lw => {
       const name = `${ROWS[r]}${c}`, cx = pad + (c - 0.5) * cw, cy = pad + 2 + (r + 0.5) * ch;
       const id = `${lw.key}|${name}`;
       if (lw.start[name]) startOf[id] = lw.start[name];
+      if ((lw.tips_before || []).includes(name)) takenEarlier[id] = true;
       svg += lw.rows === 1
         ? `<rect class="w" data-id="${id}" x="${cx - cw / 2 + 0.7}" y="${pad + 2}" width="${cw - 1.4}" height="${ch - 1.4}" rx="1.2"><title></title></rect>`
         : `<circle class="w" data-id="${id}" cx="${cx}" cy="${cy}" r="${cw / 2 - 0.9}"><title></title></circle>`;
     }
   }
-  const meta = lw.is_tips ? `${lw.tips} tips in ${lw.pickups} pick-ups`
-                          : `${Object.keys(lw.wells).length} wells touched over the run`;
+  const earlier = (lw.tips_before || []).length;
+  const meta = lw.is_tips
+    ? `${lw.tips} tips in ${lw.pickups} pick-ups` + (earlier ? `, ${earlier} already gone from this box` : "")
+      + `, ${96 - earlier - lw.tips} left`
+    : `${Object.keys(lw.wells).length} wells touched over the run`;
   const key = lw.is_tips
-    ? `<span><i style="background:var(--c0)"></i>tip used</span>`
+    ? `<span><i style="background:var(--c0)"></i>taken in this run</span>`
+      + (earlier ? `<span><i style="background:color-mix(in srgb, var(--c0) 35%, var(--slot))"></i>taken earlier</span>` : "")
     : `<span><i style="border:1px solid var(--warn);background:transparent"></i>in this command</span>`;
   return `<div class="lw">
     <h3>${esc(lw.name)}</h3>
@@ -265,8 +271,10 @@ function paint(step) {
     const lw = lwOf[lwKey], mix = comp[id] || {}, v = total(mix), start = startOf[id];
     let fill = "", title;
     if (lw && lw.is_tips) {
-      fill = tips[id] ? "var(--c0)" : "";
-      title = `${well} · ${tips[id] ? "tip used" : "tip in place"}`;
+      // dark: taken in this run · faint: taken by an earlier run from the same box · empty: still there
+      fill = tips[id] ? "var(--c0)" : takenEarlier[id] ? "color-mix(in srgb, var(--c0) 35%, var(--slot))" : "";
+      title = `${well} · ${tips[id] ? "taken in this run"
+        : takenEarlier[id] ? "taken by an earlier run" : "tip in place"}`;
     } else if (v > 0.001) {
       // colour says what is in the well, depth of colour says how much
       const [top] = dominant(mix);
