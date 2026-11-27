@@ -164,8 +164,12 @@ boxes updating as the liquid moves and the current command highlighted in amber.
 Home and End work as in the run map, and `#step-42` links to one command. The page opens on the
 finished state; pressing Play rewinds to the start.
 
-The run map links to them: a protocol step's "Protocol" line gets a **liquid handling →** link when
-the page exists, so a run that has not been simulated simply shows no link. Volumes are what the
+`viz/liquid/index.html` lists every run with a link, and carries the run-wide summary: each tip box with
+how many tips were taken, how many boxes it got through, how many a swapped box left behind, whether any
+tip would be picked up twice, and the reagent drawn from each reservoir well.
+
+The run map links to both: the header links to the index, and a protocol step's "Protocol" line gets a
+**liquid handling →** link when the page exists, so a run that has not been simulated simply shows no link. Volumes are what the
 protocol asks for, netted from the simulated commands — the simulator does not track what is really
 in a well.
 

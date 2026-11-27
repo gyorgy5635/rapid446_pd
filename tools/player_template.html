@@ -698,6 +698,10 @@ function buildStatic() {
     [m.flex_gripper_moves, "Flex gripper moves"], [fmtDur(m.estimated_total_s), TIMING ? `run time · ${Math.round(100 * TIMING.measured_steps / N)}% measured` : "est. run time"],
   ].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
   $("stepTot").textContent = N;
+  if (LIQUID && LIQUID.length) {
+    $("srcName").insertAdjacentHTML("afterend",
+      ` · <a href="liquid/index.html">liquid handling (${LIQUID.length} runs)</a>`);
+  }
   if (ROUNDS > 1) { $("roundBox").hidden = false; $("roundTot").textContent = ROUNDS; }
   if (EV.meta.title) $("pageHead").textContent = EV.meta.title;
   if (TIMING) $("clockLabel").textContent = "";

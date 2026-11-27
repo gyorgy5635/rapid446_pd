@@ -18,6 +18,7 @@ from collections import defaultdict
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+TIPS_PER_BOX = 96
 ROWS = "ABCDEFGH"
 
 # The simulator numbers OT-2 slots 1-11; deck.json and contents.json use coordinates like the Flex.
@@ -173,6 +174,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--version", required=True)
     ap.add_argument("--template", type=Path, default=REPO / "tools" / "liquid_template.html")
+    ap.add_argument("--index-template", type=Path, default=REPO / "tools" / "liquid_index_template.html")
     a = ap.parse_args()
 
     base = REPO / "protocols" / a.version
@@ -317,11 +319,54 @@ def main():
                                 json.dumps(page, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/"))
         (out_dir / f"{stem}.html").write_text(html)
         index.append({"key": stem, "round": run["round"], "protocol": run["protocol"],
-                      "robot": run["robot"], "tips": page["counts"]["tips"]})
+                      "robot": run["robot"], "tips": page["counts"]["tips"],
+                      "commands": page["counts"]["commands"], "wells": page["counts"]["wells"]})
         written += 1
 
+    # one page listing every run, with the tip boxes and reagents for the run as a whole
+    audit = report.get("tip_audit") or {"boxes": [], "reused": []}
+    labware_of = {}
+    for run in report["runs"]:
+        for box in (run.get("tip_boxes") or {}):
+            name, _, slot = box.rpartition(" on ")
+            labware_of[slot] = name
+    swaps = []
+    for site in report.get("swap_sites") or []:
+        if not site.get("fired"):
+            continue
+        after = report["runs"][site["before_step"]] if site.get("before_step", -1) < len(report["runs"]) else {}
+        swaps.append({"slot": site.get("deck_slot"), "round": after.get("round", site["round"]),
+                      "protocol": after.get("protocol", "")})
+    reservoirs = []
+    for key, ul in sorted((report.get("summary") or {}).get("reservoir_uses", {}).items()):
+        robot, slot, well = key.split(" | ")
+        if ul:
+            reservoirs.append({"robot": robot, "slot": slot, "well": well, "ul": ul})
+    index_page = {
+        "version": a.version, "counts": report.get("counts", {}),
+        "runs": index, "reservoirs": reservoirs, "swaps": swaps,
+        "reused": audit.get("reused", []),
+        "tips": [],
+    }
+    taken_per_slot = defaultdict(int)
+    for box, n in ((report.get("summary") or {}).get("tips_per_slot") or {}).items():
+        taken_per_slot[box.rpartition(" on ")[2]] += n
+    for b in audit.get("boxes", []):
+        taken = taken_per_slot.get(b["slot"], b["tips_used_in_current_box"])
+        # a box is swapped when the next step will not fit, so it can leave with tips still in it
+        wasted = (b["boxes_used"] - 1) * TIPS_PER_BOX - (taken - b["tips_used_in_current_box"])
+        index_page["tips"].append({
+            "slot": b["slot"], "labware": labware_of.get(b["slot"], "tip rack"),
+            "boxes_used": b["boxes_used"], "taken": taken,
+            "used": b["tips_used_in_current_box"], "left": b["tips_left_in_current_box"],
+            "wasted": max(0, wasted)})
+    index_page["total_tips"] = sum(taken_per_slot.values())
+
+    html = a.index_template.read_text().replace(
+        "/*__INDEX__*/null", json.dumps(index_page, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/"))
+    (out_dir / "index.html").write_text(html)
     (out_dir / "index.json").write_text(json.dumps(index, indent=1))
-    print(f"wrote {written} liquid pages to {out_dir}"
+    print(f"wrote {written} liquid pages and an index to {out_dir}"
           + (f" ({skipped} run(s) handle no liquid and get no page)" if skipped else ""))
     if expected:
         print(f"  {expected} air draw(s) from wells contents.json expects to be empty")

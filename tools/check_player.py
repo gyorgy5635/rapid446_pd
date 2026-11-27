@@ -94,7 +94,9 @@ def main():
             print(f"       {p}")
         if a.liquid:
             pages = sorted((base / "viz" / "liquid").glob("*.html"))
-            bad = [(p.name, run_page(p.read_text(), {"labware": "the labware maps", "rows": "the command table"}))
+            panels = {"index.html": {"tips": "the tip box table", "runs": "the run list"}}
+            bad = [(p.name, run_page(p.read_text(),
+                                     panels.get(p.name, {"labware": "the labware maps", "rows": "the command table"})))
                    for p in pages]
             bad = [(n, pr) for n, pr in bad if pr]
             failures += bool(bad)

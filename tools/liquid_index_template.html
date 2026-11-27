@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liquid handling index</title>
+<style>
+:root {
+  --bg: #11131a; --panel: #181b24; --ink: #e8eaf0; --muted: #959cb0; --line: #2a2f3d; --slot: #1f2430;
+  --accent: #6ea8fe; --accent-soft: #1b2a44; --warn: #f0b429; --bad: #e86a8a; --good: #7ee3a8;
+  --f-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f6f7fb; --panel: #ffffff; --ink: #1b1f2a; --muted: #5d6478; --line: #dde1ea; --slot: #eef1f7;
+    --accent: #2563eb; --accent-soft: #e3ecfd; --bad: #c2334d; --good: #1b7f4b;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 20px 16px 48px; background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 14px; line-height: 1.45; }
+.wrap { max-width: 1100px; margin: 0 auto; display: grid; gap: 16px; }
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+h1 { font-size: 1.4rem; margin: 0; }
+.sub { color: var(--muted); font-size: 0.85rem; }
+a { color: var(--accent); }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 20px; font-variant-numeric: tabular-nums; }
+.stats div { display: grid; }
+.stats b { font-size: 1.2rem; font-weight: 600; }
+.stats span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+  min-width: 0; overflow: hidden; }
+h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 0 0 10px; }
+.hint { color: var(--muted); font-size: 0.8rem; margin: 0 0 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+th { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.05em; padding: 4px 8px; border-bottom: 1px solid var(--line); }
+td { padding: 5px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+td.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.round-start td { border-top: 2px solid var(--line); }
+.bar { display: inline-block; vertical-align: -1px; width: 86px; height: 9px; border-radius: 3px;
+  background: var(--slot); border: 1px solid var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); }
+.verdict { font-weight: 600; }
+.verdict.ok { color: var(--good); }
+.verdict.bad { color: var(--bad); }
+.tag { font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 id="title">Liquid handling</h1>
+      <div class="sub" id="sub"></div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <section class="card">
+    <h2>Tip boxes</h2>
+    <p class="hint" id="tipHint"></p>
+    <table>
+      <thead><tr><th>Slot</th><th>Tip rack</th><th>Boxes</th><th>Tips taken</th><th>Current box</th><th></th><th>Left in it</th></tr></thead>
+      <tbody id="tips"></tbody>
+    </table>
+    <p class="hint" id="swaps" style="margin:10px 0 0"></p>
+  </section>
+
+  <section class="card">
+    <h2>Reagent drawn from the reservoirs</h2>
+    <table>
+      <thead><tr><th>Robot</th><th>Slot</th><th>Well</th><th>Total</th></tr></thead>
+      <tbody id="reservoirs"></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Protocol runs</h2>
+    <p class="hint">In the order the script submits them. Each page replays its run and shows the labware it
+      touches. Runs that handle no liquid, such as setting a temperature or swapping a tip box, have no page.</p>
+    <table>
+      <thead><tr><th>Round</th><th>Protocol</th><th>Robot</th><th>Commands</th><th>Tips</th><th>Wells</th></tr></thead>
+      <tbody id="runs"></tbody>
+    </table>
+  </section>
+</div>
+
+<script>
+const IX = /*__INDEX__*/null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+document.title = `${IX.version} · liquid handling`;
+$("title").textContent = "Liquid handling";
+$("sub").innerHTML = `${esc(IX.version)} · ${IX.counts.combinations} combinations in ${IX.counts.columns} columns · `
+  + `<a href="../pd_run_map.html">back to the run map</a>`;
+$("stats").innerHTML = [
+  [IX.runs.length, "runs with a page"],
+  [IX.total_tips, "tips used"],
+  [IX.tips.reduce((a, b) => a + b.boxes_used, 0), "tip boxes"],
+].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
+
+const reused = IX.reused || [];
+$("tipHint").innerHTML = reused.length
+  ? `<span class="verdict bad">${reused.length} tip(s) would be picked up twice</span> — `
+    + reused.slice(0, 3).map(r => `slot ${esc(r.slot)} ${esc(r.well)}`).join(", ")
+  : `<span class="verdict ok">No tip is picked up twice.</span> Every run starts where the counter says, and no two `
+    + `runs reach for the same tip. A slot's count starts again when the gripper or the arm swaps a fresh box in.`;
+
+$("tips").innerHTML = IX.tips.map(t => {
+  const pct = Math.round(100 * t.used / 96);
+  return `<tr><td class="n">${esc(t.slot)}</td><td>${esc(t.labware)}</td>`
+    + `<td class="n">${t.boxes_used}${t.wasted ? ` <span class="tag">${t.wasted} left behind</span>` : ""}</td>`
+    + `<td class="n">${t.taken}</td><td class="n">${t.used} of 96</td>`
+    + `<td><span class="bar"><i style="width:${pct}%"></i></span></td>`
+    + `<td class="n">${t.left}${t.left === 0 ? " <span class='tag'>empty</span>" : ""}</td></tr>`;
+}).join("");
+
+$("swaps").innerHTML = (IX.swaps.length
+  ? "Boxes swapped during the run: " + IX.swaps.map(s =>
+      `slot ${esc(s.slot)} before round ${s.round} ${esc(s.protocol.replace(/\.py$/, ""))}`).join("; ") + ". "
+  : "No box is swapped during the run. ")
+  + (IX.tips.some(t => t.wasted)
+      ? "A box is swapped as soon as the next step will not fit in what is left, so it can go out with tips still "
+        + "in it: " + IX.tips.filter(t => t.wasted).map(t => `${t.wasted} on slot ${esc(t.slot)}`).join(", ") + "."
+      : "");
+
+$("reservoirs").innerHTML = IX.reservoirs.map(r =>
+  `<tr><td>${esc(r.robot)}</td><td class="n">${esc(r.slot)}</td><td class="n">${esc(r.well)}</td>`
+  + `<td class="n">${(r.ul / 1000).toFixed(2)} mL</td></tr>`).join("");
+
+let last = null;
+$("runs").innerHTML = IX.runs.map(r => {
+  const first = r.round !== last;
+  last = r.round;
+  return `<tr class="${first ? "round-start" : ""}"><td class="n">${r.round}</td>`
+    + `<td><a href="${esc(r.key)}.html">${esc(r.protocol.replace(/\.py$/, ""))}</a></td>`
+    + `<td>${esc(r.robot)}</td><td class="n">${r.commands}</td><td class="n">${r.tips}</td>`
+    + `<td class="n">${r.wells}</td></tr>`;
+}).join("");
+</script>
+</body>
+</html>
