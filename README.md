@@ -173,6 +173,37 @@ The run map links to both: the header links to the index, and a protocol step's 
 protocol asks for, netted from the simulated commands — the simulator does not track what is really
 in a well.
 
+## Tip accounting
+Each Opentrons run starts its own tip tracking, so nothing in a protocol knows what an earlier run
+used. The counter that does know is `TipLedger` in `protocols/<version>/protocol/src/helper_functions.py`,
+with one instance per tip type in `full_run.py` (OT-2 20 µL, Flex 200 µL, Flex 50 µL 8-channel, Flex
+50 µL single). Before each protocol run the script asks it:
+
+- `needs_swap(n)` — is there room for this step, or does a box have to be replaced first?
+- `take(n)` — reserve n columns and return the first unused one, which is substituted into the
+  protocol as `$ot2_tip_start`, `$flex50_tip_start` and so on.
+
+So the ledger decides where every run starts picking up tips, and prints what it used at the end of
+the run. It is Python, not a page.
+
+Where the result shows up:
+
+| | |
+|---|---|
+| `viz/liquid/index.html` | per slot: boxes used, tips taken, the current box, what a swapped box left behind, and where the swaps happen |
+| `viz/liquid/r*_*.html` | that run's boxes well by well: taken in this run, taken earlier, still there |
+| `viz/simulated/report.json` | the same under `tip_audit`, plus `summary.tips_per_slot` |
+| `viz/pd_run_map.html` | tip boxes only as labware being carried about |
+
+The ledger decides, the simulator records what the robot would really pick up, and
+`tools/simulate_protocols.py` compares the two: it expands every pick-up into the wells it takes and
+**fails if any physical tip would be picked up twice**. That is the check worth running after
+changing how a protocol uses tips.
+
+**If you change a protocol's tip usage, change it in two places.** `full_run.py` holds the real
+counter and `tools/simulate_protocols.py` mirrors it so the simulation can reproduce the same
+starting positions. They have to agree, and nothing enforces it except the audit failing.
+
 ## Checking a built page
 Parsing a page only proves it is syntactically valid. `tools/check_player.py` runs the built
 JavaScript against a stub DOM, so a runtime error during start-up - which in a browser leaves a
