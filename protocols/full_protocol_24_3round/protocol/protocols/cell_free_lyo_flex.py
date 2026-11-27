@@ -97,7 +97,10 @@ def run(protocol: protocol_api.ProtocolContext):
         p50.aspirate(config['water_volume'], water)
         p50.dispense(config['water_volume'], dest.top(-1))
         p50.blow_out(dest.top(-1))
-    p50.drop_tip()
+    # These tips are kept, not dropped: they have been in the water and above the wells only, never
+    # touching the cake, so they are clean enough to carry on into the first template column. That
+    # saves one tip column per round, which is what makes the 50 uL box last two rounds instead of
+    # one and a half (see PLAN.md).
 
     if config['rehydrate_minutes']:
         protocol.delay(minutes=config['rehydrate_minutes'])
@@ -109,10 +112,12 @@ def run(protocol: protocol_api.ProtocolContext):
         src = diluted_plate.columns()[col][0]
         dest = cfps_plate.columns()[col][0]
         protocol.comment(f"Column {col + 1}: {config['template_volume']} uL diluted PCR into rehydrated cell-free")
-        p50.pick_up_tip()
+        if col:
+            p50.pick_up_tip()        # column 1 carries on with the water tips
         p50.mix(pre_reps, pre_vol, src.bottom(2))
         p50.aspirate(config['template_volume'], src.bottom(1))
         p50.dispense(config['template_volume'], dest.bottom(1))
         p50.mix(reps, vol, dest.bottom(1), rate=config['final_mix_rate'])
         p50.drop_tip()
-    # tip columns used: 1 (water) + reaction_columns -- must match full_run.py
+    # tip columns used: reaction_columns, because the water tips carry on into the first
+    # column -- must match full_run.py

@@ -5,13 +5,13 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24_20261124",
   "script_url": null,
-  "generated": "2026-11-27T13:12:09",
+  "generated": "2026-11-27T14:57:47",
   "workflow_calls": 191,
   "steps": 392,
   "pf400_moves": 235,
   "flex_gripper_moves": 56,
   "resource_bookkeeping_calls_ignored": 50,
-  "conditional_steps": 42,
+  "conditional_steps": 43,
   "swaps_from_simulation": true,
   "estimated_total_s": 124605
  },
@@ -7741,7 +7741,7 @@
    "line": 465,
    "kind": "protocol",
    "mover": "otflex_sandy",
-   "detail": "flex_tips_swap.py",
+   "detail": "flex_tips_swap.py (only if needed)",
    "duration_s": 600,
    "duration_source": "estimate",
    "node": "otflex_sandy",
@@ -7756,7 +7756,8 @@
     "B1": "p4",
     "C1": "p12",
     "B2": "p13"
-   }
+   },
+   "conditional": true
   },
   {
    "i": 224,
@@ -8153,7 +8154,7 @@
    "line": 465,
    "kind": "protocol",
    "mover": "otflex_sandy",
-   "detail": "flex_tips_swap.py (only if needed)",
+   "detail": "flex_tips_swap.py",
    "duration_s": 600,
    "duration_source": "estimate",
    "node": "otflex_sandy",
@@ -8168,8 +8169,7 @@
     "B1": "p4",
     "B3": "p14",
     "B2": "p13"
-   },
-   "conditional": true
+   }
   },
   {
    "i": 247,
@@ -9898,7 +9898,7 @@
    "line": 465,
    "kind": "protocol",
    "mover": "otflex_sandy",
-   "detail": "flex_tips_swap.py",
+   "detail": "flex_tips_swap.py (only if needed)",
    "duration_s": 600,
    "duration_source": "estimate",
    "node": "otflex_sandy",
@@ -9913,7 +9913,8 @@
     "B1": "p4",
     "C1": "p17",
     "B2": "p18"
-   }
+   },
+   "conditional": true
   },
   {
    "i": 351,

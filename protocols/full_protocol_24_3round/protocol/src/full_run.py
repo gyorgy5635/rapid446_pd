@@ -783,10 +783,10 @@ class PDApp(ExperimentScript,): # TODO
             self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
 
             # 24 uL water into columns 1-4 (one tip column), then per column: mix diluted PCR, add 6 uL, mix 5 x 20 uL slowly
-            if tips["flex_50"].needs_swap(n_cols + 2):
+            if tips["flex_50"].needs_swap(n_cols + 1):
                 swap_tip_box(tips["flex_50"])
 
-            payload["tip_starts"] = {"flex50_tip_start": tips["flex_50"].take(n_cols + 2)}
+            payload["tip_starts"] = {"flex50_tip_start": tips["flex_50"].take(n_cols + 1)}
             ot2_replacement_variables = helper_functions.collect_ot2_replacement_variables(payload)
             temp_ot2_file_str = helper_functions.generate_ot2_protocol(cfps_lyo_flex_protocol, ot2_replacement_variables)
             payload["current_flex_protocol"] = temp_ot2_file_str

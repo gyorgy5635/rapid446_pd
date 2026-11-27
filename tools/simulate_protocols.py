@@ -141,9 +141,9 @@ def plan(app: Path, payload_base):
         if site(rnd, "ot2_20", n_cols + 2):
             tips["ot2_20"].swap()
         step(rnd, "pd_dilute_1to50_ot2.py", base, ot2_tip_start=tips["ot2_20"].take(n_cols + 2))
-        if site(rnd, "flex_50", n_cols + 2):
+        if site(rnd, "flex_50", n_cols + 1):
             swap(rnd, base, tips["flex_50"])
-        step(rnd, "cell_free_lyo_flex.py", base, flex50_tip_start=tips["flex_50"].take(n_cols + 2))
+        step(rnd, "cell_free_lyo_flex.py", base, flex50_tip_start=tips["flex_50"].take(n_cols + 1))
         if site(rnd, "flex_200", 1):
             swap(rnd, base, tips["flex_200"])
         if site(rnd, "flex_50", n_cols + 1):
