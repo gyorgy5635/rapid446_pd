@@ -212,6 +212,25 @@ command as part of the mix, so the real transfer after a `mix_before` was droppe
 totals were unaffected, but per-well volumes were: the PCR master mix never appeared in the PCR
 plate. Commands are now matched by nesting level in both the report and the pages.
 
+### Single-tip pick-ups and what may sit below
+
+`pd_fdglu_flex_v2.py` is the only protocol that takes **single** tips with the 8-channel pipette: 3 for the RMF
+removal and 3 for the controls, 6 per round and 18 of a box of 96 over the run. They come from their own box on
+**A3**; everything else on the Flex takes whole columns.
+
+With one nozzle configured, the pipette body overhangs the slot **in front** of wherever it is reaching, so a tall
+object there is a collision. The rule is about height, not occupancy: a **tip rack** below is fatal, a **plate** is
+fine. Proved with the simulator - put a tip rack on B3, directly in front of the A3 box, and the FDGlu run fails
+with `PartialTipMovementNotAllowedError ... in slot A3 ... collision with items in deck slot B3`; with the FDGlu
+assay plate there instead, which is what the run actually has, it passes.
+
+The current deck already complies. The only tall items are the tip racks on A1, A2 and A3, and the slots in front
+of them hold a cold block, the cell-free plate and the assay plate. This is the same rule that forced the spare
+50 µL boxes off C2 and C3 earlier: C2 sits in front of B2, which the single-tip steps reach into.
+
+**So keep A1-A3 as the only tip positions on the Flex.** Any new box on B-, C- or D-row breaks a single-tip step
+in front of it, and the simulator is what catches it.
+
 ## Labware position check: what to calibrate
 
 A position check is done on the robot in the Opentrons app, not from this repo. This is the list the protocols

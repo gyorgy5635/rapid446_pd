@@ -121,7 +121,9 @@ def plan(app: Path, payload_base):
     def site(rnd, name, needed):
         i = site_no[rnd] = site_no.get(rnd, -1) + 1
         fired = bool(tips[name].needs_swap(needed))
-        sites.append({"round": rnd, "index": i, "ledger": name, "fired": fired})
+        sites.append({"round": rnd, "index": i, "ledger": name, "fired": fired,
+                      # a fired swap puts a fresh box in this deck slot, before the step that follows
+                      "deck_slot": tips[name].deck_slot or "3", "before_step": len(steps)})
         return fired
 
     for rnd in (1, 2, 3):
@@ -152,6 +154,53 @@ def plan(app: Path, payload_base):
              flex50_single_start=tips["flex_50_single"].take(6))
     return steps, hf, {"combinations": n_combos, "columns": n_cols, "fragment_transfers": n_sources,
                        "swap_sites": sites}
+
+
+def audit_tips(runs, sites, out_dir):
+    """Has any physical tip been picked up twice?
+
+    The tip counter decides where each run should start; this checks what the robot would actually
+    do with those numbers. Every pick-up is expanded to the wells it takes, per deck slot, and a
+    well seen twice means two runs would reach for the same tip. A fired swap puts a fresh box in
+    that slot, so its record starts again there.
+    """
+    fresh = defaultdict(list)       # index in the run order -> deck slots that get a fresh box
+    for site in sites:
+        if site["fired"]:
+            fresh[site["before_step"]].append(site["deck_slot"])
+    used, reused, boxes = defaultdict(dict), [], defaultdict(int)
+    for i, run in enumerate(runs):
+        for slot in fresh.get(i, []):
+            used[slot].clear()
+            boxes[slot] += 1
+        log_path = out_dir / f"r{run['round']}_{Path(run['protocol']).stem}.log.json"
+        if not run.get("ok") or not log_path.exists():
+            continue
+        active = {}
+        for cmd in json.loads(log_path.read_text()):
+            if cmd["kind"] == "configure":
+                style = (cmd["style"] or "").upper()
+                active[cmd["mount"]] = 1 if "SINGLE" in style else 8 if "COLUMN" in style else (cmd["channels"] or 1)
+                continue
+            if cmd["kind"] != "pick_up_tip":
+                continue
+            n = active.get(cmd["mount"], cmd["channels"] or 1)
+            where = f"round {run['round']} {run['protocol']}"
+            for w in well_list(cmd["well"], n):
+                if w in used[cmd["slot"]]:
+                    reused.append({"slot": cmd["slot"], "well": w,
+                                   "first": used[cmd["slot"]][w], "again": where})
+                used[cmd["slot"]][w] = where
+    status = [{"slot": slot, "boxes_used": boxes[slot] + 1, "tips_used_in_current_box": len(wells),
+               "tips_left_in_current_box": TIPS_PER_BOX - len(wells)}
+              for slot, wells in sorted(used.items(), key=lambda kv: (len(kv[0]), kv[0]))]
+    return {"reused": reused, "boxes": status}
+
+
+def well_list(well, channels):
+    """The tip wells one pick-up takes: an 8-channel pick-up takes a whole column."""
+    row, col = well[0], well[1:]
+    return [f"{r}{col}" for r in "ABCDEFGH"[:channels]] if channels and channels > 1 and row == "A" else [well]
 
 
 def tally(log):
@@ -268,12 +317,25 @@ def main():
         print(f"{'ok  ' if ok else 'FAIL'} round {rnd} {name:28s}{extra}"
               f"{'' if ok else chr(10) + '     ' + row['error']}", flush=True)
 
-    summary = summarise(results)
     sites = counts.pop("swap_sites", [])
+    audit = audit_tips(results, sites, out)
+    summary = summarise(results)
     report = {"version": a.version, "combinations_file": str(a.combinations), "counts": counts,
-              "swap_sites": sites,
+              "swap_sites": sites, "tip_audit": audit,
               "summary": summary, "runs": results}
     (out / "report.json").write_text(json.dumps(report, indent=1))
+
+    print("\nTip boxes at the end of the run (a swap starts a slot's count again):")
+    for b in audit["boxes"]:
+        print(f"  slot {b['slot']:<3} {b['tips_used_in_current_box']:3d} of {TIPS_PER_BOX} tips used"
+              f"{' in box ' + str(b['boxes_used']) if b['boxes_used'] > 1 else ''}"
+              f", {b['tips_left_in_current_box']} left")
+    if audit["reused"]:
+        print(f"  TIP REUSED: {len(audit['reused'])} tip(s) would be picked up twice:")
+        for x in audit["reused"][:5]:
+            print(f"    slot {x['slot']} well {x['well']}: {x['first']}, then {x['again']}")
+    else:
+        print("  no tip is picked up twice: the counter's starting positions do not overlap")
 
     print("\nTips for the whole run (a slot is refilled when the gripper swaps a box in):")
     for slot, n in sorted(summary["tips_per_slot"].items()):
@@ -288,7 +350,7 @@ def main():
         print(f"\nFullest well in any single run: {fullest['dispensed']} uL into {fullest['well']} of "
               f"{fullest['labware']} (capacity {CAPACITY.get(fullest['labware'], '?')} uL)")
     print(f"\n{len(results) - failures}/{len(results)} simulated. Report: {out / 'report.json'}")
-    return 1 if failures else 0
+    return 1 if failures or audit["reused"] else 0
 
 
 def summarise(results):
