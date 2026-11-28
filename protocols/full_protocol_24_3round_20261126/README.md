@@ -4,10 +4,16 @@ A frozen copy of the 3-round protein design run, taken on 2026-11-26 so that fur
 built without disturbing it. `protocol/` is byte-identical to `full_protocol_24_3round` as it stood
 that day, and the run map matches it step for step.
 
-It was refreshed once on the same day, to take in the change that keeps the controls plate cold:
-the first version of this snapshot left that plate on a room-temperature nest, which is not a
-design worth preserving, because the plate holds PCR products and protein that keep better cold,
-and it is unsealed, so it would dry out.
+It has been refreshed twice since, each time to take in a change worth keeping rather than to
+record a design that had been superseded:
+
+- **Controls kept cold** (2026-11-26). The first version left that plate on a room-temperature
+  nest. It holds PCR products and protein that keep better cold, and it is unsealed, so it would
+  dry out; it now lives on the Flex cold block.
+- **Cell-free water tips reused** (2026-11-27). The water step dispenses from above the wells and
+  never touches the cake, so its tips are clean and now carry on into the first template column.
+  That takes the step from 5 tip columns to 4, which fits 24 columns into exactly two 50 µL boxes:
+  one gripper swap instead of two, and none of the 48 tips that used to go out in part-full boxes.
 
 **Status: draft. No part of this has been run on the robots.** It has been checked by simulation
 and by the run map; see "What has been checked" below.

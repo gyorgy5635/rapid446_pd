@@ -86,12 +86,17 @@ Counted by the simulator over the whole 3-round run (24 combinations), not estim
 |---|---|---|---|---|
 | OT-2 20 µL | 208 tips (GG 120, PCR 48, dilution 40) | 624 tips | 5 fixed racks (480) + 2 boxes in slot 3 | 48 tips |
 | Flex 200 µL (A1) | 32 tips (PCR mix 24, FDGlu 8) | 96 tips | exactly 1 box; spare on D4 unused | 0 |
-| Flex 50 µL 8-channel (A2) | 72 tips (cell-free 40, FDGlu 32) | 216 tips | 1 on deck + 2 spares, 2 gripper swaps | 72 tips |
+| Flex 50 µL 8-channel (A2) | 64 tips (cell-free 32, FDGlu 32) | 192 tips | 1 on deck + 1 spare, 1 gripper swap | 0, exactly 2 boxes |
 | Flex 50 µL single (A3) | 6 tips (FDGlu) | 18 tips | 1 box | 78 tips |
 
 The OT-2 needs **one** PF400 tip-box swap, in round 3 before the PCR step: the five fixed racks and the first
-slot-3 box cover 576 tips, and the run needs 624. On the Flex the 8-channel 50 µL box is swapped twice by the
-gripper (rounds 2 and 3). The 200 µL box comes out exactly full at 96 tips, so the D4 spare is there for the case
+slot-3 box cover 576 tips, and the run needs 624. On the Flex the 8-channel 50 µL box is swapped **once**, before
+the cell-free step of round 2.
+
+The cell-free step takes 4 tip columns, not 5, because the water tips are kept rather than dropped: they go into
+the water and dispense from above the wells, never touching the cake, so they carry on into the first template
+column. That one column per round is what makes 24 columns land on exactly two boxes. Before it, the step needed
+5 columns, the box ran short at every round boundary and went out with 24 tips still in it, twice. The 200 µL box comes out exactly full at 96 tips, so the D4 spare is there for the case
 where a round has more combinations.
 
 Swaps are decided at run time by the tip counter, which the run map cannot evaluate on its own. The simulation
