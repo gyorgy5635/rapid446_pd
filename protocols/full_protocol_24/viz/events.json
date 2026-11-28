@@ -5,7 +5,7 @@
   "source": "AD-SDL/rapid446_applications @ PD_full_loop @ e4bc261",
   "derived_from": null,
   "script_url": "https://github.com/AD-SDL/rapid446_applications/blob/e4bc261ada888ceb50e51382e10a597b55978cac/Protein_Design/full_protocol_24/src/full_run.py",
-  "generated": "2026-11-27T21:55:59",
+  "generated": "2026-11-27T21:59:38",
   "workflow_calls": 73,
   "steps": 135,
   "pf400_moves": 75,

@@ -30,9 +30,10 @@ config = {
     'pcr_master_mix_well_volume': 100,
     'water_volume': 20,
     'pcr_master_mix_volume': 24,
-    # Viscous master mix: the default for this pipette is 716 uL/s, which is far too brisk for it.
-    # A proposal, not a measured value.
-    'master_mix_flow_rate': 150,  # µL/s, aspirate and dispense
+    # Viscous master mix: drawn and laid down at a quarter of the pipette's normal rate. Taken as a
+    # fraction rather than a number so it stays right whatever tip is in use: the default for this
+    # pipette on 200 uL tips is 716 uL/s, so this gives 179.
+    'master_mix_flow_fraction': 0.25,
     'water_well': 1,
     # 3-round run: PCR master mix in column 10/11/12 for round 1/2/3 (row A well index 72/80/88), set by full_run.py
     'master_mix_start_well': int("$pcr_mm_start_well"),
@@ -114,8 +115,10 @@ def master_mix_to_pcr_plate(protocol, source_plate, pcr_plate, pipette, config):
 # #######################
     # One tip column for the whole distribution: the PCR plate is empty until the OT-2 adds water
     # and Golden Gate product later, and every column gets the same mix from the same well.
-    pipette.flow_rate.aspirate = config['master_mix_flow_rate']
-    pipette.flow_rate.dispense = config['master_mix_flow_rate']
+    slow = config['master_mix_flow_fraction']
+    pipette.flow_rate.aspirate = pipette.flow_rate.aspirate * slow
+    pipette.flow_rate.dispense = pipette.flow_rate.dispense * slow
+    protocol.comment(f"Master mix at {pipette.flow_rate.aspirate:.1f} uL/s, a quarter of normal")
     pipette.pick_up_tip()
     for col_idx in range(columns_needed):
         if remaining_dispenses == 0:

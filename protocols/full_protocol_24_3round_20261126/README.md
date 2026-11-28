@@ -17,7 +17,8 @@ record a design that had been superseded:
 - **One tip column per master mix, laid down slowly** (2026-11-27). Golden Gate and the Flex PCR
   step each used a fresh tip column per destination column; the destinations are empty at that
   point and all take the same mix from the same well, so one column now serves all three. Both are
-  also slowed, 3 µL/s on the OT-2 and 150 µL/s on the Flex, because the mixes are viscous. Tips
+  also slowed to a quarter of the pipette's normal rate, 1.9 µL/s on the OT-2 and 179 µL/s on the
+  Flex, because both mixes are highly viscous. Tips
   over the run fall to 834 and the OT-2 needs no tip-box swap at all.
 
 **Status: draft. No part of this has been run on the robots.** It has been checked by simulation

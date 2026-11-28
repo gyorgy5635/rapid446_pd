@@ -61,9 +61,10 @@ config = {
 
     # Master mix settings
     'master_mix_volume': 12,  # µL per destination well
-    # The master mix is viscous, so it is drawn and laid down slowly. The default for this pipette
-    # is 7.6 uL/s; this is a proposal, not a measured value.
-    'master_mix_flow_rate': 3,  # µL/s, aspirate and dispense
+    # The master mix is viscous, so it is drawn and laid down at a quarter of the pipette's normal
+    # rate. Taken as a fraction rather than a number so it stays right whatever tip is in use: the
+    # default here is 7.6 uL/s, so this gives 1.9.
+    'master_mix_flow_fraction': 0.25,
     'master_mix_well_volume': 100,  # µL per master mix well
     'master_mix_start_well': 64,  # 0-indexed well number: column 9 (A9) holds GG mix for all 3 rounds (3x volume)
 
@@ -285,8 +286,10 @@ def add_master_mix_to_combinations(protocol, source_plate, dest_plate, pipette, 
     # One tip column for the whole distribution: every destination column is empty at this point
     # and they all receive the same master mix from the same well, so a fresh tip per column buys
     # nothing. The fragments go in afterwards, with a fresh tip each, where it does matter.
-    pipette.flow_rate.aspirate = config['master_mix_flow_rate']
-    pipette.flow_rate.dispense = config['master_mix_flow_rate']
+    slow = config['master_mix_flow_fraction']
+    pipette.flow_rate.aspirate = pipette.flow_rate.aspirate * slow
+    pipette.flow_rate.dispense = pipette.flow_rate.dispense * slow
+    protocol.comment(f"Master mix at {pipette.flow_rate.aspirate:.1f} uL/s, a quarter of normal")
     pipette.pick_up_tip()
     for dest_well in range(columns_needed):
         dest = dest_plate.columns()[dest_well]
