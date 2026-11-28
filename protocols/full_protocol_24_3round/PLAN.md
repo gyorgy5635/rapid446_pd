@@ -98,7 +98,10 @@ when it goes in and they all get the same mix from the same well, so a fresh tip
 fragments, where it does matter, still get a fresh tip each. That saved 2 columns a round on the OT-2 and 2 on the
 Flex 200 µL, which is what removed the OT-2 swap. Both master mixes are also drawn and laid down slowly - 3 µL/s
 on the OT-2 and 150 µL/s on the Flex, against defaults of 7.6 and 716 - because they are viscous. Those two rates
-are proposals in the protocols' config, not measured values.
+are proposals in the protocols' config, not measured values. The defaults they replace are the Opentrons ones for
+those pipettes with those tips: 7.6 µL/s for the OT-2 p20 8-channel, and 716 µL/s for the Flex p1000 8-channel on
+200 µL tips (478 on 50 µL tips). The Flex figure is not a mistake - it is what the vendor ships, and the runs so
+far have used it - so slowing it is a precaution for a viscous mix, not a fix.
 
 The cell-free step takes 4 tip columns, not 5, because the water tips are kept rather than dropped: they go into
 the water and dispense from above the wells, never touching the cake, so they carry on into the first template

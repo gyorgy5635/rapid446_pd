@@ -14,6 +14,11 @@ record a design that had been superseded:
   never touches the cake, so its tips are clean and now carry on into the first template column.
   That takes the step from 5 tip columns to 4, which fits 24 columns into exactly two 50 µL boxes:
   one gripper swap instead of two, and none of the 48 tips that used to go out in part-full boxes.
+- **One tip column per master mix, laid down slowly** (2026-11-27). Golden Gate and the Flex PCR
+  step each used a fresh tip column per destination column; the destinations are empty at that
+  point and all take the same mix from the same well, so one column now serves all three. Both are
+  also slowed, 3 µL/s on the OT-2 and 150 µL/s on the Flex, because the mixes are viscous. Tips
+  over the run fall to 834 and the OT-2 needs no tip-box swap at all.
 
 **Status: draft. No part of this has been run on the robots.** It has been checked by simulation
 and by the run map; see "What has been checked" below.
