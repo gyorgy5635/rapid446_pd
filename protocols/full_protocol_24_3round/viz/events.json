@@ -5,13 +5,13 @@
   "source": "AD-SDL/rapid446_applications",
   "derived_from": "full_protocol_24_20261124",
   "script_url": null,
-  "generated": "2026-11-27T19:13:40",
+  "generated": "2026-11-27T19:23:10",
   "workflow_calls": 191,
   "steps": 392,
   "pf400_moves": 235,
   "flex_gripper_moves": 56,
   "resource_bookkeeping_calls_ignored": 50,
-  "conditional_steps": 43,
+  "conditional_steps": 47,
   "swaps_from_simulation": true,
   "estimated_total_s": 124605
  },
@@ -9028,15 +9028,14 @@
    "line": 454,
    "kind": "move",
    "mover": "pf400",
-   "detail": "OT-2 20 µL tips (slot 3, PF400-swappable): ot2_patrick.deck_nest_3 → exchange_wide",
+   "detail": "OT-2 20 µL tips (slot 3, PF400-swappable): ot2_patrick.deck_nest_3 → exchange_wide (only if needed)",
    "duration_s": 45,
    "duration_source": "estimate",
    "src": "ot2_patrick.deck_nest_3",
    "dst": "exchange_wide",
    "from": "ot2_patrick.deck_nest_3",
    "to": "exchange",
-   "plate": "p2",
-   "hold": 0
+   "conditional": true
   },
   {
    "i": 299,
@@ -9045,15 +9044,14 @@
    "line": 454,
    "kind": "move",
    "mover": "pf400",
-   "detail": "OT-2 20 µL tips (slot 3, PF400-swappable): exchange_narrow → rack2_row2_nest1",
+   "detail": "labware: exchange_narrow → rack2_row2_nest1 (only if needed)",
    "duration_s": 45,
    "duration_source": "estimate",
    "src": "exchange_narrow",
    "dst": "rack2_row2_nest1",
    "from": "exchange",
    "to": "rack2_row2_nest1",
-   "plate": "p2",
-   "hold": 0
+   "conditional": true
   },
   {
    "i": 300,
@@ -9062,15 +9060,14 @@
    "line": 454,
    "kind": "move",
    "mover": "pf400",
-   "detail": "OT-2 20 µL tips (spare for slot 3): rack2_row1_nest2 → exchange_narrow",
+   "detail": "OT-2 20 µL tips (spare for slot 3): rack2_row1_nest2 → exchange_narrow (only if needed)",
    "duration_s": 45,
    "duration_source": "estimate",
    "src": "rack2_row1_nest2",
    "dst": "exchange_narrow",
    "from": "rack2_row1_nest2",
    "to": "exchange",
-   "plate": "p3",
-   "hold": 0
+   "conditional": true
   },
   {
    "i": 301,
@@ -9079,15 +9076,14 @@
    "line": 454,
    "kind": "move",
    "mover": "pf400",
-   "detail": "OT-2 20 µL tips (spare for slot 3): exchange_wide → ot2_patrick.deck_nest_3",
+   "detail": "labware: exchange_wide → ot2_patrick.deck_nest_3 (only if needed)",
    "duration_s": 45,
    "duration_source": "estimate",
    "src": "exchange_wide",
    "dst": "ot2_patrick.deck_nest_3",
    "from": "exchange",
    "to": "ot2_patrick.deck_nest_3",
-   "plate": "p3",
-   "hold": 0
+   "conditional": true
   },
   {
    "i": 302,
@@ -9105,12 +9101,12 @@
    "plates": [
     "p15",
     "p16",
-    "p3"
+    "p2"
    ],
    "deck_plates": {
+    "D3": "p2",
     "C3": "p15",
-    "C1": "p16",
-    "D3": "p3"
+    "C1": "p16"
    }
   },
   {
@@ -9571,7 +9567,7 @@
    "line": 454,
    "kind": "move",
    "mover": "pf400",
-   "detail": "OT-2 20 µL tips (spare for slot 3): ot2_patrick.deck_nest_3 → exchange_wide (only if needed)",
+   "detail": "OT-2 20 µL tips (slot 3, PF400-swappable): ot2_patrick.deck_nest_3 → exchange_wide (only if needed)",
    "duration_s": 45,
    "duration_source": "estimate",
    "src": "ot2_patrick.deck_nest_3",
@@ -9603,7 +9599,7 @@
    "line": 454,
    "kind": "move",
    "mover": "pf400",
-   "detail": "labware: rack2_row1_nest2 → exchange_narrow (only if needed)",
+   "detail": "OT-2 20 µL tips (spare for slot 3): rack2_row1_nest2 → exchange_narrow (only if needed)",
    "duration_s": 45,
    "duration_source": "estimate",
    "src": "rack2_row1_nest2",
@@ -9644,11 +9640,11 @@
    "plates": [
     "p16",
     "p17",
-    "p3",
+    "p2",
     "p4"
    ],
    "deck_plates": {
-    "D3": "p3",
+    "D3": "p2",
     "C1": "p16",
     "C3": "p17",
     "D1": "p4"
@@ -10605,10 +10601,10 @@
    "action": "run_protocol",
    "protocol": "set_ot2_temp_off.py",
    "plates": [
-    "p3"
+    "p2"
    ],
    "deck_plates": {
-    "D3": "p3"
+    "D3": "p2"
    }
   },
   {
@@ -10628,6 +10624,8 @@
   }
  ],
  "final_state": {
+  "ot2_patrick.deck_nest_3": "p2",
+  "rack2_row1_nest2": "p3",
   "rack1_row1_nest1": "p5",
   "rack1_row2_nest1": "p6",
   "rack1_row3_nest1": "p7",
@@ -10638,8 +10636,6 @@
   "rack1_row3_nest2": "p12",
   "rack1_row5_nest2": "p14",
   "rack1_row4_nest2": "p13",
-  "rack2_row2_nest1": "p2",
-  "ot2_patrick.deck_nest_3": "p3",
   "cold_block_ext": "p1",
   "rack1_row1_nest3": "p15",
   "rack1_row2_nest3": "p16",

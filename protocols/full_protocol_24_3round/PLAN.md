@@ -84,14 +84,21 @@ Counted by the simulator over the whole 3-round run (24 combinations), not estim
 
 | Tips | Per round | 3 rounds | Boxes | Margin |
 |---|---|---|---|---|
-| OT-2 20 µL | 208 tips (GG 120, PCR 48, dilution 40) | 624 tips | 5 fixed racks (480) + 2 boxes in slot 3 | 48 tips |
-| Flex 200 µL (A1) | 32 tips (PCR mix 24, FDGlu 8) | 96 tips | exactly 1 box; spare on D4 unused | 0 |
+| OT-2 20 µL | 192 tips (GG 104, PCR 48, dilution 40) | 576 tips | 6 racks on deck, exactly | 0, the spare on rack 2 is never needed |
+| Flex 200 µL (A1) | 16 tips (PCR mix 8, FDGlu 8) | 48 tips | 1 box | 48 tips |
 | Flex 50 µL 8-channel (A2) | 64 tips (cell-free 32, FDGlu 32) | 192 tips | 1 on deck + 1 spare, 1 gripper swap | 0, exactly 2 boxes |
 | Flex 50 µL single (A3) | 6 tips (FDGlu) | 18 tips | 1 box | 78 tips |
 
-The OT-2 needs **one** PF400 tip-box swap, in round 3 before the PCR step: the five fixed racks and the first
-slot-3 box cover 576 tips, and the run needs 624. On the Flex the 8-channel 50 µL box is swapped **once**, before
-the cell-free step of round 2.
+The OT-2 needs **no** tip-box swap any more: 6 racks hold 576 tips and the run uses exactly 576. The spare box
+stays on rack 2 and `ot2_tip_swap.yaml` stays wired up, so a round with more combinations still swaps rather than
+stopping. On the Flex the 8-channel 50 µL box is swapped **once**, before the cell-free step of round 2.
+
+Each master mix is laid down with **one tip column**, not one per destination column: the destinations are empty
+when it goes in and they all get the same mix from the same well, so a fresh tip per column buys nothing. The
+fragments, where it does matter, still get a fresh tip each. That saved 2 columns a round on the OT-2 and 2 on the
+Flex 200 µL, which is what removed the OT-2 swap. Both master mixes are also drawn and laid down slowly - 3 µL/s
+on the OT-2 and 150 µL/s on the Flex, against defaults of 7.6 and 716 - because they are viscous. Those two rates
+are proposals in the protocols' config, not measured values.
 
 The cell-free step takes 4 tip columns, not 5, because the water tips are kept rather than dropped: they go into
 the water and dispense from above the wells, never touching the cake, so they carry on into the first template

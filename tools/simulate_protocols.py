@@ -128,13 +128,13 @@ def plan(app: Path, payload_base):
 
     for rnd in (1, 2, 3):
         base = dict(payload_base, round_vars={"round_num": rnd, "pcr_mm_start_well": 8 * (8 + rnd)})
-        gg_cols = n_cols + (n_sources + 7) // 8
+        gg_cols = 1 + (n_sources + 7) // 8
         if site(rnd, "ot2_20", gg_cols):        # PF400 workflow, not a protocol: nothing to simulate
             tips["ot2_20"].swap()
         step(rnd, "pd_golden_gate_ot2_v2.py", base, ot2_tip_start=tips["ot2_20"].take(gg_cols))
-        if site(rnd, "flex_200", n_cols):
+        if site(rnd, "flex_200", 1):
             swap(rnd, base, tips["flex_200"])
-        step(rnd, "pd_pcr_v2_flex.py", base, flex200_tip_start=tips["flex_200"].take(n_cols))
+        step(rnd, "pd_pcr_v2_flex.py", base, flex200_tip_start=tips["flex_200"].take(1))
         if site(rnd, "ot2_20", 2 * n_cols):
             tips["ot2_20"].swap()
         step(rnd, "pd_pcr_v2_ot2.py", base, ot2_tip_start=tips["ot2_20"].take(2 * n_cols))

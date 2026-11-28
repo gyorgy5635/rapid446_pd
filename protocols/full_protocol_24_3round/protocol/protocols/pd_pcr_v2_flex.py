@@ -30,6 +30,9 @@ config = {
     'pcr_master_mix_well_volume': 100,
     'water_volume': 20,
     'pcr_master_mix_volume': 24,
+    # Viscous master mix: the default for this pipette is 716 uL/s, which is far too brisk for it.
+    # A proposal, not a measured value.
+    'master_mix_flow_rate': 150,  # µL/s, aspirate and dispense
     'water_well': 1,
     # 3-round run: PCR master mix in column 10/11/12 for round 1/2/3 (row A well index 72/80/88), set by full_run.py
     'master_mix_start_well': int("$pcr_mm_start_well"),
@@ -109,6 +112,11 @@ def master_mix_to_pcr_plate(protocol, source_plate, pcr_plate, pipette, config):
     remaining_dispenses = dispenses_per_well
     protocol.comment(f"\nAdding {master_mix_volume}µL master mix to each destination well:")
 # #######################
+    # One tip column for the whole distribution: the PCR plate is empty until the OT-2 adds water
+    # and Golden Gate product later, and every column gets the same mix from the same well.
+    pipette.flow_rate.aspirate = config['master_mix_flow_rate']
+    pipette.flow_rate.dispense = config['master_mix_flow_rate']
+    pipette.pick_up_tip()
     for col_idx in range(columns_needed):
         if remaining_dispenses == 0:
             current_master_mix_well += 8
@@ -123,13 +131,14 @@ def master_mix_to_pcr_plate(protocol, source_plate, pcr_plate, pipette, config):
             master_mix_volume,
             master_mix_well,
             dest_well,
-            new_tip='always',  # Use fresh tip for each master mix transfer
+            new_tip='never',   # one tip for the whole distribution
             mix_before=(3, 10),
             mix_after=(3, 10)
         )
-        config['tips_used']+=8
         # Update remaining dispenses
         remaining_dispenses -= 1
+    pipette.drop_tip()
+    config['tips_used']+=8
 
     protocol.comment(f"\nMaster mix addition complete. Used wells {master_mix_start_well + 1} to {current_master_mix_well + 1} (0-indexed: {master_mix_start_well} to {current_master_mix_well})")
 

@@ -533,7 +533,7 @@ class PDApp(ExperimentScript,): # TODO
             )
 
             # GG master mix (column 9) + fragments: 1 tip column per sample column, then 1 single tip per fragment
-            gg_tip_columns = n_cols + (n_sources + 7) // 8
+            gg_tip_columns = 1 + (n_sources + 7) // 8   # 1 column of master mix, then the fragments
             if tips["ot2_20"].needs_swap(gg_tip_columns):
                 swap_ot2_tip_box()
             payload["tip_starts"] = {"ot2_tip_start": tips["ot2_20"].take(gg_tip_columns)}
@@ -599,10 +599,10 @@ class PDApp(ExperimentScript,): # TODO
             self.pop_assay_plate_resource("otflex_sandy.deck_nest_A4")
 
             # PCR master mix (column 9 + round) into the PCR plate: 1 column of 200 uL tips per sample column
-            if tips["flex_200"].needs_swap(n_cols):
+            if tips["flex_200"].needs_swap(1):
                 swap_tip_box(tips["flex_200"])
 
-            payload["tip_starts"] = {"flex200_tip_start": tips["flex_200"].take(n_cols)}
+            payload["tip_starts"] = {"flex200_tip_start": tips["flex_200"].take(1)}
             ot2_replacement_variables = helper_functions.collect_ot2_replacement_variables(payload)
             temp_ot2_file_str = helper_functions.generate_ot2_protocol(pcr_flex_protocol, ot2_replacement_variables)
             payload["current_flex_protocol"] = temp_ot2_file_str
